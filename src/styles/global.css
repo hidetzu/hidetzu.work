@@ -92,7 +92,7 @@ a:hover {
 }
 
 .wrap {
-  max-width: 58rem;
+  max-width: 62rem;
   margin: 0 auto;
   padding: 1.5rem 1.25rem 4rem;
 }
@@ -234,38 +234,60 @@ footer {
   color: var(--muted);
 }
 
-/* --- now ------------------------------------------------------------------ */
+/* --- current questions --------------------------------------------------- */
 
+/* 強弱は Hero > Question > Detail の 3 段階に揃える。 */
 .lede {
   font-family: var(--font-serif);
-  font-size: 1.125rem;
+  font-size: 1.0625rem;
   line-height: 1.75;
-  margin: 0 0 2rem;
-  max-width: 34em;
+  color: var(--muted);
+  margin: 0 0 2.25rem;
+  max-width: 36em;
 }
 
-.themes {
+.topic {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.questions {
+  list-style: none;
   margin: 0;
+  padding: 0;
+  counter-reset: q;
 }
 
-.theme {
-  padding: 0.85rem 0;
+.question {
+  padding: 1.5rem 0;
   border-top: 1px solid var(--line-soft);
 }
 
-.theme dt {
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  letter-spacing: 0.04em;
-  color: var(--fg);
+.question:first-child {
+  border-top: 0;
+  padding-top: 0;
 }
 
-.theme dd {
-  margin: 0.1rem 0 0;
+.question-text {
+  font-family: var(--font-serif);
+  font-size: clamp(1.1875rem, 4.4vw, 1.4375rem);
+  line-height: 1.5;
+  margin: 0.5rem 0 0;
+  max-width: 28em;
+  text-wrap: balance;
+}
+
+.question-note {
+  margin: 0.6rem 0 0;
   font-size: 0.9375rem;
-  line-height: 1.7;
+  line-height: 1.75;
   color: var(--muted);
-  max-width: 40em;
+  max-width: 38em;
 }
 
 /* --- projects ------------------------------------------------------------- */
@@ -330,12 +352,27 @@ footer {
   font-weight: 400;
 }
 
-.project p {
-  margin: 0.45rem 0 0.75rem;
+.project > .project-main > p {
+  margin: 0.45rem 0 1.1rem;
   font-size: 0.9375rem;
   line-height: 1.7;
   color: var(--muted);
   max-width: 38em;
+}
+
+.experiment {
+  margin: 0 0 1rem;
+  padding-left: 0.9rem;
+  border-left: 1px solid var(--line);
+}
+
+.experiment p {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--fg);
+  margin: 0.3rem 0 0;
+  max-width: 32em;
 }
 
 .inline-links {
@@ -363,20 +400,6 @@ footer {
 
 /* --- writing -------------------------------------------------------------- */
 
-.subhead {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--faint);
-  margin: 2.25rem 0 0.25rem;
-}
-
-.subhead:first-child {
-  margin-top: 0;
-}
-
 .entries {
   list-style: none;
   margin: 0;
@@ -385,9 +408,20 @@ footer {
 
 .entries li {
   display: grid;
-  gap: 0.1rem;
-  padding: 0.85rem 0;
+  gap: 0.35rem;
+  padding: 1.35rem 0;
   border-top: 1px solid var(--line-soft);
+}
+
+.entries li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.entry-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
 }
 
 .entries time {
@@ -400,9 +434,10 @@ footer {
 .entries a {
   font-family: var(--font-serif);
   font-size: 1.0625rem;
-  line-height: 1.5;
+  line-height: 1.55;
   text-decoration: none;
   border-bottom: 1px solid transparent;
+  max-width: 36em;
 }
 
 .entries a:hover {
@@ -467,7 +502,7 @@ footer {
 
   .section {
     display: grid;
-    grid-template-columns: 8.5rem 1fr;
+    grid-template-columns: 10rem 1fr;
     gap: 0 3.5rem;
   }
 
@@ -485,8 +520,17 @@ footer {
   }
 
   .entries li {
-    grid-template-columns: 4.5rem 1fr;
-    gap: 0 1.5rem;
+    grid-template-columns: 11rem 1fr;
+    gap: 0 2rem;
     align-items: baseline;
+  }
+
+  .entry-meta {
+    display: block;
+  }
+
+  .entry-meta time {
+    display: block;
+    margin-top: 0.25rem;
   }
 }

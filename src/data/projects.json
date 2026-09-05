@@ -2,41 +2,32 @@
   {
     "name": "今昔 / konjaku",
     "status": "active",
-    "summary": "この土地は昔なんだったのか？ オープンデータから「言えること」だけを表示する Web アプリ。",
+    "motif": "map",
+    "summary": "街歩き中の「ここ、昔は何だった？」を拾う Web アプリ。",
+    "experiment": "調べた場所から、次に歩く場所が見つかるか。",
     "links": [
-      {
-        "label": "Site",
-        "url": "https://konjaku.hidetzu.work"
-      },
-      {
-        "label": "GitHub",
-        "url": "https://github.com/hidetzu/konjaku"
-      }
-    ],
-    "motif": "map"
+      { "label": "Site", "url": "https://konjaku.hidetzu.work" },
+      { "label": "GitHub", "url": "https://github.com/hidetzu/konjaku" }
+    ]
   },
   {
     "name": "claude-dev-template",
     "status": "active",
-    "summary": "AI 支援開発を制御下で回すための Claude Code ワークフローテンプレート。人間の判断・検査・レビュー・テレメトリを組み込んでいる。",
+    "motif": "loop",
+    "summary": "判断・検査・レビューを残したまま AI 支援開発を回す Claude Code テンプレート。",
+    "experiment": "Owner が判断しなくても安全に進める範囲を、どこまで広げられるか。",
     "links": [
-      {
-        "label": "GitHub",
-        "url": "https://github.com/hidetzu/claude-dev-template"
-      }
-    ],
-    "motif": "loop"
+      { "label": "GitHub", "url": "https://github.com/hidetzu/claude-dev-template" }
+    ]
   },
   {
     "name": "tcpip-stack",
     "status": "learning",
-    "summary": "TCP/IP スタックを C で実装しながら、プロトコルの中身を手を動かして確かめる学習用プロジェクト。",
+    "motif": "packet",
+    "summary": "TCP/IP スタックを C で実装する。",
+    "experiment": "AI に実装を委譲しながら、人間自身の理解も深められるか。",
     "links": [
-      {
-        "label": "GitHub",
-        "url": "https://github.com/hidetzu/tcpip-stack"
-      }
-    ],
-    "motif": "packet"
+      { "label": "GitHub", "url": "https://github.com/hidetzu/tcpip-stack" }
+    ]
   }
 ]

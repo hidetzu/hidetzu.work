@@ -39,23 +39,24 @@ const about = aboutData as About;
   </header>
 
   <main id="main">
-    <section class="section" aria-labelledby="now">
+    <section class="section" aria-labelledby="questions">
       <div class="section-label">
         <span class="num">01</span>
-        <h2 id="now">Now</h2>
+        <h2 id="questions">Current Questions</h2>
       </div>
       <div class="section-body">
         <p class="lede">{now.lead}</p>
-        <dl class="themes">
+        <ol class="questions">
           {
-            now.themes.map((theme) => (
-              <div class="theme">
-                <dt>{theme.name}</dt>
-                <dd>{theme.note}</dd>
-              </div>
+            now.questions.map((q) => (
+              <li class="question">
+                <span class="topic">{q.name}</span>
+                <p class="question-text">{q.question}</p>
+                <p class="question-note">{q.note}</p>
+              </li>
             ))
           }
-        </dl>
+        </ol>
       </div>
     </section>
 
@@ -78,6 +79,10 @@ const about = aboutData as About;
                     <span class="status">{project.status}</span>
                   </h3>
                   <p>{project.summary}</p>
+                  <div class="experiment">
+                    <span class="topic">Current experiment</span>
+                    <p>{project.experiment}</p>
+                  </div>
                   <ul class="inline-links">
                     {project.links.map((link) => (
                       <li>
@@ -99,24 +104,14 @@ const about = aboutData as About;
         <h2 id="writing">Writing</h2>
       </div>
       <div class="section-body">
-        <h3 class="subhead">Books</h3>
-        <ul class="entries">
-          {
-            writing.books.map((book) => (
-              <li>
-                <time datetime={book.date}>{book.date}</time>
-                <a href={book.url}>{book.title}</a>
-              </li>
-            ))
-          }
-        </ul>
-
-        <h3 class="subhead">Articles</h3>
         <ul class="entries">
           {
             writing.articles.map((article) => (
               <li>
-                <time datetime={article.date}>{article.date}</time>
+                <div class="entry-meta">
+                  <span class="topic">{article.topic}</span>
+                  <time datetime={article.date}>{article.date}</time>
+                </div>
                 <a href={article.url}>{article.title}</a>
               </li>
             ))

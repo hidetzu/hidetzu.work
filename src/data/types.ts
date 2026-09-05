@@ -12,7 +12,7 @@ export type Site = {
 export type Now = {
   updated: string;
   lead: string;
-  themes: { name: string; note: string }[];
+  questions: { name: string; question: string; note: string }[];
 };
 
 export type Project = {
@@ -20,13 +20,13 @@ export type Project = {
   status: string;
   motif: 'map' | 'loop' | 'packet';
   summary: string;
+  experiment: string;
   links: Link[];
 };
 
 export type Writing = {
   profileUrl: string;
-  books: { title: string; date: string; url: string }[];
-  articles: { title: string; date: string; url: string }[];
+  articles: { topic: string; title: string; date: string; url: string }[];
 };
 
 export type About = {

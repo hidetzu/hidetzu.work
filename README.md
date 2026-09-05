@@ -35,9 +35,9 @@ npm run preview    # dist/ の内容をローカル配信して確認
 | ファイル | 内容 |
 | --- | --- |
 | `src/data/site.json` | サイト名、タグライン、description、Hero のリンク |
-| `src/data/now.json` | Now セクション（`updated` と関心テーマ） |
-| `src/data/projects.json` | Projects の一覧（配列。先頭から表示される。`motif` は `map` / `loop` / `packet`） |
-| `src/data/writing.json` | Zenn の Book / 記事（手動定義。外部 API は叩かない） |
+| `src/data/now.json` | `updated` と、Current Questions（3 つ程度の問い） |
+| `src/data/projects.json` | Projects の一覧（配列。`motif` は `map` / `loop` / `packet`、`experiment` は今試している問い） |
+| `src/data/writing.json` | Zenn の記事（手動定義。外部 API は叩かない。今のテーマを代表する 3 本程度に絞る） |
 | `src/data/about.json` | About の本文と末尾のリンク |
 
 型は `src/data/types.ts` にある。項目を増やすときは JSON と型の両方を更新する。
@@ -50,6 +50,7 @@ Project を 1 件追加する例:
   "status": "active",
   "motif": "loop",
   "summary": "一行の説明。",
+  "experiment": "いま試している問い。",
   "links": [{ "label": "GitHub", "url": "https://github.com/hidetzu/xxx" }]
 }
 ```
@@ -126,7 +127,9 @@ npm run deploy     # astro build && wrangler deploy
 - クライアント JS は 0 のまま維持する（CSS は `inlineStylesheets: 'always'` で HTML に埋め込む）
 - 画像・フォントを増やさない。Web フォントは読み込まない
 - コンポーネントを細かく割らない。デザインシステムを作らない
-- 文章量を増やさない。情報構成（Hero / Now / Projects / Writing / About）は変えない
+- 文章量を増やさない。情報構成（Hero / Current Questions / Projects / Writing / About）は変えない
+- ポートフォリオではなく「現在進行形の研究ノート」として書く。
+  「何ができる人か」ではなく「今どんな問いを追っているか」を前に出し、役職は載せない
 
 ## ファイル構成
 
