@@ -102,49 +102,32 @@ npm run deploy     # astro build && wrangler deploy
 
 ## デザインの方針
 
-方向性は Technical / Editorial / Lab。派手なポートフォリオ風にもハッカー UI にもしない。
-色数と装飾ではなく、書体・余白・罫線で階層を作る。
+落ち着いた実用的な見た目にする。展示的な大見出しやセリフ体は使わない。
+Zenn のプロフィールページくらいの静かさを基準にする。
 
-書体は Web フォントを読み込まず、システムフォント 3 種の役割分担で階層を作っている。
-
-| 変数 | 役割 | 使いどころ |
-| --- | --- | --- |
-| `--font-mono` | 技術的なメタ情報 | サイト名、セクション番号・ラベル、日付、status、リンク |
-| `--font-serif` | 見出しとタイトル | タグライン、プロジェクト名、記事タイトル、Now のリード |
-| `--font-sans` | 本文 | 説明文、About |
-
-レイアウトはセクションごとにリズムを変える。均一な縦積みにしない。
-
-| セクション | リズム |
-| --- | --- |
-| Hero | 巨大な名前（最大 10rem）+ 右にループ図。以降のどこよりも大きく取る |
-| Current Questions | 大きな連番（Q1–Q3）を左にぶら下げ、問いを最大級の見出しとして立てる |
-| Projects | 3 列。モチーフ / 名前・説明 / CURRENT EXPERIMENT を横に並べる |
-| Writing | 縦積みではなく 3 列の索引 |
-| About | 短い一文を大きく置く |
-
-セクション見出しは全幅の帯（2px の罫 + 番号 + セクション名）で、中央寄せの細いカラムを作らない。
-`.wrap` の上限は 88rem、左右は `clamp(1rem, 4.5vw, 4.5rem)`。
-
-Hero の名前は 60rem 以上で 2 カラムになるため、`clamp` の係数を切り替えて折り返さない幅に収めている。
-ここを触るときは 768 / 960 / 1024px で名前が 1 行に収まるか確認する。
-
-図版はすべてインライン SVG で、`currentColor` ではなく CSS 変数を参照するのでダークモードに追従する。
-
-- `src/components/LoopDiagram.astro` — Hero の Human → Decision → AI → Verify ループ
-- `src/components/Motif.astro` — プロジェクト固有のモチーフ。`map` / `loop` / `packet` を
-  `projects.json` の `motif` で指定する
+- 本文はすべてサンセリフ（`--font-sans`）。`--font-mono` は日付・status・
+  セクション番号など小さなメタ情報だけに使う
+- 中央 56rem のカラム。行の区切りは 1px の細い罫
+- 文字サイズは控えめ。本文 16px、見出し 17px、補足 15px
+- Web フォントは読み込まない
 
 色は声量の 4 段階で使い分ける。WCAG AA（4.5:1）を満たす値を選んであるので、
 パレットを変えるときはコントラストを再確認する。
 
 | 変数 | 声量 | 使いどころ |
 | --- | --- | --- |
-| `--fg` | 最も強い | 問い、プロジェクト名、記事タイトル、CURRENT EXPERIMENT |
-| `--body` | 本文 | 説明文、リード、About |
-| `--muted` | 弱い | セクションラベル |
-| `--faint` | 最も弱い | 日付、status、マストヘッド、フッター |
-| `--accent` | 差し色 | セクション番号、topic ラベル、図のノードと矢印 |
+| `--fg` | 見出し | 問い、プロジェクト名、記事タイトル、セクション名 |
+| `--body` | 本文 | 説明文、リード、About、CURRENT EXPERIMENT |
+| `--muted` | 副次リンク | Site / GitHub などのリンク |
+| `--faint` | メタ | 日付、status、topic ラベル、マストヘッド、フッター |
+| `--accent` | 差し色 | Q 番号、図のノード、hover |
+
+図版はインライン SVG で、`currentColor` ではなく CSS 変数を参照するのでダークモードに追従する。
+
+- `src/components/LoopDiagram.astro` — Human → Decision → AI → Verify のループ。
+  ラベルが読める大きさ（13rem 前後）を下回らせない
+- `src/components/Motif.astro` — プロジェクト固有のモチーフ。`map` / `loop` / `packet` を
+  `projects.json` の `motif` で指定する
 
 ## 実装の方針
 

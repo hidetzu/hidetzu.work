@@ -1,41 +1,35 @@
 /* --------------------------------------------------------------------------
-   3 つの書体で階層を作る。
-   mono   … 技術的なメタ情報（ラベル、番号、日付、名前）
-   serif  … 見出しと問い
-   sans   … 本文
-
-   声量は 5 段階。--fg が最も強く、--faint が最も弱い。
-   セクションごとにレイアウトのリズムを変える。均一な縦積みにしない。
+   落ち着いた実用的な見た目にする。展示的な大見出しやセリフ体は使わない。
+   本文はすべてサンセリフ。mono は日付や status などの小さなメタ情報だけ。
    -------------------------------------------------------------------------- */
 
 :root {
   color-scheme: light dark;
-  --bg: #fbfaf7;
-  --fg: #191814;
-  --body: #3d3a34;
+  --bg: #fbfaf8;
+  --surface: #ffffff;
+  --fg: #1f1d19;
+  --body: #45423b;
   --muted: #6d6a62;
   --faint: #77736a;
-  --line: #ddd9d0;
-  --line-soft: #eae7df;
-  --accent: #96632a;
+  --line: #e4e1da;
+  --line-soft: #eeece6;
+  --accent: #8f5f28;
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans",
     "Noto Sans JP", "Noto Sans CJK JP", Meiryo, sans-serif;
-  --font-serif: "Iowan Old Style", Palatino, "Palatino Linotype", Georgia,
-    "Times New Roman", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP",
-    "Noto Serif CJK JP", "Noto Serif", "DejaVu Serif", serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
     "JetBrains Mono", "Noto Sans Mono CJK JP", "DejaVu Sans Mono", monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #14130f;
-    --fg: #eae7df;
-    --body: #c9c4ba;
+    --bg: #171612;
+    --surface: #1e1c18;
+    --fg: #ebe8e1;
+    --body: #cbc6bc;
     --muted: #9b968b;
     --faint: #878176;
-    --line: #2e2b25;
-    --line-soft: #232019;
+    --line: #302d27;
+    --line-soft: #26231e;
     --accent: #d3a86a;
   }
 }
@@ -53,21 +47,18 @@ html {
 body {
   margin: 0;
   background: var(--bg);
-  color: var(--fg);
+  color: var(--body);
   font-family: var(--font-sans);
-  font-size: 17px;
-  line-height: 1.85;
+  font-size: 16px;
+  line-height: 1.8;
   overflow-wrap: anywhere;
-  font-kerning: normal;
-  text-rendering: optimizeLegibility;
 }
 
 a {
   color: inherit;
   text-decoration-color: var(--line);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.25em;
-  transition: text-decoration-color 0.15s ease, color 0.15s ease,
+  text-underline-offset: 0.2em;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease,
     border-color 0.15s ease;
 }
 
@@ -78,17 +69,18 @@ a:hover {
 
 :focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 2px;
+  outline-offset: 2px;
+  border-radius: 3px;
 }
 
 .skip-link {
   position: absolute;
   left: -9999px;
   top: 0;
-  background: var(--bg);
+  background: var(--surface);
   padding: 0.5rem 1rem;
-  border: 1px solid var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
   z-index: 10;
 }
 
@@ -98,9 +90,9 @@ a:hover {
 }
 
 .wrap {
-  max-width: 88rem;
+  max-width: 56rem;
   margin: 0 auto;
-  padding: 1.5rem clamp(1rem, 4.5vw, 4.5rem) 5rem;
+  padding: 1.25rem clamp(1rem, 4vw, 2rem) 3.5rem;
 }
 
 /* --- masthead / footer ---------------------------------------------------- */
@@ -113,14 +105,8 @@ footer {
   gap: 0.25rem 1rem;
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.06em;
   color: var(--faint);
-}
-
-.masthead {
-  padding-bottom: 0.9rem;
-  border-bottom: 2px solid var(--fg);
 }
 
 .masthead span,
@@ -128,68 +114,80 @@ footer span {
   white-space: nowrap;
 }
 
+.masthead {
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+
 footer {
-  margin-top: 6rem;
-  padding-top: 1.25rem;
-  border-top: 2px solid var(--fg);
+  margin-top: 3.5rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line);
 }
 
 /* --- hero ----------------------------------------------------------------- */
-/* リズム: 巨大な名前 + 図版。以降のどのセクションよりも大きく取る。 */
+/* プロフィール欄。図版はアイコンくらいの大きさに留める。 */
 
 .hero {
-  padding: clamp(3rem, 9vw, 7rem) 0 clamp(3.5rem, 8vw, 6.5rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: 2.25rem 0 2.5rem;
+}
+
+/* 図版のない 404 では 1 カラムにする */
+.hero--compact {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .hero h1 {
-  font-family: var(--font-mono);
-  font-size: clamp(3.5rem, 15vw, 8rem);
-  font-weight: 600;
-  letter-spacing: -0.045em;
-  line-height: 0.92;
-  margin: 0 0 clamp(1rem, 2.5vw, 1.75rem);
+  font-size: clamp(1.5rem, 5.5vw, 1.875rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--fg);
+  margin: 0 0 0.35rem;
 }
 
 .tagline {
-  font-family: var(--font-serif);
-  font-size: clamp(1.375rem, 3.4vw, 2.375rem);
-  line-height: 1.35;
-  margin: 0 0 clamp(1.75rem, 3.5vw, 2.75rem);
-  max-width: 17em;
-  text-wrap: balance;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--body);
+  margin: 0 0 0.9rem;
+  max-width: 34em;
 }
 
 .hero-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.75rem;
+  gap: 0.5rem;
   list-style: none;
   margin: 0;
   padding: 0;
-  font-family: var(--font-mono);
   font-size: 0.8125rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
 }
 
 .hero-links a {
+  display: inline-block;
+  padding: 0.25rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
   text-decoration: none;
-  padding-bottom: 0.35rem;
-  border-bottom: 2px solid var(--accent);
+  color: var(--body);
+}
+
+.hero-links a:hover {
+  border-color: var(--accent);
 }
 
 /* --- loop diagram --------------------------------------------------------- */
 
-.hero-figure {
-  margin-top: clamp(2.5rem, 6vw, 4rem);
-}
-
 .loop {
   display: block;
   width: 100%;
-  max-width: 22rem;
+  max-width: 12rem;
   height: auto;
-  margin: 0 auto;
 }
 
 .loop-ring {
@@ -199,7 +197,7 @@ footer {
 }
 
 .loop-arrow {
-  fill: var(--muted);
+  fill: var(--faint);
 }
 
 .loop-node {
@@ -209,64 +207,57 @@ footer {
 .loop-label {
   font-family: var(--font-mono);
   font-size: 12px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  fill: var(--muted);
+  fill: var(--faint);
 }
 
-/* --- section head --------------------------------------------------------- */
-/* 全幅の帯。左に番号、右にセクション名。中央寄せの細いカラムを作らない。 */
+/* --- sections ------------------------------------------------------------- */
 
 .section {
-  margin-top: clamp(4rem, 9vw, 7rem);
+  margin-top: 2.75rem;
 }
 
 .section-head {
   display: flex;
   align-items: baseline;
-  gap: 1.25rem;
-  padding-top: 1rem;
-  border-top: 2px solid var(--fg);
-  margin-bottom: clamp(2rem, 4.5vw, 3.25rem);
+  gap: 0.75rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 1.25rem;
 }
 
 .section-head .num {
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  letter-spacing: 0.1em;
-  color: var(--accent);
+  font-size: 0.75rem;
+  color: var(--faint);
 }
 
 .section-head h2 {
   margin: 0;
-  font-family: var(--font-mono);
-  font-size: clamp(0.8125rem, 1.5vw, 1rem);
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   color: var(--fg);
 }
 
 .topic {
   display: block;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--faint);
 }
 
 /* --- current questions ---------------------------------------------------- */
-/* リズム: 大きな連番をぶら下げ、問いを最大級の見出しとして立てる。 */
 
 .lede {
-  font-family: var(--font-serif);
-  font-size: clamp(1.125rem, 1.9vw, 1.375rem);
-  line-height: 1.75;
+  font-size: 0.9375rem;
+  line-height: 1.85;
   color: var(--body);
-  margin: 0 0 clamp(2.5rem, 5vw, 4rem);
-  max-width: 34em;
+  margin: 0 0 1.5rem;
+  max-width: 42em;
 }
 
 .questions {
@@ -276,8 +267,11 @@ footer {
 }
 
 .question {
-  padding: clamp(1.75rem, 3.5vw, 2.75rem) 0;
-  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 0 0.5rem;
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--line-soft);
 }
 
 .question:first-child {
@@ -286,35 +280,30 @@ footer {
 }
 
 .question-index {
-  display: block;
   font-family: var(--font-mono);
-  font-size: clamp(1.125rem, 2.2vw, 1.625rem);
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-size: 0.8125rem;
   color: var(--accent);
-  line-height: 1.2;
-  margin-bottom: 0.65rem;
+  line-height: 1.9;
 }
 
 .question-text {
-  font-family: var(--font-serif);
-  font-size: clamp(1.5rem, 4.2vw, 2.75rem);
-  line-height: 1.35;
-  margin: 0.5rem 0 0;
-  max-width: 26em;
-  text-wrap: balance;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.65;
+  color: var(--fg);
+  margin: 0.15rem 0 0;
+  max-width: 34em;
 }
 
 .question-note {
-  margin: 1rem 0 0;
-  font-size: 1.0625rem;
-  line-height: 1.85;
+  margin: 0.35rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.8;
   color: var(--body);
-  max-width: 40em;
+  max-width: 42em;
 }
 
 /* --- projects ------------------------------------------------------------- */
-/* リズム: 大きなモチーフ + 名前、実験は独立した列に逃がす。 */
 
 .projects {
   list-style: none;
@@ -324,10 +313,10 @@ footer {
 
 .project {
   display: grid;
-  grid-template-columns: 3rem 1fr;
-  gap: 0.5rem 1.25rem;
-  padding: clamp(2rem, 4vw, 3rem) 0;
-  border-top: 1px solid var(--line);
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 0.5rem 0.9rem;
+  padding: 1.35rem 0;
+  border-top: 1px solid var(--line-soft);
 }
 
 .project:first-child {
@@ -335,21 +324,13 @@ footer {
   padding-top: 0;
 }
 
-.project-motif {
-  grid-row: 1;
-}
-
-.project-main {
-  grid-row: 1;
-}
-
 .motif {
   display: block;
-  width: 3rem;
-  height: 3rem;
+  width: 2rem;
+  height: 2rem;
   fill: none;
   stroke: var(--muted);
-  stroke-width: 1.25;
+  stroke-width: 1.5;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
@@ -365,251 +346,160 @@ footer {
 
 .project h3 {
   margin: 0;
-  font-family: var(--font-serif);
-  font-size: clamp(1.5rem, 3.4vw, 2.25rem);
-  font-weight: 600;
-  line-height: 1.25;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--fg);
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
 .status {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.16em;
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--faint);
   font-weight: 400;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 0 0.35rem;
 }
 
 .project-main > p {
-  margin: 0.75rem 0 1.25rem;
-  font-size: 1.0625rem;
+  margin: 0.25rem 0 0.7rem;
+  font-size: 0.9375rem;
   line-height: 1.8;
   color: var(--body);
-  max-width: 34em;
+  max-width: 42em;
 }
 
 .experiment {
-  grid-column: 2;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 2px solid var(--line);
+  margin: 0 0 0.8rem;
+  padding: 0.65rem 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
 }
 
 .experiment p {
-  font-family: var(--font-serif);
-  font-size: clamp(1.125rem, 1.9vw, 1.375rem);
-  line-height: 1.55;
-  color: var(--fg);
-  margin: 0.5rem 0 0;
-  max-width: 26em;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--body);
+  margin: 0.1rem 0 0;
+  max-width: 40em;
 }
 
 .inline-links {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1.75rem;
+  gap: 0.25rem 1.1rem;
   margin: 0;
   padding: 0;
-  font-family: var(--font-mono);
   font-size: 0.8125rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
 }
 
 .inline-links a {
-  text-decoration: none;
-  border-bottom: 2px solid var(--line);
-  padding-bottom: 0.2rem;
-}
-
-.inline-links a:hover {
-  border-bottom-color: var(--accent);
+  color: var(--muted);
 }
 
 /* --- writing -------------------------------------------------------------- */
-/* リズム: 縦積みではなく横並びの索引にする。 */
 
 .entries {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 2.25rem;
 }
 
 .entries li {
-  padding-top: 1rem;
-  border-top: 2px solid var(--fg);
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--line-soft);
+}
+
+.entries li:first-child {
+  border-top: 0;
+  padding-top: 0;
 }
 
 .entry-meta {
   display: flex;
   align-items: baseline;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
+  gap: 0.75rem;
+  margin-bottom: 0.2rem;
 }
 
 .entries time {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
   color: var(--faint);
 }
 
 .entries a {
-  font-family: var(--font-serif);
-  font-size: clamp(1.1875rem, 1.9vw, 1.4375rem);
-  line-height: 1.5;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.65;
+  color: var(--fg);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
+  max-width: 44em;
   display: inline-block;
 }
 
 .entries a:hover {
-  border-bottom-color: var(--accent);
+  color: var(--accent);
 }
 
 .more {
-  margin: clamp(2rem, 4vw, 3rem) 0 0;
-  font-family: var(--font-mono);
+  margin: 1.35rem 0 0;
   font-size: 0.8125rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
 }
 
 .more a {
-  text-decoration: none;
-  border-bottom: 2px solid var(--line);
-  padding-bottom: 0.2rem;
-}
-
-.more a:hover {
-  border-bottom-color: var(--accent);
+  color: var(--muted);
 }
 
 /* --- about ---------------------------------------------------------------- */
-/* リズム: 短い一文を大きく置く。本文に埋もれさせない。 */
-
-.about-lead {
-  font-family: var(--font-serif);
-  font-size: clamp(1.375rem, 3vw, 2.125rem);
-  line-height: 1.45;
-  color: var(--fg);
-  max-width: 20em;
-  text-wrap: balance;
-}
 
 .about p {
-  margin: 0 0 1.25rem;
+  margin: 0 0 0.9rem;
+  font-size: 0.9375rem;
+  line-height: 1.85;
   color: var(--body);
-  max-width: 38em;
+  max-width: 44em;
 }
 
 .about .inline-links {
-  margin-top: 2rem;
+  margin-top: 1.1rem;
 }
 
-/* --- 狭い画面 -------------------------------------------------------------- */
+/* --- 広い画面 -------------------------------------------------------------- */
 
-@media (max-width: 24rem) {
-  .masthead,
-  footer {
-    font-size: 0.6875rem;
-    letter-spacing: 0.08em;
-  }
-
-  .project {
-    grid-template-columns: 2.25rem 1fr;
-    gap: 0.5rem 0.9rem;
-  }
-
-  .motif {
-    width: 2.25rem;
-    height: 2.25rem;
-  }
-}
-
-/* --- 中間幅: Hero を横並びにする ------------------------------------------- */
-
-@media (min-width: 48rem) {
-  .entries {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 2.5rem;
-  }
-}
-
-/* Hero を横並びにするのは、名前が折り返さない幅を確保できてから */
-@media (min-width: 60rem) {
+@media (min-width: 44rem) {
   .hero {
-    display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
-    gap: clamp(2rem, 5vw, 5rem);
+    align-items: center;
+    gap: 2.5rem;
+    padding: 3rem 0;
   }
 
   .hero--compact {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  /* 図版と並ぶぶん、名前は viewport ではなく左カラムの幅に合わせる */
-  .hero h1 {
-    font-size: clamp(4rem, 11vw, 10rem);
-  }
-
-  .hero-figure {
-    margin-top: 0;
-  }
-
   .loop {
-    width: clamp(16rem, 28vw, 30rem);
+    width: 13rem;
     max-width: none;
   }
-}
 
-/* --- 広い画面 -------------------------------------------------------------- */
-
-@media (min-width: 68rem) {
-  .section-head {
-    gap: 2rem;
-  }
-
-  /* 問いは連番をぶら下げて、余白を視線の導線に使う */
   .question {
-    display: grid;
-    grid-template-columns: 6rem minmax(0, 1fr);
-    gap: 0 2rem;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
   }
 
-  .question-index {
-    margin-bottom: 0;
-    text-align: right;
-  }
-
-  /* プロジェクトは 3 列。実験は本文の隣に置いて縦の均一さを崩す */
   .project {
-    grid-template-columns: 4.5rem minmax(0, 1.15fr) minmax(0, 1fr);
-    gap: 0 clamp(2rem, 4vw, 4rem);
-    align-items: start;
-  }
-
-  .motif {
-    width: 4rem;
-    height: 4rem;
-  }
-
-  .experiment {
-    grid-column: 3;
-    grid-row: 1;
-    margin-top: 0.5rem;
-  }
-
-  .entries {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 3rem;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: 0.5rem 1.1rem;
   }
 }

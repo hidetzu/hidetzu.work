@@ -84,6 +84,10 @@ const about = aboutData as About;
                     <span class="status">{project.status}</span>
                   </h3>
                   <p>{project.summary}</p>
+                  <div class="experiment">
+                    <span class="topic">Current experiment</span>
+                    <p>{project.experiment}</p>
+                  </div>
                   <ul class="inline-links">
                     {project.links.map((link) => (
                       <li>
@@ -91,10 +95,6 @@ const about = aboutData as About;
                       </li>
                     ))}
                   </ul>
-                </div>
-                <div class="experiment">
-                  <span class="topic">Current experiment</span>
-                  <p>{project.experiment}</p>
                 </div>
               </li>
             ))
