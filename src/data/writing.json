@@ -1,0 +1,37 @@
+{
+  "profileUrl": "https://zenn.dev/hidetzu",
+  "books": [
+    {
+      "title": "現場で困らないためのGit入門",
+      "date": "2026-08",
+      "url": "https://zenn.dev/hidetzu/books/git-practical-guide"
+    }
+  ],
+  "articles": [
+    {
+      "title": "生成は雑でいい、検証器が全部拾う：採択率0.26%で成立する『生成→検証』ループ",
+      "date": "2026-07",
+      "url": "https://zenn.dev/hidetzu/articles/verigen-generate-verify-loop"
+    },
+    {
+      "title": "ready-for-ai を付けた Issue を Claude Code に回す。ただし全自動にはしなかった",
+      "date": "2026-08",
+      "url": "https://zenn.dev/hidetzu/articles/konjaku-loop-engineering"
+    },
+    {
+      "title": "AIは機能を足すのが速い。だから人間は削る仕事が増えた",
+      "date": "2026-08",
+      "url": "https://zenn.dev/hidetzu/articles/konjaku-what-not-to-build"
+    },
+    {
+      "title": "この土地は昔なんだった？ オープンデータで「言えること」だけを表示する『今昔』を作った",
+      "date": "2026-08",
+      "url": "https://zenn.dev/hidetzu/articles/konjaku-open-data-service"
+    },
+    {
+      "title": "OFFSET は読み飛ばしていない — 1,000万件で測り直したページングの話",
+      "date": "2026-09",
+      "url": "https://zenn.dev/hidetzu/articles/offset-vs-cursor-pagination"
+    }
+  ]
+}

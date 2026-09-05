@@ -1,0 +1,124 @@
+---
+import Base from '../layouts/Base.astro';
+import siteData from '../data/site.json';
+import nowData from '../data/now.json';
+import projectsData from '../data/projects.json';
+import writingData from '../data/writing.json';
+import aboutData from '../data/about.json';
+import type { Site, Now, Project, Writing, About } from '../data/types';
+
+const site = siteData as Site;
+const now = nowData as Now;
+const projects = projectsData as Project[];
+const writing = writingData as Writing;
+const about = aboutData as About;
+---
+
+<Base>
+  <header class="hero">
+    <h1>{site.name}</h1>
+    <p>{site.tagline}</p>
+    <ul class="hero-links">
+      {
+        site.links.map((link) => (
+          <li>
+            <a href={link.url} rel="me noopener">
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </header>
+
+  <main id="main">
+    <section aria-labelledby="now">
+      <h2 id="now">Now <span class="status">{now.updated}</span></h2>
+      <p class="lead">{now.lead}</p>
+      <ul class="themes">
+        {
+          now.themes.map((theme) => (
+            <li>
+              <b>{theme.name}</b> <span>— {theme.note}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section aria-labelledby="projects">
+      <h2 id="projects">Projects</h2>
+      <ul class="projects">
+        {
+          projects.map((project) => (
+            <li>
+              <h3>
+                {project.name}
+                <span class="status">{project.status}</span>
+              </h3>
+              <p>{project.summary}</p>
+              <ul class="inline-links">
+                {project.links.map((link) => (
+                  <li>
+                    <a href={link.url}>{link.label} ↗</a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section aria-labelledby="writing">
+      <h2 id="writing">Writing</h2>
+
+      <h3 class="subhead">Books</h3>
+      <ul class="entries">
+        {
+          writing.books.map((book) => (
+            <li>
+              <time datetime={book.date}>{book.date}</time>
+              <a href={book.url}>{book.title}</a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <h3 class="subhead">Articles</h3>
+      <ul class="entries">
+        {
+          writing.articles.map((article) => (
+            <li>
+              <time datetime={article.date}>{article.date}</time>
+              <a href={article.url}>{article.title}</a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="more">
+        <a href={writing.profileUrl}>Zenn のすべての記事を見る ↗</a>
+      </p>
+    </section>
+
+    <section class="about" aria-labelledby="about">
+      <h2 id="about">About</h2>
+      {about.body.map((paragraph) => <p>{paragraph}</p>)}
+      <ul class="inline-links">
+        {
+          about.links.map((link) => (
+            <li>
+              <a href={link.url}>{link.label} ↗</a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <span>hidetzu.work</span>
+    <span>Last updated {now.updated}</span>
+  </footer>
+</Base>
