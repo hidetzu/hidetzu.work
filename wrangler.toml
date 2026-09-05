@@ -2,12 +2,12 @@
 name = "hidetzu-work"
 compatibility_date = "2026-09-01"
 
+# apex のみ（www は使わない）。
+# デプロイ時にカスタムドメインの割り当てと DNS レコード作成が行われる。
+routes = [
+  { pattern = "hidetzu.work", custom_domain = true }
+]
+
 [assets]
 directory = "./dist"
 not_found_handling = "404-page"
-
-# 独自ドメインは Cloudflare ダッシュボード側、または以下の routes で設定する。
-# hidetzu.work のゾーンを Cloudflare に置いてから有効化する:
-# routes = [
-#   { pattern = "hidetzu.work", custom_domain = true }
-# ]
