@@ -1,0 +1,40 @@
+---
+// Human → Decision → AI → Verify の循環。時計回り。
+// cx=146 cy=112 r=70 を基準に座標を決め打ちしている。
+const nodes = [
+  { label: 'Human', x: 146, y: 42, tx: 146, ty: 30, anchor: 'middle', lead: true },
+  { label: 'Decision', x: 216, y: 112, tx: 228, ty: 116, anchor: 'start', lead: false },
+  { label: 'AI', x: 146, y: 182, tx: 146, ty: 198, anchor: 'middle', lead: false },
+  { label: 'Verify', x: 76, y: 112, tx: 64, ty: 116, anchor: 'end', lead: false },
+];
+
+// 円周上の 45 度刻みの位置に置く矢頭。接線方向 = 角度 + 90 度。
+const arrows = [
+  { x: 195.5, y: 62.5, r: 45 },
+  { x: 195.5, y: 161.5, r: 135 },
+  { x: 96.5, y: 161.5, r: 225 },
+  { x: 96.5, y: 62.5, r: 315 },
+];
+---
+
+<svg class="loop" viewBox="0 0 300 214" role="img" aria-labelledby="loop-title">
+  <title id="loop-title">
+    Human から Decision、AI、Verify を経て Human に戻る開発ループの図
+  </title>
+  <circle class="loop-ring" cx="146" cy="112" r="70" />
+  {arrows.map((a) => (
+    <path
+      class="loop-arrow"
+      d="M-3.2,-2.8 L3,0 L-3.2,2.8 Z"
+      transform={`translate(${a.x} ${a.y}) rotate(${a.r})`}
+    />
+  ))}
+  {nodes.map((n) => (
+    <>
+      <circle class="loop-node" cx={n.x} cy={n.y} r={n.lead ? 5 : 3.5} />
+      <text class="loop-label" x={n.tx} y={n.ty} text-anchor={n.anchor}>
+        {n.label}
+      </text>
+    </>
+  ))}
+</svg>

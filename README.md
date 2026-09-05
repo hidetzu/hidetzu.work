@@ -36,7 +36,7 @@ npm run preview    # dist/ の内容をローカル配信して確認
 | --- | --- |
 | `src/data/site.json` | サイト名、タグライン、description、Hero のリンク |
 | `src/data/now.json` | Now セクション（`updated` と関心テーマ） |
-| `src/data/projects.json` | Projects の一覧（配列。先頭から表示される） |
+| `src/data/projects.json` | Projects の一覧（配列。先頭から表示される。`motif` は `map` / `loop` / `packet`） |
 | `src/data/writing.json` | Zenn の Book / 記事（手動定義。外部 API は叩かない） |
 | `src/data/about.json` | About の本文と末尾のリンク |
 
@@ -48,8 +48,8 @@ Project を 1 件追加する例:
 {
   "name": "新しいプロジェクト",
   "status": "active",
+  "motif": "loop",
   "summary": "一行の説明。",
-  "tags": ["Tag"],
   "links": [{ "label": "GitHub", "url": "https://github.com/hidetzu/xxx" }]
 }
 ```
@@ -99,20 +99,42 @@ npm run deploy     # astro build && wrangler deploy
 リポジトリ側で管理したい場合は `wrangler.toml` のコメントアウトされた `routes` を有効にする。
 `www.hidetzu.work` は使わない前提（apex のみ）。
 
-## 方針
+## デザインの方針
 
-- 派手なポートフォリオにはしない。「README をきれいに Web 化した」程度の軽さを保つ
+方向性は Technical / Editorial / Lab。派手なポートフォリオ風にもハッカー UI にもしない。
+色数と装飾ではなく、書体・余白・罫線で階層を作る。
+
+書体は Web フォントを読み込まず、システムフォント 3 種の役割分担で階層を作っている。
+
+| 変数 | 役割 | 使いどころ |
+| --- | --- | --- |
+| `--font-mono` | 技術的なメタ情報 | サイト名、セクション番号・ラベル、日付、status、リンク |
+| `--font-serif` | 見出しとタイトル | タグライン、プロジェクト名、記事タイトル、Now のリード |
+| `--font-sans` | 本文 | 説明文、About |
+
+図版はすべてインライン SVG で、`currentColor` ではなく CSS 変数を参照するのでダークモードに追従する。
+
+- `src/components/LoopDiagram.astro` — Hero の Human → Decision → AI → Verify ループ
+- `src/components/Motif.astro` — プロジェクト固有のモチーフ。`map` / `loop` / `packet` を
+  `projects.json` の `motif` で指定する
+
+色は WCAG AA（4.5:1）を満たす値を選んである。パレットを変えるときはコントラストを再確認する。
+
+## 実装の方針
+
 - React などのフレームワークは、必要になるまで入れない
-- クライアント JS は 0 のまま維持する（CSS は Astro が HTML にインライン化する）
-- 画像・フォントを増やさない。Web フォントは読み込まずシステムフォントを使う
+- クライアント JS は 0 のまま維持する（CSS は `inlineStylesheets: 'always'` で HTML に埋め込む）
+- 画像・フォントを増やさない。Web フォントは読み込まない
 - コンポーネントを細かく割らない。デザインシステムを作らない
+- 文章量を増やさない。情報構成（Hero / Now / Projects / Writing / About）は変えない
 
 ## ファイル構成
 
 ```
 src/
   data/          コンテンツ（JSON）と型
-  layouts/       Base.astro（<head> / metadata / 共通ラッパ）
+  components/    LoopDiagram.astro, Motif.astro（インライン SVG）
+  layouts/       Base.astro（<head> / metadata / masthead / footer）
   pages/         index.astro, 404.astro
   styles/        global.css
 public/          favicon.svg, ogp.png, robots.txt

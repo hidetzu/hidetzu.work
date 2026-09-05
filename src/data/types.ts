@@ -18,6 +18,7 @@ export type Now = {
 export type Project = {
   name: string;
   status: string;
+  motif: 'map' | 'loop' | 'packet';
   summary: string;
   links: Link[];
 };

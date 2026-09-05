@@ -1,9 +1,11 @@
 ---
 import '../styles/global.css';
 import siteData from '../data/site.json';
-import type { Site } from '../data/types';
+import nowData from '../data/now.json';
+import type { Site, Now } from '../data/types';
 
 const site = siteData as Site;
+const now = nowData as Now;
 
 interface Props {
   title?: string;
@@ -27,8 +29,8 @@ const ogImage = new URL('/ogp.png', Astro.site).href;
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta name="theme-color" content="#fdfdfc" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#161513" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14130f" media="(prefers-color-scheme: dark)" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
@@ -42,7 +44,15 @@ const ogImage = new URL('/ogp.png', Astro.site).href;
   <body>
     <a class="skip-link" href="#main">本文へスキップ</a>
     <div class="wrap">
+      <div class="masthead">
+        <span>hidetzu.work</span>
+        <span>{now.updated}</span>
+      </div>
       <slot />
+      <footer>
+        <span>hidetzu.work</span>
+        <span>Last updated {now.updated}</span>
+      </footer>
     </div>
   </body>
 </html>

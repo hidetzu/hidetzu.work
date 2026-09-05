@@ -1,5 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
+import LoopDiagram from '../components/LoopDiagram.astro';
+import Motif from '../components/Motif.astro';
 import siteData from '../data/site.json';
 import nowData from '../data/now.json';
 import projectsData from '../data/projects.json';
@@ -16,109 +18,134 @@ const about = aboutData as About;
 
 <Base>
   <header class="hero">
-    <h1>{site.name}</h1>
-    <p>{site.tagline}</p>
-    <ul class="hero-links">
-      {
-        site.links.map((link) => (
-          <li>
-            <a href={link.url} rel="me noopener">
-              {link.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    <div class="hero-text">
+      <h1>{site.name}</h1>
+      <p class="tagline">{site.tagline}</p>
+      <ul class="hero-links">
+        {
+          site.links.map((link) => (
+            <li>
+              <a href={link.url} rel="me noopener">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="hero-figure">
+      <LoopDiagram />
+    </div>
   </header>
 
   <main id="main">
-    <section aria-labelledby="now">
-      <h2 id="now">Now <span class="status">{now.updated}</span></h2>
-      <p class="lead">{now.lead}</p>
-      <ul class="themes">
-        {
-          now.themes.map((theme) => (
-            <li>
-              <b>{theme.name}</b> <span>— {theme.note}</span>
-            </li>
-          ))
-        }
-      </ul>
+    <section class="section" aria-labelledby="now">
+      <div class="section-label">
+        <span class="num">01</span>
+        <h2 id="now">Now</h2>
+      </div>
+      <div class="section-body">
+        <p class="lede">{now.lead}</p>
+        <dl class="themes">
+          {
+            now.themes.map((theme) => (
+              <div class="theme">
+                <dt>{theme.name}</dt>
+                <dd>{theme.note}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
     </section>
 
-    <section aria-labelledby="projects">
-      <h2 id="projects">Projects</h2>
-      <ul class="projects">
-        {
-          projects.map((project) => (
-            <li>
-              <h3>
-                {project.name}
-                <span class="status">{project.status}</span>
-              </h3>
-              <p>{project.summary}</p>
-              <ul class="inline-links">
-                {project.links.map((link) => (
-                  <li>
-                    <a href={link.url}>{link.label} ↗</a>
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))
-        }
-      </ul>
+    <section class="section" aria-labelledby="projects">
+      <div class="section-label">
+        <span class="num">02</span>
+        <h2 id="projects">Projects</h2>
+      </div>
+      <div class="section-body">
+        <ul class="projects">
+          {
+            projects.map((project) => (
+              <li class="project">
+                <div class="project-motif">
+                  <Motif name={project.motif} />
+                </div>
+                <div class="project-main">
+                  <h3>
+                    {project.name}
+                    <span class="status">{project.status}</span>
+                  </h3>
+                  <p>{project.summary}</p>
+                  <ul class="inline-links">
+                    {project.links.map((link) => (
+                      <li>
+                        <a href={link.url}>{link.label}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
     </section>
 
-    <section aria-labelledby="writing">
-      <h2 id="writing">Writing</h2>
+    <section class="section" aria-labelledby="writing">
+      <div class="section-label">
+        <span class="num">03</span>
+        <h2 id="writing">Writing</h2>
+      </div>
+      <div class="section-body">
+        <h3 class="subhead">Books</h3>
+        <ul class="entries">
+          {
+            writing.books.map((book) => (
+              <li>
+                <time datetime={book.date}>{book.date}</time>
+                <a href={book.url}>{book.title}</a>
+              </li>
+            ))
+          }
+        </ul>
 
-      <h3 class="subhead">Books</h3>
-      <ul class="entries">
-        {
-          writing.books.map((book) => (
-            <li>
-              <time datetime={book.date}>{book.date}</time>
-              <a href={book.url}>{book.title}</a>
-            </li>
-          ))
-        }
-      </ul>
+        <h3 class="subhead">Articles</h3>
+        <ul class="entries">
+          {
+            writing.articles.map((article) => (
+              <li>
+                <time datetime={article.date}>{article.date}</time>
+                <a href={article.url}>{article.title}</a>
+              </li>
+            ))
+          }
+        </ul>
 
-      <h3 class="subhead">Articles</h3>
-      <ul class="entries">
-        {
-          writing.articles.map((article) => (
-            <li>
-              <time datetime={article.date}>{article.date}</time>
-              <a href={article.url}>{article.title}</a>
-            </li>
-          ))
-        }
-      </ul>
-
-      <p class="more">
-        <a href={writing.profileUrl}>Zenn のすべての記事を見る ↗</a>
-      </p>
+        <p class="more">
+          <a href={writing.profileUrl}>Zenn のすべての記事を見る</a>
+        </p>
+      </div>
     </section>
 
-    <section class="about" aria-labelledby="about">
-      <h2 id="about">About</h2>
-      {about.body.map((paragraph) => <p>{paragraph}</p>)}
-      <ul class="inline-links">
-        {
-          about.links.map((link) => (
-            <li>
-              <a href={link.url}>{link.label} ↗</a>
-            </li>
-          ))
-        }
-      </ul>
+    <section class="section" aria-labelledby="about">
+      <div class="section-label">
+        <span class="num">04</span>
+        <h2 id="about">About</h2>
+      </div>
+      <div class="section-body about">
+        {about.body.map((paragraph) => <p>{paragraph}</p>)}
+        <ul class="inline-links">
+          {
+            about.links.map((link) => (
+              <li>
+                <a href={link.url}>{link.label}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
     </section>
   </main>
-
-  <footer>
-    <span>hidetzu.work</span>
-    <span>Last updated {now.updated}</span>
-  </footer>
 </Base>

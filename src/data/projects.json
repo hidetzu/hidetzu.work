@@ -12,7 +12,8 @@
         "label": "GitHub",
         "url": "https://github.com/hidetzu/konjaku"
       }
-    ]
+    ],
+    "motif": "map"
   },
   {
     "name": "claude-dev-template",
@@ -23,7 +24,8 @@
         "label": "GitHub",
         "url": "https://github.com/hidetzu/claude-dev-template"
       }
-    ]
+    ],
+    "motif": "loop"
   },
   {
     "name": "tcpip-stack",
@@ -34,6 +36,7 @@
         "label": "GitHub",
         "url": "https://github.com/hidetzu/tcpip-stack"
       }
-    ]
+    ],
+    "motif": "packet"
   }
 ]
