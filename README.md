@@ -119,7 +119,16 @@ npm run deploy     # astro build && wrangler deploy
 - `src/components/Motif.astro` — プロジェクト固有のモチーフ。`map` / `loop` / `packet` を
   `projects.json` の `motif` で指定する
 
-色は WCAG AA（4.5:1）を満たす値を選んである。パレットを変えるときはコントラストを再確認する。
+色は声量の 4 段階で使い分ける。WCAG AA（4.5:1）を満たす値を選んであるので、
+パレットを変えるときはコントラストを再確認する。
+
+| 変数 | 声量 | 使いどころ |
+| --- | --- | --- |
+| `--fg` | 最も強い | 問い、プロジェクト名、記事タイトル、CURRENT EXPERIMENT |
+| `--body` | 本文 | 説明文、リード、About |
+| `--muted` | 弱い | セクションラベル |
+| `--faint` | 最も弱い | 日付、status、マストヘッド、フッター |
+| `--accent` | 差し色 | セクション番号、topic ラベル、図のノードと矢印 |
 
 ## 実装の方針
 
