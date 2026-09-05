@@ -113,6 +113,22 @@ npm run deploy     # astro build && wrangler deploy
 | `--font-serif` | 見出しとタイトル | タグライン、プロジェクト名、記事タイトル、Now のリード |
 | `--font-sans` | 本文 | 説明文、About |
 
+レイアウトはセクションごとにリズムを変える。均一な縦積みにしない。
+
+| セクション | リズム |
+| --- | --- |
+| Hero | 巨大な名前（最大 10rem）+ 右にループ図。以降のどこよりも大きく取る |
+| Current Questions | 大きな連番（Q1–Q3）を左にぶら下げ、問いを最大級の見出しとして立てる |
+| Projects | 3 列。モチーフ / 名前・説明 / CURRENT EXPERIMENT を横に並べる |
+| Writing | 縦積みではなく 3 列の索引 |
+| About | 短い一文を大きく置く |
+
+セクション見出しは全幅の帯（2px の罫 + 番号 + セクション名）で、中央寄せの細いカラムを作らない。
+`.wrap` の上限は 88rem、左右は `clamp(1rem, 4.5vw, 4.5rem)`。
+
+Hero の名前は 60rem 以上で 2 カラムになるため、`clamp` の係数を切り替えて折り返さない幅に収めている。
+ここを触るときは 768 / 960 / 1024px で名前が 1 行に収まるか確認する。
+
 図版はすべてインライン SVG で、`currentColor` ではなく CSS 変数を参照するのでダークモードに追従する。
 
 - `src/components/LoopDiagram.astro` — Hero の Human → Decision → AI → Verify ループ

@@ -40,7 +40,7 @@ const about = aboutData as About;
 
   <main id="main">
     <section class="section" aria-labelledby="questions">
-      <div class="section-label">
+      <div class="section-head">
         <span class="num">01</span>
         <h2 id="questions">Current Questions</h2>
       </div>
@@ -48,11 +48,16 @@ const about = aboutData as About;
         <p class="lede">{now.lead}</p>
         <ol class="questions">
           {
-            now.questions.map((q) => (
+            now.questions.map((q, i) => (
               <li class="question">
-                <span class="topic">{q.name}</span>
-                <p class="question-text">{q.question}</p>
-                <p class="question-note">{q.note}</p>
+                <span class="question-index" aria-hidden="true">
+                  Q{i + 1}
+                </span>
+                <div class="question-body">
+                  <span class="topic">{q.name}</span>
+                  <p class="question-text">{q.question}</p>
+                  <p class="question-note">{q.note}</p>
+                </div>
               </li>
             ))
           }
@@ -61,7 +66,7 @@ const about = aboutData as About;
     </section>
 
     <section class="section" aria-labelledby="projects">
-      <div class="section-label">
+      <div class="section-head">
         <span class="num">02</span>
         <h2 id="projects">Projects</h2>
       </div>
@@ -79,10 +84,6 @@ const about = aboutData as About;
                     <span class="status">{project.status}</span>
                   </h3>
                   <p>{project.summary}</p>
-                  <div class="experiment">
-                    <span class="topic">Current experiment</span>
-                    <p>{project.experiment}</p>
-                  </div>
                   <ul class="inline-links">
                     {project.links.map((link) => (
                       <li>
@@ -90,6 +91,10 @@ const about = aboutData as About;
                       </li>
                     ))}
                   </ul>
+                </div>
+                <div class="experiment">
+                  <span class="topic">Current experiment</span>
+                  <p>{project.experiment}</p>
                 </div>
               </li>
             ))
@@ -99,7 +104,7 @@ const about = aboutData as About;
     </section>
 
     <section class="section" aria-labelledby="writing">
-      <div class="section-label">
+      <div class="section-head">
         <span class="num">03</span>
         <h2 id="writing">Writing</h2>
       </div>
@@ -125,12 +130,16 @@ const about = aboutData as About;
     </section>
 
     <section class="section" aria-labelledby="about">
-      <div class="section-label">
+      <div class="section-head">
         <span class="num">04</span>
         <h2 id="about">About</h2>
       </div>
       <div class="section-body about">
-        {about.body.map((paragraph) => <p>{paragraph}</p>)}
+        {
+          about.body.map((paragraph, i) => (
+            <p class={i === 0 ? 'about-lead' : undefined}>{paragraph}</p>
+          ))
+        }
         <ul class="inline-links">
           {
             about.links.map((link) => (
