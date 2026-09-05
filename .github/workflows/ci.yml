@@ -37,6 +37,12 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # package-lock.json に固定した wrangler を使う（npx での取得を避ける）
+      - run: npm ci
       - uses: actions/download-artifact@v4
         with:
           name: dist
@@ -46,3 +52,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+          packageManager: npm
