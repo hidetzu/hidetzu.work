@@ -58,23 +58,35 @@ Project を 1 件追加する例:
 
 配信は Cloudflare Workers Static Assets。設定は `wrangler.toml`（Worker スクリプトなし、`dist/` をそのまま配信）。
 
-### GitHub Actions（通常はこちら）
+デプロイは **Cloudflare Workers Builds が GitHub リポジトリに直接接続**して行う。
+`main` に push すると Cloudflare 側がビルドしてデプロイする。GitHub Actions からは deploy しない
+（`.github/workflows/ci.yml` は `npm run check` と `npm run build` が通ることを見るだけ）。
 
-`.github/workflows/ci.yml` の 1 ワークフローに 2 ジョブが入っている。
+### 初回の接続手順（Cloudflare ダッシュボード）
 
-1. `build` — `npm ci` → `npm run check` → `npm run build`（push / PR の両方で実行）
-2. `deploy` — `build` の成功が前提。`main` への push のときだけ実行され、`wrangler deploy` する
+CLI では設定できないため、ダッシュボードで一度だけ行う。
 
-事前に GitHub 側で以下の Secrets を登録する（値はリポジトリにコミットしない）。
+1. Workers & Pages → 対象の Worker → Settings → Build → **Connect to Git**
+   （Worker 未作成なら Create → Import a repository から）
+2. Cloudflare の GitHub App に `hidetzu/hidetzu.work` へのアクセスを許可する。
+   Private リポジトリなので、App のリポジトリ選択で明示的に追加する必要がある
+3. ビルド設定:
 
-| Secret | 用途 |
-| --- | --- |
-| `CLOUDFLARE_API_TOKEN` | Workers Scripts の編集権限を持つ API トークン |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare のアカウント ID |
+   | 項目 | 値 |
+   | --- | --- |
+   | Production branch | `main` |
+   | Root directory | `/` |
+   | Build command | `npm run build` |
+   | Deploy command | `npx wrangler deploy` |
 
-`deploy` ジョブは `production` environment を使うので、必要なら GitHub の Environments 側で承認を挟める。
+Node のバージョンは `.node-version` で固定している。
+
+この方式では Cloudflare の API トークンをリポジトリ側に持たせる必要がない。
+GitHub Secrets への `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` の登録は不要。
 
 ### 手動デプロイ
+
+接続前の確認や、緊急時の手元からのデプロイ:
 
 ```bash
 npx wrangler login
@@ -83,7 +95,7 @@ npm run deploy     # astro build && wrangler deploy
 
 ### 独自ドメイン
 
-`hidetzu.work` の割り当ては Cloudflare ダッシュボード（Workers → Settings → Domains & Routes）で行う。
+`hidetzu.work` の割り当ては Cloudflare ダッシュボード（Workers → hidetzu-work → Settings → Domains & Routes）で行う。
 リポジトリ側で管理したい場合は `wrangler.toml` のコメントアウトされた `routes` を有効にする。
 `www.hidetzu.work` は使わない前提（apex のみ）。
 
@@ -105,4 +117,5 @@ src/
   styles/        global.css
 public/          favicon.svg, ogp.png, robots.txt
 wrangler.toml    Cloudflare Workers Static Assets の設定
+.node-version    ビルドに使う Node のバージョン（CI / Cloudflare 共通）
 ```
