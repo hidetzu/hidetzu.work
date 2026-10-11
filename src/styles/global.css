@@ -408,6 +408,22 @@ footer {
 
 /* --- writing -------------------------------------------------------------- */
 
+.writing-source + .writing-source {
+  margin-top: 2rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--line);
+}
+
+.source-name {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
 .entries {
   list-style: none;
   margin: 0;

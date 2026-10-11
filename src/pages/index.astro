@@ -109,23 +109,29 @@ const about = aboutData as About;
         <h2 id="writing">Writing</h2>
       </div>
       <div class="section-body">
-        <ul class="entries">
-          {
-            writing.articles.map((article) => (
-              <li>
-                <div class="entry-meta">
-                  <span class="topic">{article.topic}</span>
-                  <time datetime={article.date}>{article.date}</time>
-                </div>
-                <a href={article.url}>{article.title}</a>
-              </li>
-            ))
-          }
-        </ul>
-
-        <p class="more">
-          <a href={writing.profileUrl}>Zenn のすべての記事を見る</a>
-        </p>
+        {
+          writing.sources.map((source) => (
+            <div class="writing-source">
+              <h3 class="source-name">{source.name}</h3>
+              <ul class="entries">
+                {source.articles.map((article) => (
+                  <li>
+                    <div class="entry-meta">
+                      <span class="topic">{article.topic}</span>
+                      <time datetime={article.date}>{article.date}</time>
+                    </div>
+                    <a href={article.url} lang={source.lang}>
+                      {article.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              <p class="more">
+                <a href={source.profileUrl}>{source.moreLabel}</a>
+              </p>
+            </div>
+          ))
+        }
       </div>
     </section>
 

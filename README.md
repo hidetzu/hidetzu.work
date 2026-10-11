@@ -1,6 +1,6 @@
 # hidetzu.work
 
-[hidetzu.work](https://hidetzu.work) の個人サイト。GitHub / Zenn / 公開プロダクト / 現在の関心を 1 ページにまとめた入口。
+[hidetzu.work](https://hidetzu.work) の個人サイト。GitHub / Zenn / dev.to / 公開プロダクト / 現在の関心を 1 ページにまとめた入口。
 
 - Astro + TypeScript（静的生成、クライアント JS なし）
 - Cloudflare Workers Static Assets で配信
@@ -36,8 +36,8 @@ npm run preview    # dist/ の内容をローカル配信して確認
 | --- | --- |
 | `src/data/site.json` | サイト名、タグライン、description、Hero のリンク |
 | `src/data/now.json` | `updated` と、Current Questions（3 つ程度の問い） |
-| `src/data/projects.json` | Projects の一覧（配列。`motif` は `map` / `loop` / `packet`、`experiment` は今試している問い） |
-| `src/data/writing.json` | Zenn の記事（手動定義。外部 API は叩かない。今のテーマを代表する 3 本程度に絞る） |
+| `src/data/projects.json` | Projects の一覧（配列。`motif` は `map` / `loop` / `packet` / `gate` / `layers` / `frames`、`experiment` は今試している問い） |
+| `src/data/writing.json` | Writing の `sources`（Zenn と dev.to。手動定義。外部 API は叩かない。各 3 本程度に絞る） |
 | `src/data/about.json` | About の本文と末尾のリンク |
 
 型は `src/data/types.ts` にある。項目を増やすときは JSON と型の両方を更新する。
@@ -126,8 +126,8 @@ Zenn のプロフィールページくらいの静かさを基準にする。
 
 - `src/components/LoopDiagram.astro` — Human → Decision → AI → Verify のループ。
   ラベルが読める大きさ（13rem 前後）を下回らせない
-- `src/components/Motif.astro` — プロジェクト固有のモチーフ。`map` / `loop` / `packet` を
-  `projects.json` の `motif` で指定する
+- `src/components/Motif.astro` — プロジェクト固有のモチーフ。`map` / `loop` / `packet` / `gate` /
+  `layers` / `frames` を `projects.json` の `motif` で指定する
 
 ## 実装の方針
 

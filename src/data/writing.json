@@ -1,23 +1,56 @@
 {
-  "profileUrl": "https://zenn.dev/hidetzu",
-  "articles": [
+  "sources": [
     {
-      "topic": "Delegation",
-      "title": "「この関数のテストを書いて」は委譲していい。「このモジュールをテストして」はいけない",
-      "date": "2026-08",
-      "url": "https://zenn.dev/hidetzu/articles/ai-test-delegation-boundary"
+      "name": "Zenn",
+      "lang": "ja",
+      "profileUrl": "https://zenn.dev/hidetzu",
+      "moreLabel": "Zenn のすべての記事を見る",
+      "articles": [
+        {
+          "topic": "Verification",
+          "title": "AIは、そこにある関数をもう一度書く — RepoExecが測ったコード生成の依存再利用",
+          "date": "2026-09",
+          "url": "https://zenn.dev/hidetzu/articles/repoexec-dependency-reuse"
+        },
+        {
+          "topic": "Delegation",
+          "title": "ready-for-ai を付けた Issue を Claude Code に回す。ただし全自動にはしなかった",
+          "date": "2026-08",
+          "url": "https://zenn.dev/hidetzu/articles/konjaku-loop-engineering"
+        },
+        {
+          "topic": "Discovery",
+          "title": "AIは機能を足すのが速い。だから人間は削る仕事が増えた",
+          "date": "2026-08",
+          "url": "https://zenn.dev/hidetzu/articles/konjaku-what-not-to-build"
+        }
+      ]
     },
     {
-      "topic": "Discovery",
-      "title": "AIは機能を足すのが速い。だから人間は削る仕事が増えた",
-      "date": "2026-08",
-      "url": "https://zenn.dev/hidetzu/articles/konjaku-what-not-to-build"
-    },
-    {
-      "topic": "Verification",
-      "title": "生成は雑でいい、検証器が全部拾う：採択率0.26%で成立する『生成→検証』ループ",
-      "date": "2026-07",
-      "url": "https://zenn.dev/hidetzu/articles/verigen-generate-verify-loop"
+      "name": "dev.to",
+      "lang": "en",
+      "profileUrl": "https://dev.to/hidetzu",
+      "moreLabel": "See all posts on dev.to",
+      "articles": [
+        {
+          "topic": "Verification",
+          "title": "The Tests Passed. The Function Already Existed.",
+          "date": "2026-09",
+          "url": "https://dev.to/hidetzu/the-tests-passed-the-function-already-existed-35k1"
+        },
+        {
+          "topic": "Database",
+          "title": "OFFSET Doesn't Skip Rows: What 10M Rows in PostgreSQL Actually Cost",
+          "date": "2026-09",
+          "url": "https://dev.to/hidetzu/offset-doesnt-skip-rows-what-10m-rows-in-postgresql-actually-cost-2ln2"
+        },
+        {
+          "topic": "Verification",
+          "title": "99.7% Rejected in 84ms: Why I Stopped Making the Generator Smarter",
+          "date": "2026-09",
+          "url": "https://dev.to/hidetzu/997-rejected-in-84ms-why-i-stopped-making-the-generator-smarter-5em0"
+        }
+      ]
     }
   ]
 }

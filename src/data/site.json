@@ -1,11 +1,12 @@
 {
   "name": "hidetzu",
   "tagline": "Building better loops between humans, AI, and software.",
-  "description": "hidetzu の公開活動のまとめ。GitHub / Zenn / 公開プロダクト、そして今取り組んでいるテーマ。",
+  "description": "hidetzu の公開活動のまとめ。GitHub / Zenn / dev.to / 公開プロダクト、そして今取り組んでいるテーマ。",
   "lang": "ja",
   "locale": "ja_JP",
   "links": [
     { "label": "GitHub", "url": "https://github.com/hidetzu" },
-    { "label": "Zenn", "url": "https://zenn.dev/hidetzu" }
+    { "label": "Zenn", "url": "https://zenn.dev/hidetzu" },
+    { "label": "dev.to", "url": "https://dev.to/hidetzu" }
   ]
 }

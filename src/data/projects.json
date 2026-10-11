@@ -1,10 +1,21 @@
 [
   {
+    "name": "Decide First",
+    "status": "active",
+    "motif": "gate",
+    "summary": "この GitHub Issue を AI Coding Agent へ渡して大丈夫か。渡す前に人間が決めることを示す Quality Gate。",
+    "experiment": "点数ではなく、名前のついた check と根拠の行だけで判定を組み立てられるか。",
+    "links": [
+      { "label": "Site", "url": "https://decide-first.hidetzu.work" },
+      { "label": "GitHub", "url": "https://github.com/hidetzu/decide-first" }
+    ]
+  },
+  {
     "name": "今昔 / konjaku",
     "status": "active",
     "motif": "map",
     "summary": "街歩き中の「ここ、昔は何だった？」を拾う Web アプリ。",
-    "experiment": "調べた場所から、次に歩く場所が見つかるか。",
+    "experiment": "Issue を AI が書き換えてよい範囲と、人間が判断を残す場所をどこに置くか。",
     "links": [
       { "label": "Site", "url": "https://konjaku.hidetzu.work" },
       { "label": "GitHub", "url": "https://github.com/hidetzu/konjaku" }
@@ -15,19 +26,30 @@
     "status": "active",
     "motif": "loop",
     "summary": "判断・検査・レビューを残したまま AI 支援開発を回す Claude Code テンプレート。",
-    "experiment": "Owner が判断しなくても安全に進める範囲を、どこまで広げられるか。",
+    "experiment": "ready-for-ai の付与を AI に任せ、人間のゲートを merge に寄せても安全に回るか。",
     "links": [
       { "label": "GitHub", "url": "https://github.com/hidetzu/claude-dev-template" }
     ]
   },
   {
-    "name": "tcpip-stack",
-    "status": "learning",
-    "motif": "packet",
-    "summary": "TCP/IP スタックを C で実装する。",
-    "experiment": "AI に実装を委譲しながら、人間自身の理解も深められるか。",
+    "name": "ConnectDoctor",
+    "status": "active",
+    "motif": "layers",
+    "summary": "URL がつながらない理由を DNS → TCP → TLS → HTTP の順に調べ、止まった層と意味を一文で返す。",
+    "experiment": "一つの URL、四つの層、最初の失敗、一文。それ以外を作らずにいられるか。",
     "links": [
-      { "label": "GitHub", "url": "https://github.com/hidetzu/tcpip-stack" }
+      { "label": "Site", "url": "https://connect-doctor.hidetzu.work" },
+      { "label": "GitHub", "url": "https://github.com/hidetzu/connect-doctor" }
+    ]
+  },
+  {
+    "name": "vrestore",
+    "status": "experimental",
+    "motif": "frames",
+    "summary": "動画に焼き付いた固定領域を、他のフレームに写っている実画素から戻す復元ツール。Zig で実装。",
+    "experiment": "生成で「それらしく埋める」前に、映像内の証拠だけでどこまで戻せるか。戻せなかった画素を戻せなかったと言えるか。",
+    "links": [
+      { "label": "GitHub", "url": "https://github.com/hidetzu/vrestore" }
     ]
   }
 ]

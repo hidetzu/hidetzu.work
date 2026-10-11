@@ -18,15 +18,24 @@ export type Now = {
 export type Project = {
   name: string;
   status: string;
-  motif: 'map' | 'loop' | 'packet';
+  motif: 'map' | 'loop' | 'packet' | 'gate' | 'layers' | 'frames';
   summary: string;
   experiment: string;
   links: Link[];
 };
 
-export type Writing = {
+export type Article = { topic: string; title: string; date: string; url: string };
+
+export type WritingSource = {
+  name: string;
+  lang: string;
   profileUrl: string;
-  articles: { topic: string; title: string; date: string; url: string }[];
+  moreLabel: string;
+  articles: Article[];
+};
+
+export type Writing = {
+  sources: WritingSource[];
 };
 
 export type About = {

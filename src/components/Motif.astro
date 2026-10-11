@@ -1,7 +1,7 @@
 ---
 // プロジェクトごとのモチーフ。装飾なので支援技術からは隠す。
 interface Props {
-  name: 'map' | 'loop' | 'packet';
+  name: 'map' | 'loop' | 'packet' | 'gate' | 'layers' | 'frames';
 }
 const { name } = Astro.props;
 ---
@@ -37,6 +37,38 @@ const { name } = Astro.props;
         <path d="M12 10.5 V21.5" />
         <path d="M25 16 H27.5" />
         <path class="motif-mark" d="M27.5 13.6 L30.5 16 L27.5 18.4 Z" />
+      </>
+    )
+  }
+  {
+    name === 'gate' && (
+      <>
+        <path d="M3 16 H13" />
+        <path d="M19 16 H29" />
+        <path d="M13 7 V25" />
+        <path d="M19 7 V25" />
+        <circle class="motif-mark" cx="16" cy="16" r="2" />
+      </>
+    )
+  }
+  {
+    name === 'layers' && (
+      <>
+        <path d="M4 7.5 H28" />
+        <path d="M4 13.5 H28" />
+        <path d="M4 19.5 H28" />
+        <path d="M4 25.5 H28" />
+        <circle class="motif-mark" cx="16" cy="19.5" r="2" />
+      </>
+    )
+  }
+  {
+    name === 'frames' && (
+      <>
+        <rect x="3" y="9" width="16" height="12" rx="1.5" />
+        <path d="M8 6 H24 V18" />
+        <path d="M13 3 H29 V15" />
+        <rect class="motif-mark" x="9" y="13" width="4" height="4" rx="0.5" />
       </>
     )
   }
