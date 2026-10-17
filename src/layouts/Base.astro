@@ -44,13 +44,24 @@ const ogImage = new URL('/ogp.png', Astro.site).href;
   <body>
     <a class="skip-link" href="#main">本文へスキップ</a>
     <div class="wrap">
-      <div class="masthead">
-        <span>hidetzu.work</span>
-        <span>{now.updated}</span>
-      </div>
+      <header class="site-header">
+        <a class="brand" href="/">{site.name}</a>
+        <nav class="top" aria-label="links">
+          {
+            site.links.map((link, i) => (
+              <>
+                {i > 0 && <span aria-hidden="true">/</span>}
+                <a href={link.url} rel="me noopener">
+                  {link.label}
+                </a>
+              </>
+            ))
+          }
+        </nav>
+      </header>
       <slot />
       <footer>
-        <span>hidetzu.work</span>
+        <span>© {now.updated.slice(0, 4)} {site.name}</span>
         <span>Last updated {now.updated}</span>
       </footer>
     </div>

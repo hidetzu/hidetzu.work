@@ -34,9 +34,9 @@ npm run preview    # dist/ の内容をローカル配信して確認
 
 | ファイル | 内容 |
 | --- | --- |
-| `src/data/site.json` | サイト名、タグライン、description、Hero のリンク |
+| `src/data/site.json` | サイト名、タグライン、description、ヘッダーと Hero タイルのリンク |
 | `src/data/now.json` | `updated` と、Current Questions（3 つ程度の問い） |
-| `src/data/projects.json` | Projects の一覧（配列。`motif` は `map` / `loop` / `packet` / `gate` / `layers` / `frames`、`experiment` は今試している問い） |
+| `src/data/projects.json` | Projects の一覧（配列。`motif` は `map` / `loop` / `packet` / `gate` / `layers` / `frames` / `flag`、`experiment` は今試している問い） |
 | `src/data/writing.json` | Writing の `sources`（Zenn と dev.to。手動定義。外部 API は叩かない。各 3 本程度に絞る） |
 | `src/data/about.json` | About の本文と末尾のリンク |
 
@@ -102,13 +102,19 @@ npm run deploy     # astro build && wrangler deploy
 
 ## デザインの方針
 
-落ち着いた実用的な見た目にする。展示的な大見出しやセリフ体は使わない。
-Zenn のプロフィールページくらいの静かさを基準にする。
+1 画面目は名前とリンクだけのヒーローにし、
+本文のセクションはスクロールした先に置く。大きく見せるのはヒーローだけで、
+その下は Zenn のプロフィールページくらいの静かさを基準にする。
 
-- 本文はすべてサンセリフ（`--font-sans`）。`--font-mono` は日付・status・
+- ヘッダー: 左にサイト名、右に `site.json` の `links` を `/` 区切りで並べる
+- ヒーロー: 中央寄せ。ループ図 → `hidetzu.work` → 大文字の極太見出し → タグライン →
+  ピル型のリンクタイル（先頭の 1 つだけ塗る）の順。ヘッダーと合わせて 1 画面を埋める
+- 背景は CSS だけで描く（差し色のにじみと方眼の点）。canvas / WebGL は使わない
+- 動きはループ図の上を一周する点だけ。`prefers-reduced-motion` では止める
+- 本文はすべてサンセリフ（`--font-sans`）。`--font-mono` はヘッダー、タイル、日付・status・
   セクション番号など小さなメタ情報だけに使う
-- 中央 56rem のカラム。行の区切りは 1px の細い罫
-- 文字サイズは控えめ。本文 16px、見出し 17px、補足 15px
+- 中央 56rem のカラム。行の区切りは 1px の細い罫。Writing の記事はカードのグリッドで並べる
+- 本文の文字サイズは控えめ。本文 16px、セクション見出し 22px（大文字）、補足 15px
 - Web フォントは読み込まない
 
 色は声量の 4 段階で使い分ける。WCAG AA（4.5:1）を満たす値を選んであるので、
@@ -119,23 +125,23 @@ Zenn のプロフィールページくらいの静かさを基準にする。
 | `--fg` | 見出し | 問い、プロジェクト名、記事タイトル、セクション名 |
 | `--body` | 本文 | 説明文、リード、About、CURRENT EXPERIMENT |
 | `--muted` | 副次リンク | Site / GitHub などのリンク |
-| `--faint` | メタ | 日付、status、topic ラベル、マストヘッド、フッター |
+| `--faint` | メタ | 日付、status、topic ラベル、ヘッダーのナビ、フッター |
 | `--accent` | 差し色 | Q 番号、図のノード、hover |
 
 図版はインライン SVG で、`currentColor` ではなく CSS 変数を参照するのでダークモードに追従する。
 
-- `src/components/LoopDiagram.astro` — Human → Decision → AI → Verify のループ。
+- `src/components/LoopDiagram.astro` — Human → Decision → AI → Verify のループ。ヒーローの中央に置く。
   ラベルが読める大きさ（13rem 前後）を下回らせない
 - `src/components/Motif.astro` — プロジェクト固有のモチーフ。`map` / `loop` / `packet` / `gate` /
-  `layers` / `frames` を `projects.json` の `motif` で指定する
+  `layers` / `frames` / `flag` を `projects.json` の `motif` で指定する
 
 ## 実装の方針
 
 - React などのフレームワークは、必要になるまで入れない
-- クライアント JS は 0 のまま維持する（CSS は `inlineStylesheets: 'always'` で HTML に埋め込む）
+- クライアント JS は 0 のまま維持する。動きは CSS アニメーションだけで付ける（CSS は `inlineStylesheets: 'always'` で HTML に埋め込む）
 - 画像・フォントを増やさない。Web フォントは読み込まない
 - コンポーネントを細かく割らない。デザインシステムを作らない
-- 文章量を増やさない。情報構成（Hero / Current Questions / Projects / Writing / About）は変えない
+- 文章量を増やさない。情報構成（Header / Hero / Current Questions / Projects / Writing / About）は変えない
 - ポートフォリオではなく「現在進行形の研究ノート」として書く。
   「何ができる人か」ではなく「今どんな問いを追っているか」を前に出し、役職は載せない
 
@@ -145,7 +151,7 @@ Zenn のプロフィールページくらいの静かさを基準にする。
 src/
   data/          コンテンツ（JSON）と型
   components/    LoopDiagram.astro, Motif.astro（インライン SVG）
-  layouts/       Base.astro（<head> / metadata / masthead / footer）
+  layouts/       Base.astro（<head> / metadata / header / footer）
   pages/         index.astro, 404.astro
   styles/        global.css
 public/          favicon.svg, ogp.png, robots.txt

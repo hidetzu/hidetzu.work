@@ -11,6 +11,16 @@
     ]
   },
   {
+    "name": "flagman",
+    "status": "active",
+    "motif": "flag",
+    "summary": "AI coding agent が commit / push / merge の前に呼ぶ CLI。リポジトリの証拠から continue / review / defer を返し、根拠ごと記録する。",
+    "experiment": "ルールを変えたとき、本来は人間に聞くべきだったのに AI だけで進めた件数（false autonomy）が減ったかを、分子・分母つきで比べられるか。",
+    "links": [
+      { "label": "GitHub", "url": "https://github.com/hidetzu/flagman" }
+    ]
+  },
+  {
     "name": "今昔 / konjaku",
     "status": "active",
     "motif": "map",

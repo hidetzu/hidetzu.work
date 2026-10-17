@@ -14,29 +14,34 @@ const now = nowData as Now;
 const projects = projectsData as Project[];
 const writing = writingData as Writing;
 const about = aboutData as About;
+
+// タイルの小さな補足。https://github.com/hidetzu → github.com/hidetzu
+const handle = (url: string) => {
+  const u = new URL(url);
+  return `${u.host}${u.pathname}`.replace(/\/$/, '');
+};
 ---
 
 <Base>
-  <header class="hero">
-    <div class="hero-text">
-      <h1>{site.name}</h1>
-      <p class="tagline">{site.tagline}</p>
-      <ul class="hero-links">
-        {
-          site.links.map((link) => (
-            <li>
-              <a href={link.url} rel="me noopener">
-                {link.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
+  <div class="hero">
     <div class="hero-figure">
       <LoopDiagram />
     </div>
-  </header>
+    <div class="lane" aria-hidden="true"><i></i>hidetzu.work<i></i></div>
+    <h1>{site.name}</h1>
+    <p class="tagline">{site.tagline}</p>
+    <nav class="tiles" aria-label="profiles">
+      {
+        site.links.map((link, i) => (
+          <a class:list={['tile', { primary: i === 0 }]} href={link.url} rel="me noopener">
+            {link.label}
+            <small>{handle(link.url)}</small>
+          </a>
+        ))
+      }
+    </nav>
+    <a class="scroll-cue" href="#main">Current Questions ↓</a>
+  </div>
 
   <main id="main">
     <section class="section" aria-labelledby="questions">
@@ -113,15 +118,17 @@ const about = aboutData as About;
           writing.sources.map((source) => (
             <div class="writing-source">
               <h3 class="source-name">{source.name}</h3>
-              <ul class="entries">
+              <ul class="cards">
                 {source.articles.map((article) => (
                   <li>
-                    <div class="entry-meta">
-                      <span class="topic">{article.topic}</span>
-                      <time datetime={article.date}>{article.date}</time>
-                    </div>
-                    <a href={article.url} lang={source.lang}>
-                      {article.title}
+                    <a class="card" href={article.url}>
+                      <span class="entry-meta">
+                        <span class="topic">{article.topic}</span>
+                        <time datetime={article.date}>{article.date}</time>
+                      </span>
+                      <span class="card-title" lang={source.lang}>
+                        {article.title}
+                      </span>
                     </a>
                   </li>
                 ))}

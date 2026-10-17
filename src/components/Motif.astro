@@ -1,7 +1,7 @@
 ---
 // プロジェクトごとのモチーフ。装飾なので支援技術からは隠す。
 interface Props {
-  name: 'map' | 'loop' | 'packet' | 'gate' | 'layers' | 'frames';
+  name: 'map' | 'loop' | 'packet' | 'gate' | 'layers' | 'frames' | 'flag';
 }
 const { name } = Astro.props;
 ---
@@ -59,6 +59,15 @@ const { name } = Astro.props;
         <path d="M4 19.5 H28" />
         <path d="M4 25.5 H28" />
         <circle class="motif-mark" cx="16" cy="19.5" r="2" />
+      </>
+    )
+  }
+  {
+    name === 'flag' && (
+      <>
+        <path d="M9 4 V28" />
+        <path d="M9 6 H25 L21 11 L25 16 H9" />
+        <circle class="motif-mark" cx="9" cy="28" r="2" />
       </>
     )
   }

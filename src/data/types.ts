@@ -18,7 +18,7 @@ export type Now = {
 export type Project = {
   name: string;
   status: string;
-  motif: 'map' | 'loop' | 'packet' | 'gate' | 'layers' | 'frames';
+  motif: 'map' | 'loop' | 'packet' | 'gate' | 'layers' | 'frames' | 'flag';
   summary: string;
   experiment: string;
   links: Link[];
