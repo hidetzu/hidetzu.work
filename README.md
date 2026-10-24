@@ -1,6 +1,8 @@
 # hidetzu.work
 
-[hidetzu.work](https://hidetzu.work) の個人サイト。GitHub / Zenn / dev.to / 公開プロダクト / 現在の関心を 1 ページにまとめた入口。
+[hidetzu.work](https://hidetzu.work) の個人サイト。いま追っている問いと、それを確かめるために作っているソフトウェア、そこで確認できたことを 1 ページにまとめる。
+
+GitHub（プロフィール README）は「何を作ったか・どう実装したか」、このサイトは「なぜその問題に取り組むのか・何を確かめられたか」を受け持つ（[ADR 0001](docs/adr/0001-split-roles-between-github-profile-and-site.md)）。
 
 - Astro + TypeScript（静的生成、クライアント JS なし）
 - Cloudflare Workers Static Assets で配信
@@ -34,26 +36,39 @@ npm run preview    # dist/ の内容をローカル配信して確認
 
 | ファイル | 内容 |
 | --- | --- |
-| `src/data/site.json` | サイト名、タグライン、description、ヘッダーと Hero タイルのリンク |
-| `src/data/now.json` | `updated` と、Current Questions（3 つ程度の問い） |
-| `src/data/projects.json` | Projects の一覧（配列。`motif` は `map` / `loop` / `packet` / `gate` / `layers` / `frames` / `flag`、`experiment` は今試している問い） |
-| `src/data/writing.json` | Writing の `sources`（Zenn と dev.to。手動定義。外部 API は叩かない。各 3 本程度に絞る） |
+| `src/data/site.json` | サイト名、タグライン（英語）、`lede`（Hero の日本語の一文）、description、ヘッダーと Hero タイルのリンク |
+| `src/data/now.json` | `updated` と、Current Questions（3 つ程度の問い）。`projects` に projects.json の `id` を並べると、問いからそのプロジェクトへリンクする |
+| `src/data/projects.json` | プロジェクトの一覧（配列）。`placement` で載せる場所を決める（`selected` = Selected Work、`experiment` = Experiments、`more` = Other projects） |
+| `src/data/writing.json` | Writing の `sources`（Zenn と dev.to。手動定義。外部 API は叩かない。各 3 本程度に絞る）。`project` に id を書くと関連プロジェクトを添える |
 | `src/data/about.json` | About の本文と末尾のリンク |
 
 型は `src/data/types.ts` にある。項目を増やすときは JSON と型の両方を更新する。
 
-Project を 1 件追加する例:
+Project を 1 件追加する例（Selected Work）:
 
 ```json
 {
+  "id": "xxx",
   "name": "新しいプロジェクト",
-  "status": "active",
+  "placement": "selected",
+  "status": "development",
+  "release": "未リリース",
   "motif": "loop",
   "summary": "一行の説明。",
-  "experiment": "いま試している問い。",
+  "problem": "解決したい問題。",
+  "approach": "実装でどう解くか。",
+  "result": "いま確認できること。",
   "links": [{ "label": "GitHub", "url": "https://github.com/hidetzu/xxx" }]
 }
 ```
+
+- `experiment` には `problem` / `approach` の代わりに `question`（確かめたい問い）と `result`（いまの到達点）を書く
+- `more` は `summary` と `links` だけでよい
+- `status` は `released`（GitHub Release で配布物を出している）/ `development`（動く実装はあるが開発途上）/
+  `experimental`（問いの検証が中心）/ `reference`（設定など参照用）。タグの有無だけで決めず、README とコードで確かめる
+- `release` には版や公開状態を、確認できた事実だけ書く（例: `v0.1.0-dev.1（pre-release）`、`Web 版公開中`）
+- `id` は `#p-<id>` のアンカーになる。now.json / writing.json から存在しない id を参照するとビルドが落ちる
+- `motif` は `map` / `loop` / `packet` / `gate` / `layers` / `frames` / `flag` / `graph` / `scan` / `note` / `sieve`
 
 ## デプロイ
 
@@ -107,7 +122,7 @@ npm run deploy     # astro build && wrangler deploy
 その下は Zenn のプロフィールページくらいの静かさを基準にする。
 
 - ヘッダー: 左にサイト名、右に `site.json` の `links` を `/` 区切りで並べる
-- ヒーロー: 中央寄せ。ループ図 → `hidetzu.work` → 大文字の極太見出し → タグライン →
+- ヒーロー: 中央寄せ。ループ図 → `hidetzu.work` → 大文字の極太見出し → タグライン（英語）→ 日本語の一文 →
   ピル型のリンクタイル（先頭の 1 つだけ塗る）の順。ヘッダーと合わせて 1 画面を埋める
 - 背景は CSS だけで描く（差し色のにじみと方眼の点）。canvas / WebGL は使わない
 - 動きはループ図の上を一周する点だけ。`prefers-reduced-motion` では止める
@@ -125,15 +140,14 @@ npm run deploy     # astro build && wrangler deploy
 | `--fg` | 見出し | 問い、プロジェクト名、記事タイトル、セクション名 |
 | `--body` | 本文 | 説明文、リード、About、CURRENT EXPERIMENT |
 | `--muted` | 副次リンク | Site / GitHub などのリンク |
-| `--faint` | メタ | 日付、status、topic ラベル、ヘッダーのナビ、フッター |
+| `--faint` | メタ | 日付、status、release、topic ラベル、ヘッダーのナビ、フッター |
 | `--accent` | 差し色 | Q 番号、図のノード、hover |
 
 図版はインライン SVG で、`currentColor` ではなく CSS 変数を参照するのでダークモードに追従する。
 
 - `src/components/LoopDiagram.astro` — Human → Decision → AI → Verify のループ。ヒーローの中央に置く。
   ラベルが読める大きさ（13rem 前後）を下回らせない
-- `src/components/Motif.astro` — プロジェクト固有のモチーフ。`map` / `loop` / `packet` / `gate` /
-  `layers` / `frames` / `flag` を `projects.json` の `motif` で指定する
+- `src/components/Motif.astro` — プロジェクト固有のモチーフ。`projects.json` の `motif` で指定する
 
 ## 実装の方針
 
@@ -141,9 +155,11 @@ npm run deploy     # astro build && wrangler deploy
 - クライアント JS は 0 のまま維持する。動きは CSS アニメーションだけで付ける（CSS は `inlineStylesheets: 'always'` で HTML に埋め込む）
 - 画像・フォントを増やさない。Web フォントは読み込まない
 - コンポーネントを細かく割らない。デザインシステムを作らない
-- 文章量を増やさない。情報構成（Header / Hero / Current Questions / Projects / Writing / About）は変えない
+- 情報構成は Header / Hero / Current Questions / Selected Work（+ Other projects）/ Experiments / Writing / About
+  （[ADR 0001](docs/adr/0001-split-roles-between-github-profile-and-site.md)）。セクションを増やすときは ADR を足す
 - ポートフォリオではなく「現在進行形の研究ノート」として書く。
   「何ができる人か」ではなく「今どんな問いを追っているか」を前に出し、役職は載せない
+- 完成していないものは完成していないと書く。実装されていない機能、未確認の数値、スター数や利用者数は書かない
 
 ## ファイル構成
 
@@ -155,6 +171,7 @@ src/
   pages/         index.astro, 404.astro
   styles/        global.css
 public/          favicon.svg, ogp.png, robots.txt
+docs/            ADR と、プロフィール・公開情報の棚卸し
 wrangler.toml    Cloudflare Workers Static Assets の設定
 .node-version    ビルドに使う Node のバージョン（CI / Cloudflare 共通）
 ```

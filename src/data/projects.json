@@ -1,65 +1,173 @@
 [
   {
+    "id": "flagman",
+    "name": "flagman",
+    "placement": "selected",
+    "status": "development",
+    "release": "未リリース（go install）",
+    "motif": "flag",
+    "summary": "AI coding agent が commit / push / merge の前に呼び、AI だけで続けてよいかを返す CLI。",
+    "problem": "coding agent は自分から質問しにくく、エージェント自身の「自信がない」は弱い合図にしかならない。既存のゲートは「どのコマンドか」で止めるだけで、その判断が正しかったかを後から確かめない。",
+    "approach": "diff・テスト結果・git 履歴・Issue・ADR といったリポジトリの証拠から continue / review / defer を返す。LLM は使わない。判断ごとに証拠と設定を記録し、あとで人間が実際どうしたかを書き足せる。",
+    "result": "check / human / outcome / replay などのコマンドが動く。記録を再生して、ルールを変えたときに false autonomy（本来は人間に聞くべきだったのに AI だけで進めた件数）が減ったかを、分子・分母つきで比べられる。",
+    "links": [{ "label": "GitHub", "url": "https://github.com/hidetzu/flagman" }]
+  },
+  {
+    "id": "decide-first",
     "name": "Decide First",
-    "status": "active",
+    "placement": "selected",
+    "status": "released",
+    "release": "v0.1.0 · Web 版公開中",
     "motif": "gate",
     "summary": "この GitHub Issue を AI Coding Agent へ渡して大丈夫か。渡す前に人間が決めることを示す Quality Gate。",
-    "experiment": "点数ではなく、名前のついた check と根拠の行だけで判定を組み立てられるか。",
+    "problem": "曖昧な Issue をそのまま渡すと、AI は決まっていないことを勝手に決めて実装する。",
+    "approach": "Goal、Scope / Out of Scope、受け入れ条件、確認方法、未決事項、依存などを、名前のついた決定論的な check で調べる。点数は出さず、判定はどれも根拠の行までたどれる。",
+    "result": "public repository の Issue URL を貼ると READY / NEEDS CLARIFICATION / NOT READY と「渡す前に人間が決めること」を返す。Web 版と CLI がある。",
     "links": [
       { "label": "Site", "url": "https://decide-first.hidetzu.work" },
       { "label": "GitHub", "url": "https://github.com/hidetzu/decide-first" }
     ]
   },
   {
-    "name": "flagman",
-    "status": "active",
-    "motif": "flag",
-    "summary": "AI coding agent が commit / push / merge の前に呼ぶ CLI。リポジトリの証拠から continue / review / defer を返し、根拠ごと記録する。",
-    "experiment": "ルールを変えたとき、本来は人間に聞くべきだったのに AI だけで進めた件数（false autonomy）が減ったかを、分子・分母つきで比べられるか。",
-    "links": [
-      { "label": "GitHub", "url": "https://github.com/hidetzu/flagman" }
-    ]
+    "id": "vulnograph",
+    "name": "vulnograph",
+    "placement": "selected",
+    "status": "development",
+    "release": "v0.1.0-dev.1（pre-release）",
+    "motif": "graph",
+    "summary": "CVE ID から、すべての記述に出典がついたレポートと Mermaid の図を作る。",
+    "problem": "CVE を短時間で理解したいとき、AI に要約させると、どの記述がどの資料に基づくのかが分からなくなる。",
+    "approach": "Go の CLI が NVD・GitHub Security Advisories・CISA KEV・EPSS から出典つきの evidence.json を集め、Agent Skill（Claude Code / Codex）がそれだけを根拠にレポートと図を書く。図のノードは出典の番号を持ち、資料が示していない因果は点線で区別する。",
+    "result": "サンプルレポート（CVE-2026-109618）を公開している。レポートは日本語のみ。脆弱性スキャナではなく、環境が影響を受けるかは判定しない。",
+    "links": [{ "label": "GitHub", "url": "https://github.com/hidetzu/vulnograph" }]
   },
   {
+    "id": "tenken",
+    "name": "tenken",
+    "placement": "selected",
+    "status": "development",
+    "release": "v0.1.0-dev.1 タグ · GitHub Release は未公開",
+    "motif": "scan",
+    "summary": "Web サイトを 1 回で点検し、問題があれば CI を落とす CLI。",
+    "problem": "検査ツールは「問題なし」と言いがちで、実際には見られなかった URL や途中で止まった検査が区別されない。",
+    "approach": "TLS 証明書、リダイレクト、リンク切れ（mixed content を含む）、セキュリティヘッダ、sitemap / robots.txt を 1 つのバイナリで調べる。robots.txt と Crawl-delay に従い、ホストごとに 1 リクエストずつ送る。",
+    "result": "テキストと固定スキーマの JSON で結果を出し、取得しなかった URL、上限に達した箇所、走らなかった検査も報告する。",
+    "links": [{ "label": "GitHub", "url": "https://github.com/hidetzu/tenken" }]
+  },
+  {
+    "id": "konjaku",
     "name": "今昔 / konjaku",
-    "status": "active",
+    "placement": "selected",
+    "status": "development",
+    "release": "Web 版公開中",
     "motif": "map",
-    "summary": "街歩き中の「ここ、昔は何だった？」を拾う Web アプリ。",
-    "experiment": "Issue を AI が書き換えてよい範囲と、人間が判断を残す場所をどこに置くか。",
+    "summary": "場所を指すと、その土地が昔なんだったかを国土地理院の資料から答える Web サービス。",
+    "problem": "「ここは昔なんだった？」に答えるサービスは、根拠が見えないか、資料が無いことと読めなかったことを区別しない。",
+    "approach": "ブラウザが国土地理院のタイルを読み、画素から判定する。読んだ資料・区分コード・既知の限界を開いて確認できる。原典の字は要約も言い換えもしない。",
+    "result": "公開中。取得結果を「読めた」「本当に無い」「通信などで読めなかった」に分け、読めなかったときは断定しない。",
     "links": [
       { "label": "Site", "url": "https://konjaku.hidetzu.work" },
       { "label": "GitHub", "url": "https://github.com/hidetzu/konjaku" }
     ]
   },
   {
-    "name": "claude-dev-template",
-    "status": "active",
-    "motif": "loop",
-    "summary": "判断・検査・レビューを残したまま AI 支援開発を回す Claude Code テンプレート。",
-    "experiment": "ready-for-ai の付与を AI に任せ、人間のゲートを merge に寄せても安全に回るか。",
-    "links": [
-      { "label": "GitHub", "url": "https://github.com/hidetzu/claude-dev-template" }
-    ]
+    "id": "zemo",
+    "name": "zemo",
+    "placement": "selected",
+    "status": "released",
+    "release": "v0.4.1",
+    "motif": "note",
+    "summary": "git リポジトリをそのままターミナルのノートにするメモツール。Zig で実装。",
+    "problem": "複数の OS でメモを同期するために、fish と PowerShell のスクリプトを別々に保守していた。",
+    "approach": "開く前に pull、保存したら commit / push する処理を、Zig の単一バイナリにまとめた。",
+    "result": "Linux / macOS / Windows 向けのバイナリを GitHub Release で配布している。",
+    "links": [{ "label": "GitHub", "url": "https://github.com/hidetzu/zemo" }]
   },
   {
+    "id": "tcpip-stack",
+    "name": "tcpip-stack",
+    "placement": "experiment",
+    "status": "experimental",
+    "release": "v0.1.0 タグ · GitHub Release なし",
+    "motif": "packet",
+    "summary": "Linux のユーザー空間で動く TCP/IP のプロトコル部分。C で実装。",
+    "question": "答えの決まっている相手（RFC と Linux カーネル）に対して、AI 支援の開発で低レイヤーのコードをどこまで正しく書けるか。",
+    "result": "TAP デバイス上で ARP と ICMP echo に応答し、Linux カーネルの connect() が成立する。データの送信と再送もする。アプリケーション向けの TCP API はまだない。言ってよいことは docs/SPEC.md に書いたことだけ。",
+    "links": [{ "label": "GitHub", "url": "https://github.com/hidetzu/tcpip-stack" }]
+  },
+  {
+    "id": "verigen",
+    "name": "verigen",
+    "placement": "experiment",
+    "status": "experimental",
+    "release": "未リリース",
+    "motif": "sieve",
+    "summary": "生成したものを厳しい検証器にかけ、通ったものだけを出す「生成 → 検証」ループの実装。Go。",
+    "question": "生成が正しさを何も保証しないとき、正しさの保証を検証器だけに持たせられるか。",
+    "result": "覆面算など構造の違う 4 つの題材が、同じループに手を入れずに載る。覆面算で 5 問を出すのに 1,947 回試行した（採択率 0.26%、seed=7）。",
+    "links": [{ "label": "GitHub", "url": "https://github.com/hidetzu/verigen" }]
+  },
+  {
+    "id": "vrestore",
+    "name": "vrestore",
+    "placement": "experiment",
+    "status": "experimental",
+    "release": "未リリース",
+    "motif": "frames",
+    "summary": "動画に焼き付いた固定領域を、他のフレームに写っている実画素から戻す復元ツール。Zig で実装。",
+    "question": "生成で「それらしく埋める」前に、映像内の証拠だけでどこまで戻せるか。戻せなかった画素を戻せなかったと言えるか。",
+    "result": "領域の検出、復元、SSIM / PSNR での比較が動く。各画素の由来（戻した / 戻せなかった）と戻せた割合を報告する。背景が動かない動画では何も戻らない。",
+    "links": [{ "label": "GitHub", "url": "https://github.com/hidetzu/vrestore" }]
+  },
+  {
+    "id": "connect-doctor",
     "name": "ConnectDoctor",
-    "status": "active",
-    "motif": "layers",
+    "placement": "more",
+    "status": "development",
+    "release": "Web 版公開中",
     "summary": "URL がつながらない理由を DNS → TCP → TLS → HTTP の順に調べ、止まった層と意味を一文で返す。",
-    "experiment": "一つの URL、四つの層、最初の失敗、一文。それ以外を作らずにいられるか。",
     "links": [
       { "label": "Site", "url": "https://connect-doctor.hidetzu.work" },
       { "label": "GitHub", "url": "https://github.com/hidetzu/connect-doctor" }
     ]
   },
   {
-    "name": "vrestore",
-    "status": "experimental",
-    "motif": "frames",
-    "summary": "動画に焼き付いた固定領域を、他のフレームに写っている実画素から戻す復元ツール。Zig で実装。",
-    "experiment": "生成で「それらしく埋める」前に、映像内の証拠だけでどこまで戻せるか。戻せなかった画素を戻せなかったと言えるか。",
+    "id": "claude-dev-template",
+    "name": "claude-dev-template",
+    "placement": "more",
+    "status": "development",
+    "release": "未リリース",
+    "summary": "人間の判断・検証・レビューを残したまま AI 支援開発を回す Claude Code のテンプレート。2 つのプロジェクトで再現したものだけを残している。",
+    "links": [{ "label": "GitHub", "url": "https://github.com/hidetzu/claude-dev-template" }]
+  },
+  {
+    "id": "prism",
+    "name": "prism / ccpr",
+    "placement": "more",
+    "status": "released",
+    "release": "prism v0.3.0 · ccpr v1.2.1",
+    "summary": "Pull Request を、AI がレビューしやすい構造化された文脈に分解する（prism は GitHub、ccpr は AWS CodeCommit）。",
     "links": [
-      { "label": "GitHub", "url": "https://github.com/hidetzu/vrestore" }
+      { "label": "prism", "url": "https://github.com/hidetzu/prism" },
+      { "label": "ccpr", "url": "https://github.com/hidetzu/ccpr" }
     ]
+  },
+  {
+    "id": "backlog-fzf",
+    "name": "backlog-fzf",
+    "placement": "more",
+    "status": "released",
+    "release": "v0.2.0",
+    "summary": "Nulab Backlog の課題とドキュメントを、プロジェクト横断で全文検索する CLI。fzf の TUI とローカル AI の意味検索がある。",
+    "links": [{ "label": "GitHub", "url": "https://github.com/hidetzu/backlog-fzf" }]
+  },
+  {
+    "id": "dotfiles",
+    "name": "dotfiles",
+    "placement": "more",
+    "status": "reference",
+    "release": "設定ファイル",
+    "summary": "Mac は画面だけにして、開発環境は Arch Linux に置く構成の設定（WezTerm、fish、Neovim）。",
+    "links": [{ "label": "GitHub", "url": "https://github.com/hidetzu/dotfiles" }]
   }
 ]

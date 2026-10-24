@@ -28,7 +28,7 @@
     --fg: #ebe8e1;
     --body: #cbc6bc;
     --muted: #9b968b;
-    --faint: #878176;
+    --faint: #8c867b;
     --line: #302d27;
     --line-soft: #26231e;
     --accent: #d3a86a;
@@ -43,6 +43,11 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+}
+
+/* Current Questions からプロジェクトへ飛んだとき、見出しが端に貼り付かないように */
+[id^="p-"] {
+  scroll-margin-top: 1.5rem;
 }
 
 body {
@@ -81,6 +86,18 @@ a:hover {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 3px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .skip-link {
@@ -217,6 +234,14 @@ footer {
   line-height: 1.7;
   color: var(--body);
   max-width: 34em;
+}
+
+.hero-lede {
+  margin: 0.6rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.85;
+  color: var(--body);
+  max-width: 36em;
 }
 
 .tiles {
@@ -438,7 +463,45 @@ main .section:first-child {
   max-width: 42em;
 }
 
+.question-projects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.9rem;
+  margin: 0.45rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--faint);
+}
+
+.question-projects a {
+  color: var(--muted);
+}
+
 /* --- projects ------------------------------------------------------------- */
+
+/* status の凡例。小さなメタ情報なので mono で控えめに */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.4rem;
+  margin: 0 0 1.6rem;
+  font-size: 0.75rem;
+  color: var(--faint);
+}
+
+.legend div {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.legend dt {
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.legend dd {
+  margin: 0;
+}
 
 .projects {
   list-style: none;
@@ -479,6 +542,10 @@ main .section:first-child {
   stroke-dasharray: 50 12.8;
 }
 
+.motif-dotted {
+  stroke-dasharray: 2 2.5;
+}
+
 .project h3 {
   margin: 0;
   font-size: 1.0625rem;
@@ -503,6 +570,14 @@ main .section:first-child {
   padding: 0 0.35rem;
 }
 
+.release {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  font-weight: 400;
+  color: var(--faint);
+}
+
 .project-main > p {
   margin: 0.25rem 0 0.7rem;
   font-size: 0.9375rem;
@@ -525,6 +600,66 @@ main .section:first-child {
   color: var(--body);
   margin: 0.1rem 0 0;
   max-width: 40em;
+}
+
+.facts {
+  margin: 0 0 0.8rem;
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  max-width: 42em;
+}
+
+.facts dt {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+}
+
+.facts dd {
+  margin: 0 0 0.55rem;
+  color: var(--body);
+}
+
+.sub-head {
+  margin: 2.2rem 0 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.others {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.others > li {
+  padding: 0.9rem 0;
+  border-top: 1px solid var(--line-soft);
+}
+
+.others > li:first-child {
+  border-top: 0;
+}
+
+.other-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0;
+  color: var(--fg);
+}
+
+.other-summary {
+  margin: 0.2rem 0 0.35rem;
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  max-width: 42em;
 }
 
 .inline-links {
@@ -604,6 +739,14 @@ main .section:first-child {
   font-weight: 700;
   line-height: 1.65;
   color: var(--fg);
+}
+
+.card-project {
+  margin-top: auto;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  color: var(--faint);
 }
 
 .card:hover .card-title {
