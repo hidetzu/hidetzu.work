@@ -7,13 +7,33 @@ import nowData from '../data/now.json';
 import projectsData from '../data/projects.json';
 import writingData from '../data/writing.json';
 import aboutData from '../data/about.json';
-import type { Site, Now, Project, Writing, About } from '../data/types';
+import type { Site, Now, Project, Status, Writing, About } from '../data/types';
 
 const site = siteData as Site;
 const now = nowData as Now;
 const projects = projectsData as Project[];
 const writing = writingData as Writing;
 const about = aboutData as About;
+
+const selected = projects.filter((p) => p.placement === 'selected');
+const experiments = projects.filter((p) => p.placement === 'experiment');
+const others = projects.filter((p) => p.placement === 'more');
+
+// questions / writing から id でプロジェクトを引く。存在しない id はビルドで落とす
+const byId = new Map(projects.map((p) => [p.id, p]));
+const project = (id: string) => {
+  const p = byId.get(id);
+  if (!p) throw new Error(`unknown project id: ${id}`);
+  return p;
+};
+const anchor = (id: string) => `p-${id}`;
+
+const statusLabel: Record<Status, string> = {
+  released: 'Released',
+  development: 'Development',
+  experimental: 'Experimental',
+  reference: 'Reference',
+};
 
 // タイルの小さな補足。https://github.com/hidetzu → github.com/hidetzu
 const handle = (url: string) => {
@@ -23,13 +43,14 @@ const handle = (url: string) => {
 ---
 
 <Base>
-  <div class="hero">
+  <section class="hero" aria-label="Introduction">
     <div class="hero-figure">
       <LoopDiagram />
     </div>
     <div class="lane" aria-hidden="true"><i></i>hidetzu.work<i></i></div>
     <h1>{site.name}</h1>
-    <p class="tagline">{site.tagline}</p>
+    <p class="tagline" lang="en">{site.tagline}</p>
+    <p class="hero-lede">{site.lede}</p>
     <nav class="tiles" aria-label="profiles">
       {
         site.links.map((link, i) => (
@@ -41,7 +62,7 @@ const handle = (url: string) => {
       }
     </nav>
     <a class="scroll-cue" href="#main">Current Questions ↓</a>
-  </div>
+  </section>
 
   <main id="main">
     <section class="section" aria-labelledby="questions">
@@ -62,6 +83,13 @@ const handle = (url: string) => {
                   <span class="topic">{q.name}</span>
                   <p class="question-text">{q.question}</p>
                   <p class="question-note">{q.note}</p>
+                  <p class="question-projects">
+                    <span class="visually-hidden">関連するプロジェクト:</span>
+                    <span aria-hidden="true">→</span>
+                    {q.projects.map((id) => (
+                      <a href={`#${anchor(id)}`}>{project(id).name}</a>
+                    ))}
+                  </p>
                 </div>
               </li>
             ))
@@ -70,31 +98,105 @@ const handle = (url: string) => {
       </div>
     </section>
 
-    <section class="section" aria-labelledby="projects">
+    <section class="section" aria-labelledby="work">
       <div class="section-head">
         <span class="num">02</span>
-        <h2 id="projects">Projects</h2>
+        <h2 id="work">Selected Work</h2>
       </div>
       <div class="section-body">
+        <dl class="legend">
+          <div><dt>Released</dt><dd>GitHub Release で配布物を出している</dd></div>
+          <div><dt>Development</dt><dd>動く実装はあるが開発途上</dd></div>
+          <div><dt>Experimental</dt><dd>技術的な問いの検証が中心</dd></div>
+          <div><dt>Reference</dt><dd>設定など、参照用</dd></div>
+        </dl>
         <ul class="projects">
           {
-            projects.map((project) => (
-              <li class="project">
-                <div class="project-motif">
-                  <Motif name={project.motif} />
-                </div>
+            selected.map((p) => (
+              <li class="project" id={anchor(p.id)}>
+                <div class="project-motif">{p.motif && <Motif name={p.motif} />}</div>
                 <div class="project-main">
                   <h3>
-                    {project.name}
-                    <span class="status">{project.status}</span>
+                    {p.name}
+                    <span class="status">{statusLabel[p.status]}</span>
+                    <span class="release">{p.release}</span>
                   </h3>
-                  <p>{project.summary}</p>
-                  <div class="experiment">
-                    <span class="topic">Current experiment</span>
-                    <p>{project.experiment}</p>
-                  </div>
+                  <p>{p.summary}</p>
+                  <dl class="facts">
+                    <dt>問題</dt>
+                    <dd>{p.problem}</dd>
+                    <dt>アプローチ</dt>
+                    <dd>{p.approach}</dd>
+                    <dt>いま確認できること</dt>
+                    <dd>{p.result}</dd>
+                  </dl>
                   <ul class="inline-links">
-                    {project.links.map((link) => (
+                    {p.links.map((link) => (
+                      <li>
+                        <a href={link.url}>{link.label}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+
+        <h3 class="sub-head">Other projects</h3>
+        <ul class="others">
+          {
+            others.map((p) => (
+              <li id={anchor(p.id)}>
+                <p class="other-name">
+                  <strong>{p.name}</strong>
+                  <span class="status">{statusLabel[p.status]}</span>
+                  <span class="release">{p.release}</span>
+                </p>
+                <p class="other-summary">{p.summary}</p>
+                <ul class="inline-links">
+                  {p.links.map((link) => (
+                    <li>
+                      <a href={link.url}>{link.label}</a>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="experiments">
+      <div class="section-head">
+        <span class="num">03</span>
+        <h2 id="experiments">Experiments</h2>
+      </div>
+      <div class="section-body">
+        <p class="lede">完成した道具ではなく、技術的な問いを確かめるための実装。問いと、いまの到達点を書いています。</p>
+        <ul class="projects">
+          {
+            experiments.map((p) => (
+              <li class="project" id={anchor(p.id)}>
+                <div class="project-motif">{p.motif && <Motif name={p.motif} />}</div>
+                <div class="project-main">
+                  <h3>
+                    {p.name}
+                    <span class="status">{statusLabel[p.status]}</span>
+                    <span class="release">{p.release}</span>
+                  </h3>
+                  <p>{p.summary}</p>
+                  <div class="experiment">
+                    <span class="topic">Question</span>
+                    <p>{p.question}</p>
+                  </div>
+                  <dl class="facts">
+                    <dt>いまの到達点</dt>
+                    <dd>{p.result}</dd>
+                  </dl>
+                  <ul class="inline-links">
+                    {p.links.map((link) => (
                       <li>
                         <a href={link.url}>{link.label}</a>
                       </li>
@@ -110,7 +212,7 @@ const handle = (url: string) => {
 
     <section class="section" aria-labelledby="writing">
       <div class="section-head">
-        <span class="num">03</span>
+        <span class="num">04</span>
         <h2 id="writing">Writing</h2>
       </div>
       <div class="section-body">
@@ -129,6 +231,9 @@ const handle = (url: string) => {
                       <span class="card-title" lang={source.lang}>
                         {article.title}
                       </span>
+                      {article.project && (
+                        <span class="card-project">→ {project(article.project).name}</span>
+                      )}
                     </a>
                   </li>
                 ))}
@@ -144,7 +249,7 @@ const handle = (url: string) => {
 
     <section class="section" aria-labelledby="about">
       <div class="section-head">
-        <span class="num">04</span>
+        <span class="num">05</span>
         <h2 id="about">About</h2>
       </div>
       <div class="section-body about">

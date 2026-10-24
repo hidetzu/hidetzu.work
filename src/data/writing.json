@@ -7,22 +7,25 @@
       "moreLabel": "Zenn のすべての記事を見る",
       "articles": [
         {
-          "topic": "DevEnv",
-          "title": "MacとArchの役割を分けた — Macは画面、開発環境はArch（WezTerm SSHMUX）",
-          "date": "2026-10",
-          "url": "https://zenn.dev/hidetzu/articles/wezterm-sshmux-mac-arch-devhost"
+          "topic": "Verification",
+          "title": "「テストが通った」では足りない。検査の答えに NOT-VERIFIED を足した",
+          "date": "2026-08",
+          "url": "https://zenn.dev/hidetzu/articles/konjaku-verify-not-verified",
+          "project": "konjaku"
         },
         {
-          "topic": "Compilers",
-          "title": "言語処理系の地図 Part2",
-          "date": "2026-10",
-          "url": "https://zenn.dev/hidetzu/articles/lang-impl-map-2-design-choices"
+          "topic": "Verification",
+          "title": "生成は雑でいい、検証器が全部拾う：採択率0.26%で成立する『生成→検証』ループ",
+          "date": "2026-07",
+          "url": "https://zenn.dev/hidetzu/articles/verigen-generate-verify-loop",
+          "project": "verigen"
         },
         {
-          "topic": "Compilers",
-          "title": "言語処理系の地図 Part1",
+          "topic": "Search",
+          "title": "Nulab Backlogの検索をローカルAIで拡張した — Ollama・SQLiteで意味検索を実装する",
           "date": "2026-10",
-          "url": "https://zenn.dev/hidetzu/articles/lang-impl-map-1-pipeline"
+          "url": "https://zenn.dev/hidetzu/articles/backlog-fzf-semantic-search-ollama",
+          "project": "backlog-fzf"
         }
       ]
     },
@@ -33,16 +36,17 @@
       "moreLabel": "See all posts on dev.to",
       "articles": [
         {
-          "topic": "DevEnv",
-          "title": "My Mac Is Just a Screen Now: 3 Things That Broke With WezTerm SSHMUX",
-          "date": "2026-10",
-          "url": "https://dev.to/hidetzu/my-mac-is-just-a-screen-now-3-things-that-broke-with-wezterm-sshmux-5b6m"
+          "topic": "Verification",
+          "title": "99.7% Rejected in 84ms: Why I Stopped Making the Generator Smarter",
+          "date": "2026-09",
+          "url": "https://dev.to/hidetzu/997-rejected-in-84ms-why-i-stopped-making-the-generator-smarter-5em0",
+          "project": "verigen"
         },
         {
-          "topic": "Database",
-          "title": "The Same Row Twice: Four Things Keyset Pagination Needs",
+          "topic": "AI Coding",
+          "title": "The Tests Passed. The Function Already Existed.",
           "date": "2026-09",
-          "url": "https://dev.to/hidetzu/the-same-row-twice-four-things-keyset-pagination-needs-2ecp"
+          "url": "https://dev.to/hidetzu/the-tests-passed-the-function-already-existed-35k1"
         },
         {
           "topic": "Database",

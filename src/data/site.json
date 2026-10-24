@@ -1,7 +1,8 @@
 {
   "name": "hidetzu",
-  "tagline": "Building better loops between humans, AI, and software.",
-  "description": "hidetzu の公開活動のまとめ。GitHub / Zenn / dev.to / 公開プロダクト、そして今取り組んでいるテーマ。",
+  "tagline": "Building software that shows its evidence — and says what it could not verify.",
+  "lede": "ソフトウェアを設計・実装しています。AI に任せることと人間が決めることの境目、根拠と検証に関心があり、実際に動くツールや Web サービスとして公開しています。",
+  "description": "hidetzu の個人サイト。AI と人間の判断の境目、根拠と検証をテーマに作っているソフトウェアと、そこで確かめられたこと。",
   "lang": "ja",
   "locale": "ja_JP",
   "links": [
