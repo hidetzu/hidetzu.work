@@ -10,9 +10,11 @@ const now = nowData as Now;
 interface Props {
   title?: string;
   description?: string;
+  // 記事ページ（数学ノート）は article にする
+  ogType?: 'website' | 'article';
 }
 
-const { title, description = site.description } = Astro.props;
+const { title, description = site.description, ogType = 'website' } = Astro.props;
 const pageTitle = title ? `${title} | ${site.name}` : `${site.name} — ${site.tagline}`;
 // build.format: 'file' だと pathname が /index.html になるため正規化する
 const path = Astro.url.pathname.replace(/index\.html$/, '').replace(/\.html$/, '');
@@ -32,7 +34,7 @@ const ogImage = new URL('/ogp.png', Astro.site).href;
     <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#14130f" media="(prefers-color-scheme: dark)" />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
@@ -47,6 +49,8 @@ const ogImage = new URL('/ogp.png', Astro.site).href;
       <header class="site-header">
         <a class="brand" href="/">{site.name}</a>
         <nav class="top" aria-label="links">
+          <a href="/math">Math</a>
+          <span aria-hidden="true">/</span>
           {
             site.links.map((link, i) => (
               <>
