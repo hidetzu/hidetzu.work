@@ -2,8 +2,11 @@
 title: "位相の基底と生成される位相"
 description: "Munkres『Topology』§13 の学習ノート（途中まで）。基底の定義、基底が生成する位相、有理数を端点とする開区間が実数の通常の位相を生成すること。"
 topic: topology
+order: 2
 status: studying
 createdAt: 2026-11-08
+related:
+  - rational-density
 tags:
   - basis
   - topological-space

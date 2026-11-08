@@ -54,6 +54,50 @@
   text-decoration: none;
 }
 
+/* 分野の目次（/math の先頭） */
+.math-fields ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  list-style: none;
+  margin: 0 0 1.2rem;
+  padding: 0;
+  font-size: 0.9375rem;
+}
+
+.math-field {
+  margin-top: 1.8rem;
+}
+
+.math-field h3 {
+  margin: 0;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.math-field-description {
+  margin: 0.45rem 0 0.2rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* ノートの分野ラベルは /math の分野へのリンク */
+.math-field-link {
+  width: fit-content;
+  text-decoration: none;
+}
+
+.math-field-link:hover {
+  color: var(--accent);
+}
+
+.math-related {
+  margin-top: 2.5rem;
+}
+
 /* --- 記事 ------------------------------------------------------------------ */
 
 .math-note {

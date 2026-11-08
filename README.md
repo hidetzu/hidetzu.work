@@ -84,6 +84,22 @@ Project を 1 件追加する例（Selected Work）:
 3. 公開するときは `draft: false` にして（または行を消して）、`npm run check && npm test && npm run build` を通す
 
 Markdown ファイルを足すだけで一覧（`/math`）と記事ページに出る。ほかのファイルを触る必要はない。
+1 つの概念（または密接な概念のまとまり）を 1 ノートにし、長くなったら分ける。
+
+### 分野
+
+`/math` はノートを分野ごとにまとめて表示する（[ADR 0003](docs/adr/0003-organize-math-notes-by-field.md)）。
+分野は `src/data/math.json` の `fields` に、表示順に並べる。ノートのない分野は表示しない。
+
+| id | 分野 |
+| --- | --- |
+| `logic` | 論理学 |
+| `set-theory` | 集合論 |
+| `combinatorics` | 組み合わせ論 |
+| `real-numbers` | 実数 |
+| `topology` | 位相空間論 |
+
+URL は分野に関係なく `/math/<slug>` のまま。ノートの分野を変えても URL は変わらない。
 学習の目安（`src/data/math.json` の `roadmap`）の項目にノートをつなぐときは `"note": "<slug>"` を書く。
 
 ### frontmatter
@@ -92,11 +108,13 @@ Markdown ファイルを足すだけで一覧（`/math`）と記事ページに�
 | --- | --- | --- |
 | `title` | ○ | タイトル |
 | `description` | ○ | 一覧と meta description に出す一文 |
-| `topic` | ○ | 学習テーマ（`topology` など） |
+| `topic` | ○ | 分野の id（上の表）。表にない値はビルドエラー |
+| `order` | | 分野の中での並び順（小さいほど先）。省略すると後ろに作成日順 |
 | `status` | ○ | 理解の状態（下記） |
 | `createdAt` | ○ | 作成日 `YYYY-MM-DD` |
-| `updatedAt` | | 更新日。一覧はこの日付（なければ作成日）の新しい順 |
+| `updatedAt` | | 更新日。一覧の日付に出す（なければ作成日） |
 | `tags` | | タグの配列 |
+| `related` | | 関連するノートの slug の配列。ノートの末尾に出し、相手のノートにも逆向きに出る。存在しない slug はビルドエラー |
 | `sources` | | 読んだ文献。`title` と、本を見て確かめた章・節・ページだけを `location` に書く |
 | `draft` | | `true` の間はビルドに含めない |
 

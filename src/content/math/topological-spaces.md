@@ -2,8 +2,11 @@
 title: "位相空間の定義と位相の強弱"
 description: "Munkres『Topology』§12 の学習ノート。位相の定義と代表例、位相の強弱、位相の共通部分と和集合、集合族を含む最も弱い位相の存在。"
 topic: topology
+order: 1
 status: understood
 createdAt: 2026-11-08
+related:
+  - basis
 tags:
   - topological-space
   - munkres
@@ -88,7 +91,7 @@ $$
 
 和集合の側では、補集合が「有限集合の共通部分」になるので、1 つでも有限な補集合があれば足りる。個数は関係ない。
 共通部分の側では、補集合が「有限集合の和集合」になるので、個数が有限であることが必要になる。
-ド・モルガンの法則と論理との対応は [命題論理の基礎](/math/propositional-logic) にまとめた。
+ここで使ったド・モルガンの法則と、論理との対応は [集合族に対するド・モルガンの法則](/math/families-of-sets#thm-de-morgan-families) にまとめた。
 
 :::example[無限個の共通部分は開とは限らない（補足）]
 $X = \mathbb{N} = \{0, 1, 2, \dots\}$ とし、$n \ge 1$ に対して $U_n = X \setminus \{n\} \in \mathcal{T}_f$ とおく。

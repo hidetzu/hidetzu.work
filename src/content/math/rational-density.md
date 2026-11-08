@@ -1,7 +1,8 @@
 ---
 title: "有理数の稠密性"
 description: "任意の 2 つの実数の間に有理数があることを、アルキメデスの性質から示す。有理数を端点とする開区間と実数の通常の位相との関係。"
-topic: topology
+topic: real-numbers
+order: 1
 status: understood
 createdAt: 2026-11-08
 tags:

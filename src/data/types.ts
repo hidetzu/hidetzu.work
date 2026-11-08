@@ -81,9 +81,18 @@ export type About = {
   links: Link[];
 };
 
+// 数学の分野。ノートの frontmatter の topic に id を書く。並び順は /math での表示順
+export type MathField = {
+  id: string;
+  title: string;
+  description: string;
+};
+
 export type MathIndex = {
   lead: string[];
   textbook: string;
+  // ノートのない分野は /math に出さない。分野を増やすときはここに足す
+  fields: MathField[];
   // 学習の目安。note に src/content/math のファイル名（slug）を書くと、そのノートへリンクする
   roadmap: { title: string; note?: string }[];
   goals: string;
