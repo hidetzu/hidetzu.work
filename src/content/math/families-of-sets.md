@@ -1,12 +1,14 @@
 ---
 title: "集合族"
-description: "集合を要素とする集合と、添字付けられた集合族。要素と部分集合の区別、集合族の和集合・共通部分、集合族に対するド・モルガンの法則。"
+description: "集合を要素とする集合と、添字付けられた集合族。要素と部分集合の区別、集合族の和集合・共通部分と縮む開区間の例、集合族に対するド・モルガンの法則。"
 topic: set-theory
 order: 4
 status: studying
 createdAt: 2026-11-09
 related:
   - topological-spaces
+  - propositional-logic
+  - rational-density
 tags:
   - set-theory
   - munkres
@@ -16,9 +18,16 @@ sources:
 ---
 
 :::remark[このノートの書き方]
-Munkres の Chapter 1 で集合族に入ったところ（学習中）。定義と例を整理した。
+Munkres の Chapter 1（p.12〜13 まで）で学んだ集合族の定義と例を整理したもの。
 空な集合族の扱いと、ド・モルガンの法則の証明はレビューの段階で補ったもので、**（補足）** と付けた。
 :::
+
+学習状況（4 節）：
+
+- 一般化された和集合・共通部分：定義を確認済み
+- 縮む開区間の和集合：手書きで証明し、レビュー済み
+- 縮む開区間の共通部分：手書きで考え、アルキメデスの性質を使う背理法を理解し、レビュー済み
+- アルキメデスの性質そのものの証明：まだしていない
 
 ## 1. 集合族
 
@@ -88,13 +97,75 @@ $$
 $$
 :::
 
-和集合は「少なくとも 1 つに属する」で $\exists$、共通部分は「すべてに属する」で $\forall$（[量化記号](/math/propositional-logic#thm-de-morgan)）。
+和集合と共通部分の違いは、量化記号の違い（[命題論理の基礎](/math/propositional-logic#thm-quantifier-negation)）になっている。
+
+- 和集合：**少なくとも 1 つの** $A_\alpha$ に属する。存在記号 $\exists$
+- 共通部分：**すべての** $A_\alpha$ に属する。全称記号 $\forall$
+
 2 つの集合の $A \cup B$、$A \cap B$ は、$\mathcal{A} = \{A, B\}$ の場合にあたる。
 
 :::example[集合族の和集合・共通部分]{#ex-family-union}
 - $\mathcal{A} = \{\, \{1, 2\}, \{2, 3\}, \{3\} \,\}$ なら、和集合は $\{1, 2, 3\}$、共通部分は $\varnothing$（3 つすべてに属する要素はない）。
 - 3 節の $A_n = (-1/n, 1/n)$ なら、和集合は $A_1 = (-1, 1)$、共通部分は $\{0\}$。
 :::
+
+### 学習例：0 に向かって縮む開区間
+
+:::example[縮む開区間の和集合と共通部分]{#ex-shrinking-intervals}
+$n = 1, 2, 3, \dots$ に対して
+
+$$
+A_n = \left\{\, x \in \mathbb{R} \ \middle|\ 0 < x < \frac{1}{n} \,\right\} = \left( 0, \frac{1}{n} \right)
+$$
+
+とすると
+
+$$
+\bigcup_{n=1}^{\infty} A_n = A_1 = (0, 1), \qquad \bigcap_{n=1}^{\infty} A_n = \varnothing .
+$$
+:::
+
+和集合は手書きで証明し、レビューを受けたもの。共通部分は手書きで考え、レビューでアルキメデスの性質を使う背理法として整理したもの。
+
+:::proof[和集合]
+相互包含で示す。
+
+**$\bigcup_n A_n \subseteq A_1$。** 任意の $n \ge 1$ について $\frac{1}{n} \le 1$ なので、$A_n \subseteq A_1$。
+（補足）実際、$x \in A_n$ なら $0 < x < \frac{1}{n} \le 1$ で $x \in A_1$。
+よって $x \in \bigcup_n A_n$ なら、ある $n$ について $x \in A_n \subseteq A_1$。
+
+**$A_1 \subseteq \bigcup_n A_n$。** $A_1$ はこの集合族の 1 つなので、和集合に含まれる。
+
+以上より $\bigcup_{n=1}^{\infty} A_n = A_1$。
+:::
+
+:::proof[共通部分]
+共通部分が空でないと仮定する。すると、ある実数 $x$ が存在して $x \in \bigcap_{n=1}^{\infty} A_n$。共通部分の定義から
+
+$$
+\forall n \ge 1,\quad 0 < x < \frac{1}{n} .
+$$
+
+特に $x > 0$ なので、[アルキメデスの性質](/math/rational-density#thm-archimedean)から、ある自然数 $m$ が存在して $\frac{1}{m} < x$。
+（補足）アルキメデスの性質を $r = \frac{1}{x}$ に使うと $m > \frac{1}{x}$ を満たす自然数 $m$ があり、両辺に $\frac{x}{m} > 0$ を掛けると $\frac{1}{m} < x$。
+
+一方、仮定から $n = m$ のときも $x < \frac{1}{m}$ が成り立つ。これは矛盾である。
+
+したがって $\bigcap_{n=1}^{\infty} A_n = \varnothing$。
+:::
+
+この証明で理解したこと：$x$ が共通部分に属するとは $\forall n,\ x \in A_n$ ということなので、それを崩すには
+
+$$
+\exists m,\quad x \notin A_m
+$$
+
+を示せばよい。これは[量化記号の否定](/math/propositional-logic#thm-quantifier-negation) $\neg (\forall n\ P(n)) \iff \exists n\ \neg P(n)$ そのもので、アルキメデスの性質が、その $m$ を実際に見つける役割を果たしている。
+
+アルキメデスの性質そのものは、この証明では証明せずに使っている。
+
+（補足）上の例の $(-1/n, 1/n)$ では共通部分が $\{0\}$ だったが、ここでは区間が $0$ を含まないので、共通部分は空になる。
+どちらも、有限個なら共通部分は空でない（いちばん小さい区間になる）のに、無限個にすると変わる例になっている（[§13 のノート](/math/basis#ex-infinite-intersection)）。
 
 ### 空な集合族（補足）
 
