@@ -148,7 +148,7 @@ $U \cup V$ と $U \cap V$ は $U, V$ のどちらかに等しいので、補題�
 
 ### 問題 1：2 つの位相の比較
 
-:::proposition{#q1}
+:::example{#q1}
 $\mathcal{T}_1 = \{\varnothing, \{a\}, X\}$、$\mathcal{T}_2 = \{\varnothing, \{a, b\}, X\}$ はどちらも $X$ 上の位相で、互いに比較できない。
 :::
 
@@ -162,7 +162,7 @@ $\{a, b\} \in \mathcal{T}_2$ だが $\{a, b\} \notin \mathcal{T}_1$ なので $\
 
 ### 問題 2：2 つの位相を含む最も弱い位相
 
-:::proposition{#q2}
+:::example{#q2}
 $\mathcal{T}_1 = \{\varnothing, \{a\}, X\}$、$\mathcal{T}_2 = \{\varnothing, \{b\}, X\}$ とする。
 
 $$
@@ -224,7 +224,7 @@ $U_1 \cap \cdots \cap U_n \in \mathcal{T}_\alpha$。$\alpha$ は任意なので 
 
 ### 問題 4：位相の和集合は位相とは限らない
 
-:::proposition{#q4}
+:::example{#q4}
 $\mathcal{T}_1 = \{\varnothing, \{a\}, X\}$、$\mathcal{T}_2 = \{\varnothing, \{b\}, X\}$ はどちらも位相だが、和集合 $\mathcal{T}_1 \cup \mathcal{T}_2$ は位相ではない。
 :::
 
