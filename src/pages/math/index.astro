@@ -1,0 +1,90 @@
+---
+import Base from '../../layouts/Base.astro';
+import '../../styles/math.css';
+import mathData from '../../data/math.json';
+import type { MathIndex } from '../../data/types';
+import {
+  byLastModified,
+  getMathNotes,
+  lastModified,
+  mathStatusLabel,
+  mathStatusNote,
+  ymd,
+  type MathStatus,
+} from '../../lib/math-notes';
+
+const data = mathData as MathIndex;
+const notes = (await getMathNotes()).sort(byLastModified);
+
+// roadmap から存在しないノートを参照したらビルドで落とす
+const ids = new Set(notes.map((n) => n.id));
+for (const item of data.roadmap) {
+  if (item.note && !ids.has(item.note)) throw new Error(`math.json: unknown note "${item.note}"`);
+}
+
+const statuses = Object.keys(mathStatusLabel) as MathStatus[];
+const description = '位相幾何学を基礎から学び直すための数学ノート。定義・定理・自分で考えた証明・疑問を記録する。';
+---
+
+<Base title="Math Notes" description={description}>
+  <main id="main">
+    <section class="section" aria-labelledby="math-notes">
+      <div class="section-head">
+        <span class="num">∑</span>
+        <h1 id="math-notes">Math Notes</h1>
+      </div>
+      {data.lead.map((p) => <p class="lede">{p}</p>)}
+      <p class="math-textbook"><span class="topic">Textbook</span> <span lang="en">{data.textbook}</span></p>
+    </section>
+
+    <section class="section" aria-labelledby="math-roadmap">
+      <h2 class="sub-head" id="math-roadmap">Roadmap</h2>
+      <ol class="math-roadmap">
+        {
+          data.roadmap.map((item) => (
+            <li>{item.note ? <a href={`/math/${item.note}`}>{item.title}</a> : item.title}</li>
+          ))
+        }
+      </ol>
+      <p class="math-goals">{data.goals}</p>
+    </section>
+
+    <section class="section" aria-labelledby="math-list">
+      <h2 class="sub-head" id="math-list">Notes</h2>
+      {
+        notes.length === 0 ? (
+          <p class="math-empty">まだ公開しているノートはありません。</p>
+        ) : (
+          <>
+            <dl class="legend">
+              {statuses.map((s) => (
+                <div>
+                  <dt>{mathStatusLabel[s]}</dt>
+                  <dd>{mathStatusNote[s]}</dd>
+                </div>
+              ))}
+            </dl>
+            <ul class="others math-list">
+              {notes.map((note) => (
+                <li>
+                  <span class="entry-meta">
+                    <span class="topic">{note.data.topic}</span>
+                    <span class="status">{mathStatusLabel[note.data.status]}</span>
+                    {note.data.draft && <span class="status">draft</span>}
+                    <time datetime={ymd(lastModified(note))}>{ymd(lastModified(note))}</time>
+                  </span>
+                  <p class="other-name">
+                    <a href={`/math/${note.id}`}>
+                      <strong>{note.data.title}</strong>
+                    </a>
+                  </p>
+                  <p class="other-summary">{note.data.description}</p>
+                </li>
+              ))}
+            </ul>
+          </>
+        )
+      }
+    </section>
+  </main>
+</Base>

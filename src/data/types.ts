@@ -80,3 +80,11 @@ export type About = {
   body: string[];
   links: Link[];
 };
+
+export type MathIndex = {
+  lead: string[];
+  textbook: string;
+  // 学習の目安。note に src/content/math のファイル名（slug）を書くと、そのノートへリンクする
+  roadmap: { title: string; note?: string }[];
+  goals: string;
+};
