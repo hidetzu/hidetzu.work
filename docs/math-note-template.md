@@ -1,10 +1,12 @@
 ---
 title: "ノートのタイトル"
 description: "一覧に出す一文。何を学ぶノートか。"
-topic: topology
+topic: topology # 分野。src/data/math.json の fields の id（logic / set-theory / combinatorics / real-numbers / topology）
+order: 1 # 分野の中での並び順（小さいほど先）。省略すると後ろに作成日順で並ぶ
 status: unread # unread / studying / understood / proof-in-progress / verified（自己申告）
 createdAt: 2026-01-01
 # updatedAt: 2026-01-02
+related: [] # 関連するノートの slug。相手のノートにも逆向きのリンクが自動で出る
 tags: []
 sources:
   - title: "James R. Munkres, Topology, 2nd ed."

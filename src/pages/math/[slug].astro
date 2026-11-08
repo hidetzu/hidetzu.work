@@ -1,23 +1,37 @@
 ---
-import { render } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 // KaTeX の CSS は数学ノートの記事ページにだけ入れる（フォントは数式で使う字形だけが読み込まれる）
 import 'katex/dist/katex.min.css';
 import Base from '../../layouts/Base.astro';
 import '../../styles/math.css';
-import { getMathNotes, mathStatusLabel, mathStatusNote, ymd, type MathNote } from '../../lib/math-notes';
+import {
+  fieldOf,
+  getMathNotes,
+  mathStatusLabel,
+  mathStatusNote,
+  relatedNotes,
+  ymd,
+  type MathNote,
+} from '../../lib/math-notes';
 
 export async function getStaticPaths() {
   const notes = await getMathNotes();
-  return notes.map((note) => ({ params: { slug: note.id }, props: { note } }));
+  const all = await getCollection('math');
+  return notes.map((note) => ({
+    params: { slug: note.id },
+    props: { note, related: relatedNotes(note, notes, all) },
+  }));
 }
 
 interface Props {
   note: MathNote;
+  related: MathNote[];
 }
 
-const { note } = Astro.props;
+const { note, related } = Astro.props;
 const { Content, headings } = await render(note);
-const { title, description, topic, status, createdAt, updatedAt, tags, sources, draft } = note.data;
+const { title, description, status, createdAt, updatedAt, tags, sources, draft } = note.data;
+const field = fieldOf(note);
 const toc = headings.filter((h) => h.depth === 2);
 ---
 
@@ -25,7 +39,7 @@ const toc = headings.filter((h) => h.depth === 2);
   <main id="main" class="math-note">
     <p class="math-back"><a href="/math">← Math Notes</a></p>
     <header class="math-head">
-      <span class="topic">{topic}</span>
+      <a class="topic math-field-link" href={`/math#${field.id}`}>{field.title}</a>
       <h1>{title}</h1>
       <p class="math-description">{description}</p>
       <dl class="math-meta">
@@ -94,6 +108,27 @@ const toc = headings.filter((h) => h.depth === 2);
     <article class="prose">
       <Content />
     </article>
+
+    {
+      related.length > 0 && (
+        <nav class="math-related" aria-labelledby="math-related">
+          <h2 class="sub-head" id="math-related">Related</h2>
+          <ul class="others math-list">
+            {related.map((n) => (
+              <li>
+                <span class="topic">{fieldOf(n).title}</span>
+                <p class="other-name">
+                  <a href={`/math/${n.id}`}>
+                    <strong>{n.data.title}</strong>
+                  </a>
+                </p>
+                <p class="other-summary">{n.data.description}</p>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
 
     <p class="math-back math-back--end"><a href="/math">← Math Notes に戻る</a></p>
   </main>
