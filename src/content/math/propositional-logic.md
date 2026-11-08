@@ -107,14 +107,17 @@ $x$ を含む文 $P(x)$ には、**量化記号**を付けて命題にする。
 
 否定は「すべて」と「ある」を入れ替える。
 
+:::theorem[量化記号の否定]{#thm-quantifier-negation}
 $$
 \begin{aligned}
 \neg\, \forall x\, P(x) &\iff \exists x\, \neg P(x) \\
 \neg\, \exists x\, P(x) &\iff \forall x\, \neg P(x)
 \end{aligned}
 $$
+:::
 
 「すべての $x$ で成り立つ」を否定するには、成り立たない $x$ を 1 つ挙げればよい。
+[集合族の共通部分が空になる例](/math/families-of-sets#ex-shrinking-intervals)では、この形で矛盾を導いている。
 集合の補集合についてのド・モルガンの法則（[2 つの集合](/math/set-operations#thm-de-morgan-sets)、[集合族](/math/families-of-sets#thm-de-morgan-families)）は、この 2 組の法則を所属条件に当てはめたもの。
 
 ## 5. 確認問題
