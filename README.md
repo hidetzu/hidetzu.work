@@ -26,6 +26,7 @@ npm run dev        # http://localhost:4321
 
 ```bash
 npm run check      # astro check（型 + テンプレートの診断）
+npm test           # 数学ノート用 Markdown プラグインのテスト（node --test）
 npm run build      # dist/ に静的ファイルを出力
 npm run preview    # dist/ の内容をローカル配信して確認
 ```
@@ -69,6 +70,91 @@ Project を 1 件追加する例（Selected Work）:
 - `release` には版や公開状態を、確認できた事実だけ書く（例: `v0.1.0-dev.1（pre-release）`、`Web 版公開中`）
 - `id` は `#p-<id>` のアンカーになる。now.json / writing.json から存在しない id を参照するとビルドが落ちる
 - `motif` は `map` / `loop` / `packet` / `gate` / `layers` / `frames` / `flag` / `graph` / `scan` / `note` / `sieve`
+
+## 数学ノート（/math）
+
+位相幾何学を学び直すための個人的なノート（[ADR 0002](docs/adr/0002-add-math-notes.md)）。
+完成した解説ではなく、定義・定理の主張、自分で考えた証明、疑問を記録する。
+
+### ノートを追加する
+
+1. [docs/math-note-template.md](docs/math-note-template.md) を `src/content/math/<slug>.md` にコピーする。
+   `<slug>` は英小文字とハイフン（例: `topological-spaces`）。URL は `/math/<slug>` になり、後から変えない
+2. frontmatter を埋める。書いている間は `draft: true` のままにする（`npm run dev` でだけ表示される）
+3. 公開するときは `draft: false` にして（または行を消して）、`npm run check && npm test && npm run build` を通す
+
+Markdown ファイルを足すだけで一覧（`/math`）と記事ページに出る。ほかのファイルを触る必要はない。
+学習の目安（`src/data/math.json` の `roadmap`）の項目にノートをつなぐときは `"note": "<slug>"` を書く。
+
+### frontmatter
+
+| 項目 | 必須 | 内容 |
+| --- | --- | --- |
+| `title` | ○ | タイトル |
+| `description` | ○ | 一覧と meta description に出す一文 |
+| `topic` | ○ | 学習テーマ（`topology` など） |
+| `status` | ○ | 理解の状態（下記） |
+| `createdAt` | ○ | 作成日 `YYYY-MM-DD` |
+| `updatedAt` | | 更新日。一覧はこの日付（なければ作成日）の新しい順 |
+| `tags` | | タグの配列 |
+| `sources` | | 読んだ文献。`title` と、本を見て確かめた章・節・ページだけを `location` に書く |
+| `draft` | | `true` の間はビルドに含めない |
+
+`status` は自己申告で、本人だけが変える。
+
+| 値 | 表示 | 意味 |
+| --- | --- | --- |
+| `unread` | 未学習 | まだ読んでいない |
+| `studying` | 学習中 | 読みながら理解している途中 |
+| `understood` | 理解した | 内容を自分の言葉で説明できる |
+| `proof-in-progress` | 証明を検討中 | 証明を自分で考えている。未完成の部分を含む |
+| `verified` | 証明を検証済み | 証明の各段階を確かめ終えた |
+
+`understood` と `verified` は別のもの。理解したつもりであることと、証明が厳密に成立していることを混同しない。
+ビルドやテストが通ったことは `verified` の理由にならない。
+
+### 数式
+
+- インライン: `$f \colon X \to Y$`
+- ディスプレイ: `$$` だけの行で囲む
+
+```md
+$$
+f^{-1}(V) \in \mathcal{T}_X
+$$
+```
+
+ビルド時に KaTeX で HTML にする（クライアント JS なし）。TeX の誤りはビルドエラーになる。
+本文で `$` そのものを書くときは `\$` とエスケープする。
+
+### 定義・定理・証明・疑問のブロック
+
+```md
+:::definition[位相]{#def-topology}
+集合 $X$ 上の位相とは …
+:::
+```
+
+| 書き方 | 見出し | 使いどころ |
+| --- | --- | --- |
+| `:::definition` | 定義 | 定義。自分の言い換えは本の定義と分けて書く |
+| `:::theorem` / `:::proposition` / `:::lemma` / `:::corollary` | 定理 / 命題 / 補題 / 系 | 主張。前提と結論を分けて書く |
+| `:::attempt` | 証明の試み | 自分で考えている途中の証明。足りないところを明記する。∎ は付かない |
+| `:::proof` | 証明 | 検証を終えた完成した証明だけ。∎ が付く |
+| `:::question` | 疑問 | 分からないこと、次に考えたいこと |
+| `:::reading` | 読書メモ | 本のどこを読み、何を理解したか |
+| `:::remark` / `:::example` | 注意 / 例 | 補足 |
+
+- `[...]` のラベルは省略できる。`{#id}` を付けると `/math/<slug>#id` で参照できる（`def-` / `thm-` / `q-` などの接頭辞を推奨）
+- 上の表にない名前はビルドエラーになる
+- ブロックは `src/lib/math-markdown.mjs` で HTML にし、見た目は `src/styles/math.css`（数学ノートのページでだけ読み込む）
+
+### 書くときの約束
+
+- 本の証明や本文を書き写さない。定理の主張と、自分の理解・自分で考えた証明を中心に書く
+- 章・節・定理番号・ページ番号は、本を見て確かめたものだけを書く
+- AI（Claude など）は証明を考える主体ではなく、レビューとヒントの補助に使う。
+  自分で書いていない理解や証明を、自分の成果としてノートにしない
 
 ## デプロイ
 
@@ -153,10 +239,11 @@ npm run deploy     # astro build && wrangler deploy
 
 - React などのフレームワークは、必要になるまで入れない
 - クライアント JS は 0 のまま維持する。動きは CSS アニメーションだけで付ける（CSS は `inlineStylesheets: 'always'` で HTML に埋め込む）
-- 画像・フォントを増やさない。Web フォントは読み込まない
+- 画像・フォントを増やさない。Web フォントは読み込まない（例外は数学ノートの記事ページの KaTeX フォント。ADR 0002）
 - コンポーネントを細かく割らない。デザインシステムを作らない
 - 情報構成は Header / Hero / Current Questions / Selected Work（+ Other projects）/ Experiments / Writing / About
-  （[ADR 0001](docs/adr/0001-split-roles-between-github-profile-and-site.md)）。セクションを増やすときは ADR を足す
+  （[ADR 0001](docs/adr/0001-split-roles-between-github-profile-and-site.md)）。セクションを増やすときは ADR を足す。
+  数学ノートはトップページとは別の `/math` に置く（[ADR 0002](docs/adr/0002-add-math-notes.md)）
 - ポートフォリオではなく「現在進行形の研究ノート」として書く。
   「何ができる人か」ではなく「今どんな問いを追っているか」を前に出し、役職は載せない
 - 完成していないものは完成していないと書く。実装されていない機能、未確認の数値、スター数や利用者数は書かない
@@ -165,13 +252,17 @@ npm run deploy     # astro build && wrangler deploy
 
 ```
 src/
-  data/          コンテンツ（JSON）と型
+  data/          コンテンツ（JSON）と型。math.json は /math の入口の文言と学習の目安
+  content/math/  数学ノート（Markdown）
+  content.config.ts  数学ノートの frontmatter の定義
+  lib/           math-markdown.mjs（数式とブロックの Markdown プラグイン）, math-notes.ts
   components/    LoopDiagram.astro, Motif.astro（インライン SVG）
   layouts/       Base.astro（<head> / metadata / header / footer）
-  pages/         index.astro, 404.astro
-  styles/        global.css
+  pages/         index.astro, 404.astro, math/index.astro, math/[slug].astro
+  styles/        global.css, math.css（数学ノートのページだけ）
+tests/           数学ノート用 Markdown プラグインのテスト
 public/          favicon.svg, ogp.png, robots.txt
-docs/            ADR と、プロフィール・公開情報の棚卸し
+docs/            ADR、プロフィール・公開情報の棚卸し、数学ノートの雛形
 wrangler.toml    Cloudflare Workers Static Assets の設定
 .node-version    ビルドに使う Node のバージョン（CI / Cloudflare 共通）
 ```
