@@ -13,7 +13,7 @@
     {
       "id": "set-theory",
       "title": "集合論",
-      "description": "集合の表記と包含関係、集合演算、冪集合、集合族、直積。"
+      "description": "集合の表記と包含関係、集合演算、冪集合、集合族、直積、写像。"
     },
     {
       "id": "combinatorics",
