@@ -5,6 +5,7 @@ topic: set-theory
 order: 7
 status: studying
 createdAt: 2026-11-11
+updatedAt: 2026-11-12
 related:
   - cartesian-product
   - families-of-sets
@@ -19,7 +20,7 @@ sources:
 
 :::remark[このノートの書き方]
 Munkres の Chapter 1 の Relations（関係）のうち、これまでに学んだ同値関係の内容を整理したもの。
-命題 1〜5 の証明は、手書きで取り組んだ証明の流れをそのまま残して書き直したもの。レビューの段階で補った説明には **（補足）** と付けた。
+命題 1〜5 の証明は、手書きで取り組んだ証明の流れをそのまま残して書き直したもの。命題 6 は自分で証明したあと、証明の文章を Claude が書いた。レビューの段階で補った説明には **（補足）** と付けた。
 順序関係はまだ学んでいないので、見出しだけを置いている。
 :::
 
@@ -27,7 +28,7 @@ Munkres の Chapter 1 の Relations（関係）のうち、これまでに学ん
 
 - 関係・同値関係・同値類・分割の定義：確認済み
 - 命題 1〜5：手書きで証明済み
-- 分割から作った同値類が元の分割と一致すること（2 節の最後）：まだ証明していない
+- 命題 6（分割から作った同値類が元の分割の元に一致すること）：自分で証明済み
 - 順序関係：未学習
 
 ## 1. 関係
@@ -253,18 +254,29 @@ $y \in E \cap E'$ なので $E \cap E' \ne \varnothing$。分割の条件 2 の�
 よって $x, z \in E$ で、$x \sim z$。
 :::
 
-### 未完了の証明課題
+### 分割から作った同値類
 
-:::question[分割から作った同値類は元の分割と一致するか]{#q-partition-classes}
-**未証明・今後取り組む課題。**
-
+:::proposition[6. 分割から作った同値類は元の分割の元に一致する]{#prop-partition-classes}
 $\mathcal{P}$ を $A$ の分割とし、[命題 5](#prop-partition-to-equivalence) の同値関係 $\sim$ を考える。$a \in A$ と、$a \in E$ を満たす $E \in \mathcal{P}$ について
 
 $$
-[a] = E
+[a] = E .
 $$
+:::
 
-を示す。
+自分で証明できた問題。下の証明の文章は、Claude が書いたもの。
+
+:::proof
+相互包含で示す。
+
+**$[a] \subseteq E$。** 任意の $x \in [a]$ をとると $x \sim a$。$\sim$ の定義より、ある $F \in \mathcal{P}$ について $x, a \in F$。
+すると $a \in E \cap F$ なので $E \cap F \ne \varnothing$。分割の条件 2 の対偶より $E = F$。
+よって $x \in F = E$。
+
+**$E \subseteq [a]$。** 任意の $x \in E$ をとると、$x, a \in E$ かつ $E \in \mathcal{P}$ なので、$\sim$ の定義より $x \sim a$。
+よって $x \in [a]$。
+
+以上より $[a] = E$。
 :::
 
 ## 3. 順序関係
