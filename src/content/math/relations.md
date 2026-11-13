@@ -56,7 +56,7 @@ $$
 1. **反射律**：任意の $x \in A$ について $x \sim x$。
 2. **対称律**：任意の $x, y \in A$ について $x \sim y \implies y \sim x$。
 3. **推移律**：任意の $x, y, z \in A$ について $x \sim y \land y \sim z \implies x \sim z$。
-:::
+   :::
 
 - 反射律：どの元も自分自身と関係にある。
 - 対称律：関係にあるかどうかは、2 つの元の順番によらない。
@@ -91,6 +91,7 @@ $$
 [2] &= \{2, 4, 6, \dots\}
 \end{aligned}
 $$
+
 :::
 
 :::example[mod 3]{#ex-mod-3}
@@ -109,6 +110,7 @@ $$
 [3] &= \{3, 6, 9, \dots\}
 \end{aligned}
 $$
+
 :::
 
 （補足）たとえば mod 3 では $[4] = [1]$ のように、同じ同値類を表す元はいくつもある。この理由が命題 3。
@@ -138,6 +140,7 @@ $\sim$ を $A$ 上の同値関係、$a, b \in A$ とすると
 $$
 [a] \cap [b] \ne \varnothing \implies [a] = [b] .
 $$
+
 :::
 
 :::proof
@@ -165,6 +168,7 @@ $\sim$ を $A$ 上の同値関係、$a, b \in A$ とすると
 $$
 a \sim b \iff [a] = [b] .
 $$
+
 :::
 
 :::proof
@@ -190,6 +194,7 @@ $$
 $$
 \bigcup_{E \in \mathcal{P}} E = A
 $$
+
 :::
 
 和集合は[集合族の和集合](/math/families-of-sets#def-family-union)。
@@ -262,9 +267,8 @@ $\mathcal{P}$ を $A$ の分割とし、[命題 5](#prop-partition-to-equivalenc
 $$
 [a] = E .
 $$
-:::
 
-自分で証明できた問題。下の証明の文章は、Claude が書いたもの。
+:::
 
 :::proof
 相互包含で示す。
