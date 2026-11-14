@@ -132,10 +132,10 @@ URL は分野に関係なく `/math/<slug>` のまま。ノートの分野を変
 | 値 | 表示 | 意味 |
 | --- | --- | --- |
 | `unread` | 未学習 | まだ読んでいない |
-| `studying` | 学習中 | 読みながら理解している途中 |
-| `understood` | 理解した | 内容を自分の言葉で説明できる |
+| `studying` | 学習中 | 定義や定理を学んでいる途中 |
+| `understood` | 理解した | 定義や定理の意味を説明できる。すべての定理を自力で証明したという意味ではない |
 | `proof-in-progress` | 証明を検討中 | 証明を自分で考えている。未完成の部分を含む |
-| `verified` | 証明を検証済み | 証明の各段階を確かめ終えた |
+| `verified` | 証明レビュー済み | 自分で書いた証明について、論理的な確認を終えた |
 
 `understood` と `verified` は別のもの。理解したつもりであることと、証明が厳密に成立していることを混同しない。
 ビルドやテストが通ったことは `verified` の理由にならない。
@@ -188,7 +188,7 @@ $$
 …
 :::
 
-:::proof[補足]{origin=ai note="レビューで背理法として整理"}
+:::proof{origin=ai note="レビューで背理法として整理"}
 …
 :::
 ```
@@ -202,6 +202,8 @@ $$
 | `text` | `ai` | 文章は Claude が整理 |
 | `note` | 自由な文 | 括弧で添える（レビューで直した点など） |
 
+- AI によるレビュー・文章の整理（`self-reviewed`、`text=ai`）と、AI が証明を作ったこと（`ai`）を区別する
+- 「（補足）」は教科書の範囲外の事項を示す印で、証明を誰が書いたかを示すためには使わない
 - 分からないものは書かない（「記録なし」として数える）。推測で `self` にしない
 - 未完成の証明は `:::attempt` に書く。`/math` の証明の数には入らない
 - ノートの冒頭の「学習状況」の文章は、これまでどおり残す。属性はそれを証明ごとに書き写したもの
@@ -209,9 +211,11 @@ $$
 ### 証明の依存関係
 
 証明の中に書いたリンク（`[命題 2](#prop-a)`、`[…](/math/<slug>#id)`）を、その証明が使った結果として集める
-（`src/lib/math-graph.mjs`）。ノートの末尾に「証明の依存関係」（定理ごとに、証明で使う結果と、その結果を使う証明）を、
+（`src/lib/math-graph.mjs`）。ノートの末尾に「証明の依存関係」（定理ごとに、証明で使う結果）を、
 `/math` にノート間の依存関係を出す。
 
+- 参照は「後の証明 → 前提となる定義・定理」の一方向だけを出す。前提の側のノートに、その結果を使う後続の証明は列挙しない
+  （本文にも「§13 の証明で使った」のような後続への言及は書かない）
 - 証明は直前の主張（定義・定理・補題・命題・系・例）に付く。離れた位置の証明は `:::proof{for=thm-a}` で主張の id を指定する
 - 証明の外のリンクと frontmatter の `related` は依存関係に入れない（「Related」は関連知識として別に出す）
 - 証明で使った結果は、証明の中でリンクにする。リンクのない参照は依存関係に出ない
@@ -241,6 +245,7 @@ $$
 ## デプロイ
 
 配信は Cloudflare Workers Static Assets。設定は `wrangler.toml`（Worker スクリプトなし、`dist/` をそのまま配信）。
+統合・改名したページの旧 URL は `public/_redirects` で新しい URL へ 301 リダイレクトする（例: `/math/set-operations` → `/math/sets`）。
 
 デプロイは **Cloudflare Workers Builds が GitHub リポジトリに直接接続**して行う。
 `main` に push すると Cloudflare 側がビルドしてデプロイする。GitHub Actions からは deploy しない
@@ -343,7 +348,7 @@ src/
   pages/         index.astro, 404.astro, math/index.astro, math/[slug].astro
   styles/        global.css, math.css（数学ノートのページだけ）
 tests/           数学ノート用 Markdown プラグインのテスト
-public/          favicon.svg, ogp.png, robots.txt
+public/          favicon.svg, ogp.png, robots.txt, _redirects
 docs/            ADR、プロフィール・公開情報の棚卸し、数学ノートの雛形
 wrangler.toml    Cloudflare Workers Static Assets の設定
 .node-version    ビルドに使う Node のバージョン（CI / Cloudflare 共通）

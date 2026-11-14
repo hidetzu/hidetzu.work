@@ -30,7 +30,7 @@ $P \Rightarrow Q$（$P$ ならば $Q$）が偽になるのは、$P$ が真で $Q
 $P$ が偽なら、$Q$ に関係なく $P \Rightarrow Q$ は真になる。これを**空虚な真**という。
 
 :::example[空虚な真]{#ex-vacuous}
-空集合はどの集合にも含まれる（[集合と包含関係](/math/sets#prop-empty-subset)）。
+空集合はどの集合にも含まれる（[集合の基本と演算](/math/sets#prop-empty-subset)）。
 $x \in \varnothing$ はどの $x$ についても偽なので、「$x \in \varnothing$ ならば $x \in B$」は空虚に真になる。
 :::
 
@@ -87,4 +87,4 @@ $$
 
 同値を示すには、両方向の含意を示す。$P$ は $Q$ であるための必要十分条件になる。
 
-集合の等号 $A = B$ を、$A \subseteq B$ と $B \subseteq A$ の両方を示して証明するのは、この形（[集合と包含関係](/math/sets#def-set-equality)）。
+集合の等号 $A = B$ を、$A \subseteq B$ と $B \subseteq A$ の両方を示して証明するのは、この形（[集合の基本と演算](/math/sets#def-set-equality)）。

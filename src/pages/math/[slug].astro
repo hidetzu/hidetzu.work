@@ -50,13 +50,11 @@ for (const h of headings) {
 const graph = await getMathGraph();
 const titleOf = (slug: string) => notes.find((n) => n.id === slug)?.data.title ?? slug;
 const statementTitle = (key: string) => graph.statements.get(key)?.title ?? key;
-const statementsHere = (graph.statementsByNote.get(note.id) ?? []).filter(
-  (s) => s.key && (s.uses.size > 0 || s.usedBy.size > 0),
-);
+// 参照は「後の証明 → 前提」の一方向だけを出す。この結果を使う後続の証明・ノートは列挙しない（docs/adr/0006）
+const statementsHere = (graph.statementsByNote.get(note.id) ?? []).filter((s) => s.key && s.uses.size > 0);
 const byId = (slugs: Set<string> | undefined) =>
   notes.filter((n) => slugs?.has(n.id));
 const prerequisites = byId(graph.noteUses.get(note.id));
-const dependents = byId(graph.noteUsedBy.get(note.id));
 ---
 
 <Base title={title} description={description} ogType="article">
@@ -163,7 +161,7 @@ const dependents = byId(graph.noteUsedBy.get(note.id));
         <section class="math-deps" aria-labelledby="math-deps">
           <h2 class="sub-head" id="math-deps">証明の依存関係</h2>
           <p class="math-deps-lead">
-            各証明の中で参照している定義・定理と、その結果を参照している証明の一覧。証明の外にある関連リンクは含めない。
+            各証明の中で参照している定義・定理の一覧。証明の外にある関連リンクは含めない。
           </p>
           <dl class="math-deps-list">
             {statementsHere.map((s) => (
@@ -186,21 +184,6 @@ const dependents = byId(graph.noteUsedBy.get(note.id));
                     </ul>
                   </dd>
                 )}
-                {s.usedBy.size > 0 && (
-                  <dd>
-                    <span class="math-deps-kind">この結果を使う証明</span>
-                    <ul>
-                      {[...s.usedBy].map((key) => (
-                        <li>
-                          <a href={statementHref(key, note.id)} set:html={richText(statementTitle(key))} />
-                          {!key.startsWith(`${note.id}#`) && (
-                            <span class="math-deps-note">（{titleOf(key.split('#')[0])}）</span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </dd>
-                )}
               </div>
             ))}
           </dl>
@@ -209,38 +192,22 @@ const dependents = byId(graph.noteUsedBy.get(note.id));
     }
 
     {
-      (prerequisites.length > 0 || dependents.length > 0) && (
+      prerequisites.length > 0 && (
         <nav class="math-note-links" aria-labelledby="math-note-links">
           <h2 class="sub-head" id="math-note-links">Dependencies</h2>
           <dl>
-            {prerequisites.length > 0 && (
-              <div>
-                <dt>証明で使うノート</dt>
-                <dd>
-                  <ul>
-                    {prerequisites.map((n) => (
-                      <li>
-                        <a href={`/math/${n.id}`}>{n.data.title}</a>
-                      </li>
-                    ))}
-                  </ul>
-                </dd>
-              </div>
-            )}
-            {dependents.length > 0 && (
-              <div>
-                <dt>このノートの結果を使うノート</dt>
-                <dd>
-                  <ul>
-                    {dependents.map((n) => (
-                      <li>
-                        <a href={`/math/${n.id}`}>{n.data.title}</a>
-                      </li>
-                    ))}
-                  </ul>
-                </dd>
-              </div>
-            )}
+            <div>
+              <dt>証明で使うノート</dt>
+              <dd>
+                <ul>
+                  {prerequisites.map((n) => (
+                    <li>
+                      <a href={`/math/${n.id}`}>{n.data.title}</a>
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
           </dl>
         </nav>
       )

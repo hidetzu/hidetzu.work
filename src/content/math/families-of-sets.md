@@ -204,7 +204,7 @@ $$
 2 つ目は $\neg \forall \iff \exists \neg$ を使って同じように示せる。
 :::
 
-2 つの集合の場合（[集合演算とド・モルガンの法則](/math/set-operations#thm-de-morgan-sets)）は $J = \{1, 2\}$ の場合にあたる。
+2 つの集合の場合（[集合の基本と演算](/math/sets#thm-de-morgan-sets)）は $J = \{1, 2\}$ の場合にあたる。
 [§12 の有限補集合位相の証明](/math/topological-spaces#prop-finite-complement)で、和集合の補集合を補集合の共通部分に直したのはこの法則。
 
 ## 6. 位相の定義へ

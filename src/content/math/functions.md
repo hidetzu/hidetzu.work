@@ -7,7 +7,7 @@ status: understood
 createdAt: 2026-11-10
 related:
   - cartesian-product
-  - set-operations
+  - sets
   - families-of-sets
 tags:
   - set-theory
@@ -31,7 +31,7 @@ Munkres の Chapter 1 §2「Functions」で学んだ範囲（写像の定義、L
 - 写像の定義、単射・全射・全単射、像と逆像：学習済み
 - Lemma 2.1、演習 1〜5（今回取り組んだ範囲）：学習済み
 
-以下、$f \colon A \to B$ を写像とする。差集合は [集合演算のノート](/math/set-operations#def-set-operations) と同じく $\setminus$ で書く。
+以下、$f \colon A \to B$ を写像とする。差集合は [集合の基本と演算のノート](/math/sets#def-set-operations) と同じく $\setminus$ で書く。
 
 ## 1. 写像の定義
 
