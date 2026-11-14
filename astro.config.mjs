@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import { satteri } from '@astrojs/markdown-satteri';
-import { katexMath, mathBlocks } from './src/lib/math-markdown.mjs';
+import { cjkLineBreaks, katexMath, mathBlocks } from './src/lib/math-markdown.mjs';
 
 export default defineConfig({
   site: 'https://hidetzu.work',
@@ -18,7 +18,7 @@ export default defineConfig({
     processor: satteri({
       features: { math: true, directive: true },
       // katexMath を先に（ラベル中の数式を変換してから mathBlocks がブロックを組む）
-      mdastPlugins: [katexMath, mathBlocks],
+      mdastPlugins: [katexMath, cjkLineBreaks, mathBlocks],
     }),
   },
 });

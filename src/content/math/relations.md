@@ -16,6 +16,9 @@ tags:
 sources:
   - title: "James R. Munkres, Topology, 2nd ed."
     location: "Chapter 1, §3 Relations"
+textbook:
+  chapter: 1
+  section: 3
 ---
 
 :::remark[このノートの書き方]
@@ -149,7 +152,7 @@ $\sim$ を $A$ 上の同値関係とし、$a, b \in A$ とする。$[a] \cap [b]
 対偶をとれば、$[a] \ne [b]$ ならば $[a] \cap [b] = \varnothing$ である。
 :::
 
-:::proof
+:::proof{origin=self}
 $[a] \cap [b]$ の元 $y$ を 1 つとる。同値類の定義より、$y \sim a$ かつ $y \sim b$ である。
 
 まず $[a] \subseteq [b]$ を示す。$x \in [a]$ とすると、$x \sim a$ である。
@@ -171,7 +174,7 @@ $$
 が成り立つ。
 :::
 
-:::proof
+:::proof{origin=self}
 $(\Rightarrow)$ $a \sim b$ と仮定する。$x \in [a]$ ならば $x \sim a$ であり、$a \sim b$ と推移律より $x \sim b$、すなわち $x \in [b]$ となる。よって $[a] \subseteq [b]$ である。
 また、対称律より $b \sim a$ である。$x \in [b]$ ならば $x \sim b$ であり、推移律より $x \sim a$、すなわち $x \in [a]$ となる。よって $[b] \subseteq [a]$ である。
 したがって $[a] = [b]$ が成り立つ。
@@ -193,7 +196,7 @@ $$
 は $A$ の分割である。
 :::
 
-:::proof
+:::proof{origin=self}
 分割の 3 条件を順に確かめる。
 
 **(1)** 任意の $[a] \in \mathcal{P}$ に対して、反射律より $a \sim a$ であるから $a \in [a]$ となる。よって $[a]$ は空でない。
@@ -220,7 +223,7 @@ $$
 と定める。このとき、$\sim$ は $A$ 上の同値関係である。
 :::
 
-:::proof
+:::proof{origin=self}
 **反射律**：$x \in A$ とする。分割の条件 3 より $\bigcup_{E \in \mathcal{P}} E = A$ であるから、$x \in E$ を満たす $E \in \mathcal{P}$ が存在する。$x, x \in E$ であるから、$x \sim x$ である。
 
 **対称律**：$x \sim y$ ならば、ある $E \in \mathcal{P}$ に対して $x, y \in E$ である。これは $y, x \in E$ と同じことであるから、$y \sim x$ である。
@@ -236,7 +239,7 @@ $y \in E \cap E'$ より $E \cap E' \ne \varnothing$ であるから、分割の
 $\mathcal{P}$ を $A$ の分割とし、$\sim$ を[命題 3](#prop-partition-to-equivalence) の同値関係とする。$a \in A$ とし、$E \in \mathcal{P}$ を $a \in E$ を満たす元とする。このとき $[a] = E$ である。
 :::
 
-:::proof
+:::proof{origin=self text=ai}
 両方向の包含を示す。
 
 まず $[a] \subseteq E$ を示す。$x \in [a]$ とすると $x \sim a$ であるから、$\sim$ の定義より、$x, a \in F$ を満たす $F \in \mathcal{P}$ が存在する。
@@ -255,7 +258,7 @@ $\mathcal{P}$ を $A$ の分割とし、$\sim$ を[命題 3](#prop-partition-to-
 $C_1, C_2$ を $A$ 上の同値関係とする。$F(C_1) = F(C_2)$ ならば、$C_1 = C_2$ である。
 :::
 
-:::proof
+:::proof{origin=self text=ai}
 $\mathcal{P} = F(C_1) = F(C_2)$ とおく。[命題 2](#prop-equivalence-to-partition) より、$\mathcal{P}$ は $A$ の分割である。
 
 $x \in A$ を任意に固定し、$C_1, C_2$ による $x$ の同値類を $E_1 = [x]_{C_1}$、$E_2 = [x]_{C_2}$ とおく。
@@ -286,7 +289,7 @@ $C_1, C_2$ はともに $A \times A$ の部分集合であるから、$C_1 = C_2
 
 ### 中心定理の証明
 
-:::proof[中心定理の証明]{#proof-equivalence-partition}
+:::proof[中心定理の証明]{#proof-equivalence-partition for=thm-equivalence-partition origin=ai note="自分で証明した命題 2〜5 をつなぐまとめ"}
 **$F$ が写像として定まること**：$R \in \operatorname{Eq}(A)$ ならば、[命題 2](#prop-equivalence-to-partition) より $F(R) = \{\, [x]_R \mid x \in A \,\}$ は $A$ の分割である。すなわち $F(R) \in \operatorname{Part}(A)$ である。
 
 **$F$ が全射であること**：$\mathcal{P} \in \operatorname{Part}(A)$ を任意にとり、[命題 3](#prop-partition-to-equivalence) の同値関係を $R_{\mathcal{P}} \in \operatorname{Eq}(A)$ とする。$F(R_{\mathcal{P}}) = \mathcal{P}$ を、両方向の包含によって示す。
@@ -358,7 +361,7 @@ $$
 [mod 3 の例](#ex-mod-3)において、$[1] \cap [2] = \varnothing$ である。
 :::
 
-:::proof
+:::proof{origin=self}
 背理法で示す。$[1] \cap [2] \ne \varnothing$ と仮定し、その元 $x$ をとる。このとき $x \sim 1$ かつ $x \sim 2$ である。
 対称律より $1 \sim x$ であり、これと $x \sim 2$ に推移律を用いると $1 \sim 2$ を得る。
 ところが $1 \bmod 3 = 1$、$2 \bmod 3 = 2$ であり、$1 \ne 2$ であるから $1 \not\sim 2$ である。これは矛盾である。
@@ -385,7 +388,7 @@ $$
 とくに、$A^{*}$ と $B$ のあいだには全単射が存在する。
 :::
 
-:::proof
+:::proof{origin=self text=ai}
 **(1)** $a, b, c \in A$ とする。$f(a) = f(a)$ であるから、$a \sim a$ である。
 $a \sim b$ ならば $f(a) = f(b)$、すなわち $f(b) = f(a)$ であるから、$b \sim a$ である。
 $a \sim b$ かつ $b \sim c$ ならば $f(a) = f(b) = f(c)$ であるから、$a \sim c$ である。
@@ -478,7 +481,7 @@ $$
 で定めると、$\prec$ は順序関係である。
 :::
 
-:::proof
+:::proof{origin=self text=ai}
 順序関係の 3 条件を確かめる。
 
 **比較可能性**：$x \ne y$ とする。$x^2 \ne y^2$ ならば、$x^2 < y^2$ または $y^2 < x^2$ であり、それぞれ $x \prec y$、$y \prec x$ となる。
@@ -591,7 +594,7 @@ $$
 とする。$B$ は空でなく、$A$ において上に有界であるが、$A$ の中に最小上界をもたない。したがって、$A$ は最小上界性質をもたない。
 :::
 
-:::proof
+:::proof{origin=self text=ai}
 $B = \{-\tfrac{1}{2}, -\tfrac{1}{4}, -\tfrac{1}{6}, \dots\}$ は空でなく、$B \subseteq (-1, 0) \subseteq A$ である。
 
 まず、$A$ における $B$ の上界全体が、ちょうど $(0, 1)$ であることを示す。
@@ -611,7 +614,7 @@ $y \in (0, 1)$ ならば、$B$ の元はすべて負であるから $y$ より�
 順序集合 $A$ が最小上界性質をもつならば、$A$ は最大下界性質ももつ。
 :::
 
-:::proof
+:::proof{origin=self text=ai note="解答を一度確認したあと、見ずに最初から証明し直した"}
 $B$ を、$A$ の空でない部分集合で下に有界なものとする。$B$ が $A$ の中に最大下界をもつことを示せばよい。
 
 $B$ の下界全体の集合を

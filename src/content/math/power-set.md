@@ -13,6 +13,8 @@ tags:
 sources:
   - title: "James R. Munkres, Topology, 2nd ed."
     location: "Chapter 1"
+textbook:
+  chapter: 1
 ---
 
 :::remark[このノートの書き方]
@@ -58,7 +60,7 @@ $|A| = n$ ならば $|\mathcal{P}(A)| = 2^n$。
 直感的には、部分集合を 1 つ作ることは、$A$ の $n$ 個の要素それぞれについて「入れる」か「入れない」かを選ぶことにあたる。
 選び方は $2 \times 2 \times \cdots \times 2 = 2^n$ 通りある。
 
-:::proof[補足]
+:::proof[補足]{origin=ai}
 $n$ についての帰納法で示す。
 
 $n = 0$ のとき $A = \varnothing$ で、$\mathcal{P}(\varnothing) = \{\varnothing\}$ なので $|\mathcal{P}(A)| = 1 = 2^0$。

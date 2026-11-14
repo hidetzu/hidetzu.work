@@ -4,6 +4,44 @@
     "完成した解説ではありません。各ノートの状態は自己申告で、「理解した」と「証明を検証済み」は区別しています。"
   ],
   "textbook": "James R. Munkres, Topology, 2nd ed.",
+  "chapters": [
+    {
+      "number": 1,
+      "title": "Set Theory and Logic",
+      "sections": [
+        {
+          "number": 1,
+          "title": "Fundamental Concepts"
+        },
+        {
+          "number": 2,
+          "title": "Functions"
+        },
+        {
+          "number": 3,
+          "title": "Relations"
+        },
+        {
+          "number": 4,
+          "title": "The Integers and the Real Numbers"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "title": "Topological Spaces and Continuous Functions",
+      "sections": [
+        {
+          "number": 12,
+          "title": "Topological Spaces"
+        },
+        {
+          "number": 13,
+          "title": "Basis for a Topology"
+        }
+      ]
+    }
+  ],
   "fields": [
     {
       "id": "logic",

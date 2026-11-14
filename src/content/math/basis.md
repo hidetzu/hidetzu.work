@@ -14,6 +14,9 @@ tags:
 sources:
   - title: "James R. Munkres, Topology, 2nd ed."
     location: "Chapter 2, §13 Basis for a Topology"
+textbook:
+  chapter: 2
+  section: 13
 ---
 
 :::remark[このノートの書き方]
@@ -71,7 +74,7 @@ $$
 添字集合 $\Lambda$ は任意で、空でもよい（空な和集合は $\varnothing$）。
 :::
 
-:::proof[補足]
+:::proof[補足]{origin=ai}
 $\subseteq$：$U \in \mathcal{T}_{\mathcal{B}}$ とする。各 $x \in U$ に対して $x \in B_x \subseteq U$ を満たす $B_x \in \mathcal{B}$ を 1 つ選ぶと、$U = \bigcup_{x \in U} B_x$。
 実際、各 $B_x$ は $U$ に含まれ、$U$ の各点 $x$ は $B_x$ に属する。$U = \varnothing$ のときは空な和集合になる。
 
@@ -86,7 +89,7 @@ $\supseteq$：基底要素は $\mathcal{T}_{\mathcal{B}}$ に属し（[6 節の�
 $\mathcal{B}$ が $X$ 上の位相の基底ならば、$\mathcal{T}_{\mathcal{B}}$ は $X$ 上の位相である。
 :::
 
-:::proof
+:::proof{origin=self-reviewed}
 位相の 3 条件を確かめる。
 
 **条件 1.** $\varnothing$ については、$x \in \varnothing$ となる $x$ がないので、条件は空虚に成り立つ。
@@ -157,7 +160,7 @@ $$
 $$
 :::
 
-:::proof
+:::proof{origin=self-reviewed}
 $B \in \mathcal{B}$ と $x \in B$ を任意に取る。基底要素として $B$ 自身を取れば $x \in B \subseteq B$。よって $B \in \mathcal{T}_{\mathcal{B}}$。
 :::
 
@@ -169,7 +172,7 @@ $$
 $$
 :::
 
-:::proof
+:::proof{origin=self-reviewed}
 **基底であること。** 条件 1 は、$X \in \mathcal{T}$ なので、任意の $x \in X$ について $B = X$ を取ればよい。
 条件 2 は、$U, V \in \mathcal{T}$ と $x \in U \cap V$ に対して、$U \cap V \in \mathcal{T}$ なので $B_3 = U \cap V$ を取ればよい。
 
@@ -204,7 +207,7 @@ $$
 $\mathcal{B}_{\mathbb{Q}}$ は $\mathbb{R}$ 上の位相の基底である。
 :::
 
-:::proof[補足]
+:::proof[補足]{origin=ai}
 **条件 1.** $x \in \mathbb{R}$ とする。[有理数の稠密性](/math/rational-density#thm-rational-density)より、$x - 1 < m < x$ と $x < n < x + 1$ を満たす $m, n \in \mathbb{Q}$ がある。$x \in (m, n) \in \mathcal{B}_{\mathbb{Q}}$。
 
 **条件 2.** $(m_1, n_1), (m_2, n_2) \in \mathcal{B}_{\mathbb{Q}}$ と $x \in (m_1, n_1) \cap (m_2, n_2)$ を取る。
@@ -225,7 +228,7 @@ $$
 $$
 :::
 
-:::proof
+:::proof{origin=self-reviewed}
 相互包含を示す。
 
 **第 1 段階：$\mathcal{T}_{\mathcal{B}_{\mathbb{Q}}} \subseteq \mathcal{T}$。**

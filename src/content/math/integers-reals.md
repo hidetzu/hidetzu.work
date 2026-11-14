@@ -15,6 +15,9 @@ tags:
 sources:
   - title: "James R. Munkres, Topology, 2nd ed."
     location: "Chapter 1, §4 The Integers and the Real Numbers"
+textbook:
+  chapter: 1
+  section: 4
 ---
 
 :::remark[このノートの書き方]
@@ -131,7 +134,7 @@ $$
 $\mathcal{B}$ を帰納的集合からなる空でない集まりとする。このとき、共通部分 $\bigcap_{A \in \mathcal{B}} A$ は帰納的集合である。
 :::
 
-:::proof
+:::proof{origin=self text=ai}
 $I = \bigcap_{A \in \mathcal{B}} A$ とおき、帰納的集合の 2 条件を確かめる。
 
 **条件 1**：各 $A \in \mathcal{B}$ は帰納的集合であるから、$1 \in A$ である。$1$ はすべての $A \in \mathcal{B}$ に属するので、$1 \in I$ である。
@@ -150,7 +153,7 @@ $I = \bigcap_{A \in \mathcal{B}} A$ とおき、帰納的集合の 2 条件を�
 
 :::
 
-:::proof
+:::proof{origin=self text=ai}
 **(1)** $\mathbb{Z}_{+}$ は帰納的集合全体の集まり $\mathcal{A}$ の共通部分であり、$\mathcal{A}$ は空でない。よって[演習 3(a)](#prop-intersection-inductive) より、$\mathbb{Z}_{+}$ は帰納的集合である。
 
 **(2)** $A \subseteq \mathbb{Z}_{+}$ を帰納的集合とする。$A \in \mathcal{A}$ であり、$\mathbb{Z}_{+}$ は $\mathcal{A}$ のすべての元の共通部分であるから、$\mathbb{Z}_{+} \subseteq A$ である。
@@ -169,11 +172,11 @@ $$
 
 と書く。
 
-:::theorem[定理 4.1（整列性）]{#thm-well-ordering}
+:::theorem[4.1：整列性]{#thm-well-ordering}
 $\mathbb{Z}_{+}$ の空でない部分集合は、すべて最小元をもつ。
 :::
 
-:::proof
+:::proof{origin=textbook text=ai}
 まず、有限集合の場合を数学的帰納法で示し、次に一般の場合に広げる。
 
 **ステップ 1**：任意の $n \in \mathbb{Z}_{+}$ に対して、$\{1, \dots, n\}$ の空でない部分集合はすべて最小元をもつことを示す。
@@ -205,7 +208,7 @@ $$
 
 とおく。たとえば $S_1 = \varnothing$ である。
 
-:::theorem[定理 4.2（強い数学的帰納法）]{#thm-strong-induction}
+:::theorem[4.2：強い数学的帰納法]{#thm-strong-induction}
 $A \subseteq \mathbb{Z}_{+}$ が、任意の $n \in \mathbb{Z}_{+}$ に対して
 
 $$
@@ -215,7 +218,7 @@ $$
 を満たすならば、$A = \mathbb{Z}_{+}$ である。
 :::
 
-:::proof
+:::proof{origin=textbook text=ai}
 背理法で示す。$A \ne \mathbb{Z}_{+}$ と仮定すると、$\mathbb{Z}_{+} \setminus A$ は $\mathbb{Z}_{+}$ の空でない部分集合である。
 [整列性](#thm-well-ordering)より、$\mathbb{Z}_{+} \setminus A$ は最小元 $n$ をもつ。
 
@@ -234,7 +237,7 @@ $k \in S_n$ とすると $k < n$ である。$n$ は $\mathbb{Z}_{+} \setminus A
 任意の $n \in \mathbb{Z}_{+}$ に対して、$\{1, \dots, n\}$ の空でない部分集合はすべて最大元をもつ。
 :::
 
-:::proof
+:::proof{origin=self text=ai}
 この主張が成り立つ $n \in \mathbb{Z}_{+}$ 全体を $A$ とし、数学的帰納法で示す。
 
 **基底**：$\{1\}$ の空でない部分集合は $\{1\}$ だけであり、その最大元は $1$ である。よって $1 \in A$ である。
@@ -257,8 +260,8 @@ $k \in S_n$ とすると $k < n$ である。$n$ は $\mathbb{Z}_{+} \setminus A
 $\mathbb{Z}_{+}$ は最大元をもたない。とくに、演習 4(a) の結論は、空でない部分集合 $\mathbb{Z}_{+}$ 自身については成り立たない。
 :::
 
-:::proof
-$\mathbb{Z}_{+}$ が最大元 $n$ をもつと仮定する。$\mathbb{Z}_{+}$ は帰納的集合であるから、$n + 1 \in \mathbb{Z}_{+}$ である。
+:::proof{origin=self text=ai}
+$\mathbb{Z}_{+}$ が最大元 $n$ をもつと仮定する。$\mathbb{Z}_{+}$ は[帰納的集合である](#thm-induction)から、$n + 1 \in \mathbb{Z}_{+}$ である。
 一方 $n + 1 > n$ であるから、$n$ が最大元であることに矛盾する。
 
 よって $\mathbb{Z}_{+}$ は最大元をもたない。
@@ -270,13 +273,13 @@ $\mathbb{Z}_{+}$ が最大元 $n$ をもつと仮定する。$\mathbb{Z}_{+}$ �
 $\mathbb{Z}_{+}$ は、$\mathbb{R}$ において上に有界でない。
 :::
 
-:::proof
-背理法で示す。$\mathbb{Z}_{+}$ が上に有界であると仮定する。$\mathbb{Z}_{+}$ は空でないから、最小上界性質 (7) より $b = \sup \mathbb{Z}_{+}$ が存在する。
+:::proof{origin=textbook text=ai}
+背理法で示す。$\mathbb{Z}_{+}$ が上に有界であると仮定する。$\mathbb{Z}_{+}$ は空でないから、[最小上界性質 (7)](#def-real-axioms) より $b = \sup \mathbb{Z}_{+}$ が存在する。
 
 $b - 1 < b$ であり、$b$ は上界のうち最小のものであるから、$b - 1$ は $\mathbb{Z}_{+}$ の上界ではない。
 よって、$n > b - 1$ を満たす $n \in \mathbb{Z}_{+}$ が存在する。
 
-両辺に $1$ を加えると $n + 1 > b$ となる。ところが $\mathbb{Z}_{+}$ は帰納的集合であるから $n + 1 \in \mathbb{Z}_{+}$ であり、これは $b$ が $\mathbb{Z}_{+}$ の上界であることに矛盾する。
+両辺に $1$ を加えると $n + 1 > b$ となる。ところが $\mathbb{Z}_{+}$ は[帰納的集合である](#thm-induction)から $n + 1 \in \mathbb{Z}_{+}$ であり、これは $b$ が $\mathbb{Z}_{+}$ の上界であることに矛盾する。
 
 よって $\mathbb{Z}_{+}$ は上に有界でない。
 :::

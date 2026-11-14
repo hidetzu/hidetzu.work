@@ -14,6 +14,8 @@ tags:
 sources:
   - title: "James R. Munkres, Topology, 2nd ed."
     location: "Chapter 1"
+textbook:
+  chapter: 1
 ---
 
 :::remark[このノートの書き方]
