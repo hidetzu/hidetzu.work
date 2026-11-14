@@ -8,7 +8,7 @@ createdAt: 2026-11-08
 updatedAt: 2026-11-09
 related:
   - implication
-  - set-operations
+  - sets
 tags:
   - logic
   - munkres
@@ -23,7 +23,7 @@ textbook:
 本文で読んで学んだのは、日常英語の or と数学の or の違い（3 節）。
 ほかの節は、位相空間論の定義や証明を読み書きするときに参照するために、論理学の基本を補足として整理したもの。見出しに **（補足）** と付けた。
 
-含意・対偶・必要条件と十分条件は [含意と対偶](/math/implication)、集合演算との対応は [集合演算とド・モルガンの法則](/math/set-operations) に分けた。
+含意・対偶・必要条件と十分条件は [含意と対偶](/math/implication)、集合演算との対応は [集合の基本と演算](/math/sets#def-set-operations) に分けた。
 :::
 
 ## 1. 命題（補足）
@@ -87,7 +87,7 @@ $$
 
 と書ける。
 
-集合では、この違いがそのまま和集合と対称差の違いになる（[集合演算とド・モルガンの法則](/math/set-operations#ex-or-xor)）。
+集合では、この違いがそのまま和集合と対称差の違いになる（[集合の基本と演算](/math/sets#ex-or-xor)）。
 
 ## 4. ド・モルガンの法則と量化記号（補足）
 
@@ -120,7 +120,7 @@ $$
 
 「すべての $x$ で成り立つ」を否定するには、成り立たない $x$ を 1 つ挙げればよい。
 [集合族の共通部分が空になる例](/math/families-of-sets#ex-shrinking-intervals)では、この形で矛盾を導いている。
-集合の補集合についてのド・モルガンの法則（[2 つの集合](/math/set-operations#thm-de-morgan-sets)、[集合族](/math/families-of-sets#thm-de-morgan-families)）は、この 2 組の法則を所属条件に当てはめたもの。
+集合の補集合についてのド・モルガンの法則（[2 つの集合](/math/sets#thm-de-morgan-sets)、[集合族](/math/families-of-sets#thm-de-morgan-families)）は、この 2 組の法則を所属条件に当てはめたもの。
 
 ## 5. 確認問題
 

@@ -45,7 +45,7 @@ $$
 $$
 :::
 
-- 空集合はどの集合にも含まれる（[集合と包含関係](/math/sets#prop-empty-subset)）ので、$\varnothing \in \mathcal{P}(A)$ がいつも成り立つ。
+- 空集合はどの集合にも含まれる（[集合の基本と演算](/math/sets#prop-empty-subset)）ので、$\varnothing \in \mathcal{P}(A)$ がいつも成り立つ。
 - $A \subseteq A$ なので、$A \in \mathcal{P}(A)$ もいつも成り立つ。
 - $\mathcal{P}(\varnothing) = \{\varnothing\}$。空集合の部分集合は $\varnothing$ だけなので、冪集合は要素を 1 つ持つ。$\mathcal{P}(\varnothing)$ 自体は空集合ではない。
 

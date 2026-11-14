@@ -387,7 +387,7 @@ export const symbolSections: SymbolSection[] = [
   {
     id: 'sets',
     title: '集合論',
-    lead: '詳しくは[集合と包含関係](/math/sets)、[集合演算](/math/set-operations)、[集合族](/math/families-of-sets)。',
+    lead: '詳しくは[集合の基本と演算](/math/sets)、[集合族](/math/families-of-sets)。',
     entries: [
       {
         tex: '\\in',

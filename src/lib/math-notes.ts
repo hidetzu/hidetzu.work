@@ -13,15 +13,15 @@ export const mathStatusLabel: Record<MathStatus, string> = {
   studying: '学習中',
   understood: '理解した',
   'proof-in-progress': '証明を検討中',
-  verified: '証明を検証済み',
+  verified: '証明レビュー済み',
 };
 
 export const mathStatusNote: Record<MathStatus, string> = {
   unread: 'まだ読んでいない',
-  studying: '読みながら理解している途中',
-  understood: '内容を自分の言葉で説明できる（証明の検証とは別）',
+  studying: '定義や定理を学んでいる途中',
+  understood: '定義や定理の意味を説明できる（すべての定理を自力で証明したという意味ではない）',
   'proof-in-progress': '証明を自分で考えている。未完成の部分を含む',
-  verified: '証明の各段階を確かめ終えた',
+  verified: '自分で書いた証明について、論理的な確認を終えた',
 };
 
 // draft: true のノートは dev でだけ出す
