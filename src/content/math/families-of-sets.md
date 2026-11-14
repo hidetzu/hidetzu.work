@@ -99,7 +99,7 @@ $$
 $$
 :::
 
-和集合と共通部分の違いは、量化記号の違い（[命題論理の基礎](/math/propositional-logic#thm-quantifier-negation)）になっている。
+和集合と共通部分の違いは、量化記号の違い（[論理の基礎](/math/propositional-logic#thm-quantifier-negation)）になっている。
 
 - 和集合：**少なくとも 1 つの** $A_\alpha$ に属する。存在記号 $\exists$
 - 共通部分：**すべての** $A_\alpha$ に属する。全称記号 $\forall$

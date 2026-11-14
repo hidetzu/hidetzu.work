@@ -8,7 +8,6 @@ createdAt: 2026-11-09
 updatedAt: 2026-11-14
 related:
   - propositional-logic
-  - implication
 tags:
   - set-theory
   - munkres
@@ -49,7 +48,7 @@ $$
 
 このノートでは $\subseteq$ を使う。本によっては同じ意味で $\subset$ と書く。
 
-$A \subseteq B$ を示すには、任意の $x$ をとり、$x \in A$ を仮定して $x \in B$ を導く。定義が「ならば」の形であるから、示し方は[含意](/math/implication)の示し方と同じである。
+$A \subseteq B$ を示すには、任意の $x$ をとり、$x \in A$ を仮定して $x \in B$ を導く。定義が「ならば」の形であるから、示し方は[含意](/math/propositional-logic#def-implication)の示し方と同じである。
 
 ### 所属関係と包含関係の違い
 
@@ -94,14 +93,14 @@ $A = B$ は、$A \subseteq B$ と $B \subseteq A$ の両方を示して証明す
 
 :::proof{origin=self}
 $\varnothing \subseteq B$ は、[部分集合の定義](#def-subset)より「任意の $x$ について、$x \in \varnothing$ ならば $x \in B$」である。
-$x \in \varnothing$ はどの $x$ についても偽であるから、この含意は空虚に真である（[空虚な真](/math/implication#ex-vacuous)）。
+$x \in \varnothing$ はどの $x$ についても偽であるから、この含意は空虚に真である（[空虚な真](/math/propositional-logic#ex-vacuous)）。
 :::
 
 $\varnothing$ と $\{\varnothing\}$ は異なる。$\varnothing$ は要素をもたないが、$\{\varnothing\}$ は $\varnothing$ という要素を 1 つもつ。
 
 ## 5. 和集合・共通部分・差集合
 
-集合の演算は、「$x$ が属する」という命題の論理演算（[命題論理の基礎](/math/propositional-logic)）で定義される。
+集合の演算は、「$x$ が属する」という命題の論理演算（[論理の基礎](/math/propositional-logic)）で定義される。
 
 :::definition[和集合・共通部分・差集合]{#def-set-operations}
 $$
