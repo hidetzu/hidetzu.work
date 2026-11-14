@@ -1,0 +1,393 @@
+---
+// 数学の記号・文字リファレンス。データは src/data/math-notation.ts にある。
+// クライアント JS は使わない（README「実装の方針」）。探すのはブラウザのページ内検索に任せる
+import 'katex/dist/katex.min.css';
+import Base from '../../layouts/Base.astro';
+import '../../styles/math.css';
+import {
+  glossary,
+  greekLetters,
+  hebrewLetters,
+  latinLetters,
+  readings,
+  references,
+  symbolSections,
+  typefaces,
+} from '../../data/math-notation';
+import { richText, tex } from '../../lib/tex';
+
+const title = '数学の記号と文字';
+const description =
+  '英語の数学書を読むための記号・文字の辞書。ギリシャ文字、書体、集合論・位相空間論の記号、読み方、数学英語の用語集。';
+
+const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const glyph = (command: string, letter: string) => tex(command ? `${command}{${letter}}` : letter);
+---
+
+<Base title={title} description={description}>
+  <main id="main" class="math-note math-ref">
+    <p class="math-back"><a href="/math">← Math Notes</a></p>
+    <header class="math-head">
+      <span class="topic">Reference</span>
+      <h1>{title}</h1>
+      <p class="math-description">{description}</p>
+    </header>
+
+    <nav class="math-toc" aria-label="目次">
+      <ol>
+        <li>
+          <a href="#letters">文字</a>
+          <ul>
+            <li><a href="#latin">ラテン文字</a></li>
+            <li><a href="#greek">ギリシャ文字</a></li>
+            <li><a href="#typefaces">書体の比較</a></li>
+            <li><a href="#fraktur">ドイツ文字</a></li>
+            <li><a href="#hebrew">ヘブライ文字</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#symbols">記号</a>
+          <ul>
+            {
+              symbolSections.map((s) => (
+                <li>
+                  <a href={`#${s.id}`}>{s.title}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </li>
+        <li><a href="#readings">読み方</a></li>
+        <li><a href="#glossary">数学英語の用語集</a></li>
+        <li><a href="#references">参考資料</a></li>
+      </ol>
+    </nav>
+
+    <article class="prose">
+      <div class="math-block math-remark">
+        <p class="math-block-title"><strong>このページの使い方</strong></p>
+        <ul>
+          <li>
+            記号・日本語名・英語名・LaTeX コマンドは、ブラウザのページ内検索（<kbd>Ctrl</kbd>+<kbd>F</kbd> /
+            <kbd>⌘</kbd>+<kbd>F</kbd>、スマートフォンでは「ページ内を検索」）で探せる。
+          </li>
+          <li>LaTeX の欄のコマンドは、1 回クリック（タップ）すると全体が選択されるので、そのままコピーできる。</li>
+          <li>
+            意味の欄は一般的な使い方。本によって違う記号は「注」に書いた。Munkres 固有の書き方は、確認できたものだけを載せ、確認に使った資料を末尾の参考資料に挙げた。
+          </li>
+          <li>まだ学んでいない分野（順序関係、閉包・連続写像など）は、記号と一般的な意味だけを載せている。</li>
+        </ul>
+      </div>
+
+      <h2 id="letters">1. 文字</h2>
+
+      <h3 id="latin">ラテン文字</h3>
+      <p>
+        数学での使い方は慣習で、決まりではない。よく見かける例を挙げる。読みは英語での文字の呼び方。
+      </p>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th scope="col">文字</th>
+            <th scope="col">英語の読み</th>
+            <th scope="col">小文字の例</th>
+            <th scope="col">大文字の例</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            latinLetters.map((l) => (
+              <tr>
+                <td class="ref-symbol" data-label="文字">
+                  <Fragment set:html={tex(`${l.letter.toUpperCase()},\\ ${l.letter}`)} />
+                </td>
+                <td data-label="英語の読み">{l.reading}</td>
+                <td data-label="小文字の例" set:html={richText(l.lower)} />
+                <td data-label="大文字の例" set:html={richText(l.upper)} />
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+
+      <h3 id="greek">ギリシャ文字</h3>
+      <p>
+        24 文字すべて。大文字の多くはラテン文字と同じ形で、LaTeX にもそのためのコマンドがない（たとえば
+        <code>\Alpha</code> はなく、<code>A</code> と書く）。異体字は、同じ文字の別の字形。
+      </p>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th scope="col">大文字</th>
+            <th scope="col">小文字</th>
+            <th scope="col">異体字</th>
+            <th scope="col">日本語名</th>
+            <th scope="col">英語名</th>
+            <th scope="col">主な使い方</th>
+            <th scope="col">LaTeX</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            greekLetters.map((g) => (
+              <tr>
+                <td class="ref-symbol" data-label="大文字" set:html={tex(g.upper)} />
+                <td class="ref-symbol" data-label="小文字" set:html={tex(g.lower)} />
+                <td class="ref-symbol" data-label="異体字" set:html={g.variant ? tex(g.variant) : '—'} />
+                <td data-label="日本語名">{g.ja}</td>
+                <td data-label="英語名" lang="en">{g.en}</td>
+                <td data-label="主な使い方" set:html={richText(g.uses)} />
+                <td data-label="LaTeX" class="ref-latex">
+                  {g.latex.map((c) => <code>{c}</code>)}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+
+      <div class="math-block math-remark">
+        <p class="math-block-title"><strong>注意（異体字と表示の違い）</strong></p>
+        <ul>
+          <li set:html={richText('LaTeX の `\\epsilon` は $\\epsilon$（三日月形）、`\\varepsilon` は $\\varepsilon$ の形になる。数学ではどちらも同じ文字として使い、$\\varepsilon$ を好む本が多い。')} />
+          <li set:html={richText('同じく `\\phi` は $\\phi$（縦棒が貫く形）、`\\varphi` は $\\varphi$（開いた形）。')} />
+          <li
+            set:html={richText(
+              'Unicode の φ（U+03C6）と ϕ（U+03D5）は、フォントによって字形が入れ替わって見えることがある。数式は LaTeX のコマンドで区別するほうが確実。',
+            )}
+          />
+          <li set:html={richText('$\\varsigma$（語末形シグマ）はギリシャ語の綴りで単語の最後に使う形で、数学ではほとんど使わない。')} />
+          <li set:html={richText('空集合の $\\varnothing$ はギリシャ文字の $\\phi$ とは別の記号（[集合論の記号](/math/notation#sets)の表を参照）。')} />
+        </ul>
+      </div>
+
+      <h3 id="typefaces">書体の比較</h3>
+      <p>同じ文字でも、書体が違えば別の記号として使い分ける。</p>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th scope="col">書体</th>
+            <th scope="col">英語</th>
+            <th scope="col">例</th>
+            <th scope="col">主な使い方</th>
+            <th scope="col">LaTeX</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            typefaces.map((t) => (
+              <tr>
+                <td data-label="書体">{t.name}</td>
+                <td data-label="英語" lang="en">{t.en}</td>
+                <td class="ref-symbol" data-label="例" set:html={tex(t.latex)} />
+                <td data-label="主な使い方">
+                  <Fragment set:html={richText(t.uses)} />
+                  {t.note && <span class="ref-note" set:html={richText(`注：${t.note}`)} />}
+                </td>
+                <td data-label="LaTeX" class="ref-latex">
+                  <code>{t.latex}</code>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+
+      <p>大文字 A〜Z を書体ごとに並べると、次のようになる。</p>
+      <div class="ref-scroll">
+        <table class="ref-grid">
+          <thead>
+            <tr>
+              <th scope="col">文字</th>
+              {
+                typefaces.map((t) => (
+                  <th scope="col">
+                    <code>{t.command || '—'}</code>
+                  </th>
+                ))
+              }
+            </tr>
+          </thead>
+          <tbody>
+            {
+              alphabet.map((letter) => (
+                <tr>
+                  <th scope="row">{letter}</th>
+                  {typefaces.map((t) => (
+                    <td set:html={glyph(t.command, letter)} />
+                  ))}
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <p set:html={richText('（Unicode）$\\mathbb{N}$ ℕ、$\\mathbb{R}$ ℝ などの黒板太字や、ドイツ文字の ℭ ℌ ℑ ℜ ℨ は、数学用英数字記号のブロックではなく「文字様記号」（Letterlike Symbols）のブロックにある。また数学用英数字記号のブロックには、カリグラフィーと筆記体の別々の文字はなく、どちらも Mathematical Script の文字で表す（字形はフォントによる）。')} />
+
+      <h3 id="fraktur">ドイツ文字</h3>
+      <p set:html={richText('ドイツ文字（Fraktur、フラクトゥール）は `\\mathfrak{…}` で書く。形が似ていて見分けにくい文字があるので、通常の文字との対応を一覧にした。')} />
+      <ul class="ref-letters">
+        {
+          alphabet.map((letter) => (
+            <li>
+              <span class="ref-letters-glyph" set:html={tex(`\\mathfrak{${letter}}\\ \\mathfrak{${letter.toLowerCase()}}`)} />
+              <span class="ref-letters-name">{`${letter} ${letter.toLowerCase()}`}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p set:html={richText('使用例：リー環 $\\mathfrak{g}$（`\\mathfrak{g}`）、素イデアル $\\mathfrak{p}$、極大イデアル $\\mathfrak{m}$、連続体の濃度 $\\mathfrak{c}$。複素数の実部・虚部を $\\Re z$、$\\Im z$（`\\Re`、`\\Im`）と書くのもドイツ文字の R, I から来ている。')} />
+
+      <h3 id="hebrew">ヘブライ文字</h3>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th scope="col">文字</th>
+            <th scope="col">日本語名</th>
+            <th scope="col">英語名</th>
+            <th scope="col">主な使い方</th>
+            <th scope="col">LaTeX</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            hebrewLetters.map((h) => (
+              <tr>
+                <td class="ref-symbol" data-label="文字" set:html={tex(h.tex)} />
+                <td data-label="日本語名">{h.ja}</td>
+                <td data-label="英語名" lang="en">{h.en}</td>
+                <td data-label="主な使い方" set:html={richText(h.uses)} />
+                <td data-label="LaTeX" class="ref-latex">
+                  <code>{h.latex}</code>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <p set:html={richText('`\\beth`、`\\gimel`、`\\daleth` は amssymb パッケージが必要。')} />
+
+      <h2 id="symbols">2. 記号</h2>
+
+      {
+        symbolSections.map((section) => (
+          <section aria-labelledby={section.id}>
+            <h3 id={section.id}>{section.title}</h3>
+            {section.lead && <p set:html={richText(section.lead)} />}
+            <table class="ref-table">
+              <thead>
+                <tr>
+                  <th scope="col">記号</th>
+                  <th scope="col">名前</th>
+                  <th scope="col">英語</th>
+                  <th scope="col">意味</th>
+                  <th scope="col">使用例</th>
+                  <th scope="col">LaTeX</th>
+                </tr>
+              </thead>
+              <tbody>
+                {section.entries.map((e) => (
+                  <tr>
+                    <td class="ref-symbol" data-label="記号" set:html={tex(e.tex)} />
+                    <td data-label="名前">{e.name}</td>
+                    <td data-label="英語" lang="en">
+                      {e.en}
+                    </td>
+                    <td data-label="意味">
+                      <Fragment set:html={richText(e.meaning)} />
+                      {e.note && <span class="ref-note" set:html={richText(`注：${e.note}`)} />}
+                    </td>
+                    <td data-label="使用例">
+                      {e.example ? <Fragment set:html={tex(e.example)} /> : '—'}
+                      {e.exampleNote && <span class="ref-note" set:html={richText(e.exampleNote)} />}
+                    </td>
+                    <td data-label="LaTeX" class="ref-latex">
+                      {e.latex.map((c) => (
+                        <code>{c}</code>
+                      ))}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        ))
+      }
+
+      <h2 id="readings">3. 読み方</h2>
+      <p>数式を英語で読み上げるときの言い方。</p>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th scope="col">式</th>
+            <th scope="col">英語</th>
+            <th scope="col">日本語</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            readings.map((r) => (
+              <tr>
+                <td class="ref-symbol" data-label="式" set:html={tex(r.tex)} />
+                <td data-label="英語" lang="en">
+                  {r.en}
+                </td>
+                <td data-label="日本語">{r.ja}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+
+      <h2 id="glossary">4. 数学英語の用語集</h2>
+      <p>英語の数学書でよく出会う語句。例文はこのページのために作ったもの。</p>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th scope="col">英語</th>
+            <th scope="col">日本語</th>
+            <th scope="col">使われ方</th>
+            <th scope="col">例文</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            glossary.map((g) => (
+              <tr>
+                <td data-label="英語" lang="en">
+                  <strong>{g.en}</strong>
+                </td>
+                <td data-label="日本語">{g.ja}</td>
+                <td data-label="使われ方" set:html={g.usage ? richText(g.usage) : '—'} />
+                <td data-label="例文" lang="en">
+                  {g.example ?? '—'}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+
+      <h2 id="references">5. 参考資料</h2>
+      <ul>
+        {
+          references.map((r) => (
+            <li>
+              {r.url ? (
+                <a href={r.url} lang="en" rel="noopener">
+                  {r.title}
+                </a>
+              ) : (
+                <span lang="en">{r.title}</span>
+              )}
+              <br />
+              <span class="ref-note" set:html={richText(r.note)} />
+            </li>
+          ))
+        }
+      </ul>
+    </article>
+
+    <p class="math-back math-back--end"><a href="/math">← Math Notes</a></p>
+  </main>
+</Base>
