@@ -92,7 +92,7 @@ $A = B$ は、$A \subseteq B$ と $B \subseteq A$ の両方を示して証明す
 任意の集合 $B$ について $\varnothing \subseteq B$ である。
 :::
 
-:::proof{origin=self-reviewed text=ai}
+:::proof{origin=self}
 $\varnothing \subseteq B$ は、[部分集合の定義](#def-subset)より「任意の $x$ について、$x \in \varnothing$ ならば $x \in B$」である。
 $x \in \varnothing$ はどの $x$ についても偽であるから、この含意は空虚に真である（[空虚な真](/math/implication#ex-vacuous)）。
 :::
@@ -170,7 +170,7 @@ $$
 $$
 :::
 
-:::proof{origin=self-reviewed text=ai}
+:::proof{origin=self}
 1 つ目を所属条件で示す。$x \in X$ について
 
 $$
