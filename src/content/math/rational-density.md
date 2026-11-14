@@ -2,7 +2,7 @@
 title: "有理数の稠密性"
 description: "任意の 2 つの実数の間に有理数があることを、アルキメデスの性質から示す。有理数を端点とする開区間と実数の通常の位相との関係。"
 topic: real-numbers
-order: 1
+order: 2
 status: understood
 createdAt: 2026-11-08
 tags:
@@ -27,7 +27,7 @@ $$
 任意の実数 $r$ に対して、$n > r$ を満たす自然数 $n$ が存在する。
 :::
 
-このノートでは証明せずに使う。
+このノートでは証明せずに使う。証明は[整数と実数のノート](/math/integers-reals#thm-archimedean)にある。
 
 ## 2. 有理数の稠密性
 

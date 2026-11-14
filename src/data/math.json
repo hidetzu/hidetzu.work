@@ -23,7 +23,7 @@
     {
       "id": "real-numbers",
       "title": "実数",
-      "description": "実数の性質のうち、位相空間論の例や証明で使うもの。"
+      "description": "実数の公理、正の整数と数学的帰納法、アルキメデス的順序性、有理数の稠密性。"
     },
     {
       "id": "topology",
