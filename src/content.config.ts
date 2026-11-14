@@ -27,6 +27,9 @@ const math = defineCollection({
     related: z.array(z.string()).default([]),
     // 読んだ箇所。location は本を見て確かめた章・節・ページだけを書く（例: "§12, pp. 75–78"）
     sources: z.array(z.object({ title: z.string(), location: z.string().optional() })).default([]),
+    // 教科書（src/data/math.json の textbook / chapters）のどの章・節に当たるか。/math の章立ての一覧に使う。
+    // 本を見て確かめた節だけを書く。節が分からなければ chapter だけにする。教科書と対応しないノートは省略する
+    textbook: z.object({ chapter: z.number().int(), section: z.number().int().optional() }).optional(),
     // true の間は `npm run dev` でだけ表示し、ビルドには含めない
     draft: z.boolean().default(false),
   }),

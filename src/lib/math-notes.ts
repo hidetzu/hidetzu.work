@@ -1,6 +1,8 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import mathData from '../data/math.json';
-import type { MathField, MathIndex } from '../data/types';
+import type { MathChapter, MathField, MathIndex } from '../data/types';
+import { buildGraph } from './math-graph.mjs';
+import { PROOF_ORIGINS } from './math-markdown.mjs';
 
 export type MathNote = CollectionEntry<'math'>;
 export type MathStatus = MathNote['data']['status'];
@@ -66,4 +68,100 @@ export const relatedNotes = (note: MathNote, visible: MathNote[], all: MathNote[
   return visible
     .filter((n) => n.id !== note.id && (note.data.related.includes(n.id) || n.data.related.includes(note.id)))
     .sort(byFieldThenOrder);
+};
+
+// --- 教科書の章立て ------------------------------------------------------------
+
+export const mathChapters: MathChapter[] = (mathData as MathIndex).chapters;
+
+// frontmatter の textbook が math.json の chapters にない章・節を指していたらビルドで落とす
+const checkTextbook = (note: MathNote) => {
+  const tb = note.data.textbook;
+  if (!tb) return;
+  const chapter = mathChapters.find((c) => c.number === tb.chapter);
+  if (!chapter) throw new Error(`math: unknown chapter ${tb.chapter} in ${note.id}`);
+  if (tb.section !== undefined && !chapter.sections.some((s) => s.number === tb.section)) {
+    throw new Error(`math: unknown section §${tb.section} (chapter ${tb.chapter}) in ${note.id}`);
+  }
+};
+
+/** 「Chapter 1, §3 Relations」の形。教科書と対応しないノートは undefined */
+export const textbookLabel = (note: MathNote) => {
+  const tb = note.data.textbook;
+  if (!tb) return undefined;
+  const chapter = mathChapters.find((c) => c.number === tb.chapter);
+  const section = chapter?.sections.find((s) => s.number === tb.section);
+  return section ? `Chapter ${tb.chapter}, §${section.number} ${section.title}` : `Chapter ${tb.chapter}`;
+};
+
+// 章 → 節 → ノート。節を記録していないノートは章ごとの unsectioned に、教科書と対応しないノートは others に入る。
+// 節は math.json の順、ノートは分野の順 → 分野の中の順
+export const groupByChapter = (notes: MathNote[]) => {
+  notes.forEach(checkTextbook);
+  const sorted = [...notes].sort(byFieldThenOrder);
+  const chapters = mathChapters
+    .map((chapter) => ({
+      chapter,
+      sections: chapter.sections
+        .map((section) => ({
+          section,
+          notes: sorted.filter(
+            (n) => n.data.textbook?.chapter === chapter.number && n.data.textbook.section === section.number,
+          ),
+        }))
+        .filter((s) => s.notes.length > 0),
+      unsectioned: sorted.filter(
+        (n) => n.data.textbook?.chapter === chapter.number && n.data.textbook.section === undefined,
+      ),
+    }))
+    .filter((c) => c.sections.length > 0 || c.unsectioned.length > 0);
+  return { chapters, others: sorted.filter((n) => !n.data.textbook) };
+};
+
+// --- 証明の依存関係と出どころ ------------------------------------------------------
+
+// src/lib/math-graph.mjs の buildGraph が返すもの
+export type MathStatement = {
+  key: string | null;
+  slug: string;
+  id: string | null;
+  kind: string;
+  label: string;
+  title: string;
+  ref: string | null;
+  proofs: { kind: string; origin: string | null; text: string | null; note: string | null }[];
+  uses: Set<string>;
+  usedBy: Set<string>;
+};
+
+export type MathGraph = {
+  statements: Map<string, MathStatement>;
+  statementsByNote: Map<string, MathStatement[]>;
+  proofCounts: Map<string, Record<string, number>>;
+  noteUses: Map<string, Set<string>>;
+  noteUsedBy: Map<string, Set<string>>;
+};
+
+export const proofOriginLabel = PROOF_ORIGINS as Record<string, string>;
+export const proofOriginKeys = Object.keys(PROOF_ORIGINS);
+
+// /math の凡例に出す説明。PROOF_ORIGINS（src/lib/math-markdown.mjs）と同じキーを持つ
+export const proofOriginNote: Record<string, string> = {
+  self: '自分で考えて証明した',
+  'self-reviewed': '自分で証明し、レビューで確かめた（直した箇所は注記する）',
+  textbook: '本文の証明を読んで理解した。自分の証明ではない',
+  ai: 'Claude が補った証明。自分の証明ではない',
+};
+
+// 公開するノートだけから組む。ビルド中は一度だけ作って使い回す
+let graph: Promise<MathGraph> | undefined;
+export const getMathGraph = () =>
+  (graph ??= getMathNotes().then(
+    (notes) => buildGraph(notes.map((n) => ({ slug: n.id, body: n.body ?? '' }))) as MathGraph,
+  ));
+
+/** 主張へのリンク先。同じノートならページ内リンク */
+export const statementHref = (key: string, from: string) => {
+  const [slug, id] = key.split('#');
+  return slug === from ? `#${id}` : `/math/${slug}#${id}`;
 };

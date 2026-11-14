@@ -11,6 +11,9 @@ tags: []
 sources:
   - title: "James R. Munkres, Topology, 2nd ed."
     # location: "§xx, pp. xx–xx"   # 本を見て確かめた章・節・ページだけを書く
+# textbook:            # 教科書の章・節（src/data/math.json の chapters にあるもの）。本を見て確かめたものだけ
+#   chapter: 2
+#   section: 12
 draft: true # 公開するときに false にする（または行を消す）
 ---
 
@@ -22,15 +25,17 @@ draft: true # 公開するときに false にする（または行を消す）
 :::
 
 :::theorem[名前]{#thm-xxx}      （proposition / lemma / corollary も同じ書き方）
-前提と結論を分けて書く。
+前提と結論を分けて書く。ラベルを「4.1：名前」とすると見出しは「定理 4.1（名前）」になる。
 :::
 
 :::attempt[命題 xxx]
 自分で考えている途中の証明。足りない部分は「ここが示せていない」と書く。∎ は付かない。
 :::
 
-:::proof
+:::proof{origin=self}
 検証済みの完成した証明だけをここに書く。∎ が付く。
+origin は self / self-reviewed / textbook / ai。文章を Claude が整えたら text=ai、補足は note="…"。
+証明で使った定義・定理は [補題 1](#lem-xxx) のようにリンクにする（依存関係として集計される）。
 :::
 
 :::question

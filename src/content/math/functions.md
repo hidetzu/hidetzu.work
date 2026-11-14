@@ -15,6 +15,9 @@ tags:
 sources:
   - title: "James R. Munkres, Topology, 2nd ed."
     location: "Chapter 1, §2 Functions"
+textbook:
+  chapter: 1
+  section: 2
 ---
 
 :::remark[このノートの書き方]
@@ -117,7 +120,7 @@ $$
 
 $A$ 上の恒等写像を $i_A \colon A \to A$、$i_A(a) = a$ と書く。
 
-:::lemma[Lemma 2.1]{#lem-2-1}
+:::lemma[2.1]{#lem-2-1}
 $f \colon A \to B$ とする。写像 $g, h \colon B \to A$ が存在して
 
 $$
@@ -127,7 +130,7 @@ $$
 を満たすならば、$f$ は全単射で、$g = h = f^{-1}$。
 :::
 
-:::proof
+:::proof{text=ai}
 **1. 単射であること。** $a_1, a_2 \in A$、$f(a_1) = f(a_2)$ とする。両辺に $g$ を施すと、$g \circ f = i_A$ より
 
 $$
@@ -192,7 +195,7 @@ $A_0 \subseteq A$、$B_0 \subseteq B$ とする。
 2. $f(f^{-1}(B_0)) \subseteq B_0$。$f$ が全射なら等号が成り立つ。
 :::
 
-:::proof
+:::proof{text=ai}
 **1 の包含。** $a \in A_0$ とすると $f(a) \in f(A_0)$。逆像の定義より $a \in f^{-1}(f(A_0))$。
 
 **1 の等号（$f$ が単射）。** $a \in f^{-1}(f(A_0))$ とすると $f(a) \in f(A_0)$ なので、ある $a_0 \in A_0$ が存在して $f(a) = f(a_0)$。単射性より $a = a_0 \in A_0$。
@@ -224,7 +227,7 @@ $B_0, B_1 \subseteq B$ とする。
 
 逆像では、すべて等号になる（1 は包含の保存）。
 
-:::proof
+:::proof{text=ai}
 **1.** $a \in f^{-1}(B_0)$ とすると $f(a) \in B_0 \subseteq B_1$ なので $a \in f^{-1}(B_1)$。
 
 2〜4 は、$a \in A$ について同値変形で示す。各行は両向きに成り立つ。
@@ -267,7 +270,7 @@ $A_0, A_1 \subseteq A$ とする。
 4. $f(A_0) \setminus f(A_1) \subseteq f(A_0 \setminus A_1)$。$f$ が単射なら等号が成り立つ。
 :::
 
-:::proof
+:::proof{text=ai}
 **1.** $b \in f(A_0)$ とすると、ある $a \in A_0$ が存在して $f(a) = b$。$a \in A_1$ なので $b \in f(A_1)$。
 
 **2.** $b \in B$ について、「$\exists$」は「$\lor$」の上に分配できるので
@@ -295,7 +298,7 @@ $$
 
 3 の包含の証明は、両辺の元が同じ $a$ から来ることしか使っていない。逆向きでは $a_0$ と $a_1$ が別の元かもしれず、それを同じにするのが単射性。
 
-:::proof[4 の別証明：2・3 を使う]
+:::proof[4 の別証明：2・3 を使う]{text=ai}
 **包含。** $A_0 = (A_0 \setminus A_1) \cup (A_0 \cap A_1)$ なので、2 と、$A_0 \cap A_1 \subseteq A_1$ に 1 を使うと
 
 $$
@@ -360,7 +363,7 @@ $\{B_\lambda\}_{\lambda \in \Lambda}$ を $B$ の部分集合の族、$\{A_\lamb
 
 和集合は「ある $\lambda$ について」（$\exists$）、共通部分は「すべての $\lambda$ について」（$\forall$）と所属条件を書き直して示す。
 
-:::proof
+:::proof{text=ai}
 **1.** $a \in A$ について
 
 $$
@@ -410,7 +413,7 @@ $$
 $$
 :::
 
-:::proof
+:::proof{text=ai}
 $a \in A$ について
 
 $$
@@ -432,7 +435,7 @@ $$
 4. $g \circ f$ が全射なら、$g$ は全射。
 :::
 
-:::proof
+:::proof{text=ai}
 **1.** $g(f(a_1)) = g(f(a_2))$ とする。$g$ の単射性より $f(a_1) = f(a_2)$、$f$ の単射性より $a_1 = a_2$。
 
 **2.** $f(a_1) = f(a_2)$ とすると $g(f(a_1)) = g(f(a_2))$。$g \circ f$ の単射性より $a_1 = a_2$。
@@ -474,7 +477,7 @@ $f \colon A \to B$ とする。
 2. $f$ に右逆写像があれば、$f$ は全射。
 :::
 
-:::proof
+:::proof{text=ai}
 **1.** $g$ を左逆写像とする。$f(a_1) = f(a_2)$ なら $a_1 = g(f(a_1)) = g(f(a_2)) = a_2$。
 
 **2.** $h$ を右逆写像とする。任意の $b \in B$ について、$a = h(b) \in A$ とおけば $f(a) = f(h(b)) = b$。

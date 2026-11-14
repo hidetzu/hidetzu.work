@@ -14,6 +14,8 @@ tags:
 sources:
   - title: "James R. Munkres, Topology, 2nd ed."
     location: "Chapter 1"
+textbook:
+  chapter: 1
 ---
 
 :::remark[このノートの書き方]
@@ -89,7 +91,7 @@ $A = B$ は、$A \subseteq B$ と $B \subseteq A$ の両方を示して証明す
 任意の集合 $B$ について $\varnothing \subseteq B$。
 :::
 
-:::proof[補足]
+:::proof[補足]{origin=ai}
 $\varnothing \subseteq B$ は「任意の $x$ について、$x \in \varnothing$ ならば $x \in B$」。
 $x \in \varnothing$ はどの $x$ についても偽なので、この含意は空虚に真（[空虚な真](/math/implication#ex-vacuous)）。
 :::

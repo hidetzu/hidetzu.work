@@ -23,7 +23,7 @@ $$
 
 ## 1. 使う性質
 
-:::theorem[アルキメデスの性質]{#thm-archimedean}
+:::theorem[アルキメデスの性質]{#thm-archimedean ref=integers-reals#thm-archimedean}
 任意の実数 $r$ に対して、$n > r$ を満たす自然数 $n$ が存在する。
 :::
 
@@ -39,8 +39,8 @@ a < b \implies \exists\, q \in \mathbb{Q},\quad a < q < b .
 $$
 :::
 
-:::proof
-$a < b$ とする。$b - a > 0$ なので、アルキメデスの性質より
+:::proof{origin=self}
+$a < b$ とする。$b - a > 0$ なので、[アルキメデスの性質](#thm-archimedean)より
 
 $$
 n > \frac{1}{b - a}

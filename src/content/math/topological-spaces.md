@@ -13,6 +13,9 @@ tags:
 sources:
   - title: "James R. Munkres, Topology, 2nd ed."
     location: "Chapter 2, §12 Topological Spaces"
+textbook:
+  chapter: 2
+  section: 12
 ---
 
 :::remark[このノートの書き方]
@@ -67,7 +70,7 @@ $$
 $\mathcal{T}_f$ は $X$ 上の位相である。
 :::
 
-:::proof[補足]
+:::proof[補足]{origin=ai}
 **条件 1.** $\varnothing \in \mathcal{T}_f$ は定義から。$X \setminus X = \varnothing$ は有限なので $X \in \mathcal{T}_f$。
 
 **条件 2.** $\{U_\lambda\}_{\lambda \in \Lambda} \subseteq \mathcal{T}_f$ とする。すべての $U_\lambda$ が空なら（$\Lambda = \varnothing$ の場合も含めて）和集合は $\varnothing \in \mathcal{T}_f$。
@@ -142,7 +145,7 @@ $X$ の部分集合族 $\mathcal{T}$ が有限集合で、$\varnothing, X \in \m
 任意の $U, V \in \mathcal{T}$ に対して $U \cup V \in \mathcal{T}$ かつ $U \cap V \in \mathcal{T}$ ならば、$\mathcal{T}$ は位相である。
 :::
 
-:::proof
+:::proof{origin=ai}
 $\mathcal{T}$ が有限なので、その部分族も有限である。空な部分族の和集合は $\varnothing \in \mathcal{T}$。
 空でない有限個の元の和集合と共通部分は、2 つずつの和集合・共通部分を繰り返して得られるので、帰納法により $\mathcal{T}$ に属する。
 :::
@@ -156,7 +159,7 @@ $U \cup V$ と $U \cap V$ は $U, V$ のどちらかに等しいので、補題�
 $\mathcal{T}_1 = \{\varnothing, \{a\}, X\}$、$\mathcal{T}_2 = \{\varnothing, \{a, b\}, X\}$ はどちらも $X$ 上の位相で、互いに比較できない。
 :::
 
-:::proof
+:::proof{origin=self}
 **位相であること。** $\varnothing \subseteq \{a\} \subseteq X$ と $\varnothing \subseteq \{a, b\} \subseteq X$ より、どちらも元が包含関係で一列に並ぶ有限な族で、$\varnothing$ と $X$ を含む。補題より位相である。
 
 **比較できないこと。**
@@ -179,7 +182,7 @@ $$
 2. $\mathcal{T}_1 \cup \mathcal{T}_2 \subseteq \mathcal{S}$ を満たす任意の位相 $\mathcal{S}$ に対して $\mathcal{T}_3 \subseteq \mathcal{S}$
 :::
 
-:::proof
+:::proof{origin=self}
 **1. 位相であること。** $\mathcal{T}_3$ は有限で $\varnothing, X$ を含む。補題を使うため、2 元の和集合・共通部分を確かめる（補足）。
 一方が $\varnothing$ または $X$ の場合と、一方が他方を含む場合（$\{a\} \subseteq \{a, b\}$、$\{b\} \subseteq \{a, b\}$）は、結果が 2 元のどちらかに等しい。
 残るのは $\{a\}$ と $\{b\}$ の組だけで、
@@ -210,7 +213,7 @@ $$
 は $X$ 上の位相である。添字集合 $A$ は無限でもよい。$A = \varnothing$ のときは、共通部分を $\mathcal{P}(X)$ と約束する。
 :::
 
-:::proof
+:::proof{origin=self}
 $A = \varnothing$ のとき、$\mathcal{T} = \mathcal{P}(X)$ は離散位相なので位相。以下 $A \ne \varnothing$ とする。
 
 **条件 1.** 各 $\mathcal{T}_\alpha$ は位相なので $\varnothing, X \in \mathcal{T}_\alpha$。これがすべての $\alpha$ で成り立つので $\varnothing, X \in \mathcal{T}$。
@@ -232,7 +235,7 @@ $U_1 \cap \cdots \cap U_n \in \mathcal{T}_\alpha$。$\alpha$ は任意なので 
 $\mathcal{T}_1 = \{\varnothing, \{a\}, X\}$、$\mathcal{T}_2 = \{\varnothing, \{b\}, X\}$ はどちらも位相だが、和集合 $\mathcal{T}_1 \cup \mathcal{T}_2$ は位相ではない。
 :::
 
-:::proof
+:::proof{origin=self}
 $\mathcal{T}_1, \mathcal{T}_2$ は元が包含関係で一列に並ぶ有限な族で、$\varnothing$ と $X$ を含むので、補題より位相。
 
 $$
@@ -251,7 +254,7 @@ $$
 任意の集合族 $\mathcal{A} \subseteq \mathcal{P}(X)$ に対して、$\mathcal{A}$ を含む位相のうちで最も弱いものが存在する。
 :::
 
-:::proof
+:::proof{origin=self-reviewed note="記号と包含関係の向きをレビューで修正"}
 $\mathcal{A}$ を含む $X$ 上の位相全体を
 
 $$

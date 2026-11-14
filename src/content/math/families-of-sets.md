@@ -15,6 +15,8 @@ tags:
 sources:
   - title: "James R. Munkres, Topology, 2nd ed."
     location: "Chapter 1"
+textbook:
+  chapter: 1
 ---
 
 :::remark[このノートの書き方]
@@ -127,7 +129,7 @@ $$
 
 和集合は手書きで証明し、レビューを受けたもの。共通部分は手書きで考え、レビューでアルキメデスの性質を使う背理法として整理したもの。
 
-:::proof[和集合]
+:::proof[和集合]{origin=self-reviewed}
 相互包含で示す。
 
 **$\bigcup_n A_n \subseteq A_1$。** 任意の $n \ge 1$ について $\frac{1}{n} \le 1$ なので、$A_n \subseteq A_1$。
@@ -139,7 +141,7 @@ $$
 以上より $\bigcup_{n=1}^{\infty} A_n = A_1$。
 :::
 
-:::proof[共通部分]
+:::proof[共通部分]{origin=self-reviewed note="レビューでアルキメデスの性質を使う背理法として整理"}
 共通部分が空でないと仮定する。すると、ある実数 $x$ が存在して $x \in \bigcap_{n=1}^{\infty} A_n$。共通部分の定義から
 
 $$
@@ -187,7 +189,7 @@ X \setminus \bigcap_{\alpha \in J} A_\alpha &= \bigcup_{\alpha \in J} (X \setmin
 $$
 :::
 
-:::proof[補足]
+:::proof[補足]{origin=ai}
 1 つ目を示す。$x \in X$ について
 
 $$

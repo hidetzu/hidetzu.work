@@ -4,12 +4,16 @@ import { getCollection, render } from 'astro:content';
 import 'katex/dist/katex.min.css';
 import Base from '../../layouts/Base.astro';
 import '../../styles/math.css';
+import { richText } from '../../lib/tex';
 import {
   fieldOf,
+  getMathGraph,
   getMathNotes,
   mathStatusLabel,
   mathStatusNote,
   relatedNotes,
+  statementHref,
+  textbookLabel,
   ymd,
   type MathNote,
 } from '../../lib/math-notes';
@@ -19,20 +23,40 @@ export async function getStaticPaths() {
   const all = await getCollection('math');
   return notes.map((note) => ({
     params: { slug: note.id },
-    props: { note, related: relatedNotes(note, notes, all) },
+    props: { note, notes, related: relatedNotes(note, notes, all) },
   }));
 }
 
 interface Props {
   note: MathNote;
+  notes: MathNote[];
   related: MathNote[];
 }
 
-const { note, related } = Astro.props;
+const { note, notes, related } = Astro.props;
 const { Content, headings } = await render(note);
 const { title, description, status, createdAt, updatedAt, tags, sources, draft } = note.data;
 const field = fieldOf(note);
-const toc = headings.filter((h) => h.depth === 2);
+const chapter = textbookLabel(note);
+
+// 目次: 2 段目（###）は 1 段目（##）の下にまとめる
+const toc: { text: string; slug: string; children: { text: string; slug: string }[] }[] = [];
+for (const h of headings) {
+  if (h.depth === 2) toc.push({ text: h.text, slug: h.slug, children: [] });
+  else if (h.depth === 3 && toc.length > 0) toc[toc.length - 1].children.push({ text: h.text, slug: h.slug });
+}
+
+// 証明の依存関係（証明の中のリンクから集めたもの）
+const graph = await getMathGraph();
+const titleOf = (slug: string) => notes.find((n) => n.id === slug)?.data.title ?? slug;
+const statementTitle = (key: string) => graph.statements.get(key)?.title ?? key;
+const statementsHere = (graph.statementsByNote.get(note.id) ?? []).filter(
+  (s) => s.key && (s.uses.size > 0 || s.usedBy.size > 0),
+);
+const byId = (slugs: Set<string> | undefined) =>
+  notes.filter((n) => slugs?.has(n.id));
+const prerequisites = byId(graph.noteUses.get(note.id));
+const dependents = byId(graph.noteUsedBy.get(note.id));
 ---
 
 <Base title={title} description={description} ogType="article">
@@ -48,9 +72,19 @@ const toc = headings.filter((h) => h.depth === 2);
           <dd>
             <span class="status">{mathStatusLabel[status]}</span>
             {draft && <span class="status">draft</span>}
-            {mathStatusNote[status]}（自己申告）
+            {mathStatusNote[status]}（ページ全体の自己申告。証明ごとの出どころは各証明に書く）
           </dd>
         </div>
+        {
+          chapter && (
+            <div>
+              <dt>Textbook</dt>
+              <dd>
+                <a href="/math#textbook" lang="en">{chapter}</a>
+              </dd>
+            </div>
+          )
+        }
         <div>
           <dt>Created</dt>
           <dd><time datetime={ymd(createdAt)}>{ymd(createdAt)}</time></dd>
@@ -93,14 +127,29 @@ const toc = headings.filter((h) => h.depth === 2);
 
     {
       toc.length > 1 && (
-        <nav class="math-toc" aria-label="目次">
-          <ol>
+        <nav class="math-toc" aria-labelledby="math-toc-title">
+          <p class="math-toc-title" id="math-toc-title">目次</p>
+          <ul>
             {toc.map((h) => (
               <li>
                 <a href={`#${h.slug}`}>{h.text}</a>
+                {h.children.length > 0 && (
+                  <ul>
+                    {h.children.map((c) => (
+                      <li>
+                        <a href={`#${c.slug}`}>{c.text}</a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
-          </ol>
+            {statementsHere.length > 0 && (
+              <li>
+                <a href="#math-deps">証明の依存関係</a>
+              </li>
+            )}
+          </ul>
         </nav>
       )
     }
@@ -110,9 +159,98 @@ const toc = headings.filter((h) => h.depth === 2);
     </article>
 
     {
+      statementsHere.length > 0 && (
+        <section class="math-deps" aria-labelledby="math-deps">
+          <h2 class="sub-head" id="math-deps">証明の依存関係</h2>
+          <p class="math-deps-lead">
+            各証明の中で参照している定義・定理と、その結果を参照している証明の一覧。証明の外にある関連リンクは含めない。
+          </p>
+          <dl class="math-deps-list">
+            {statementsHere.map((s) => (
+              <div>
+                <dt>
+                  <a href={`#${s.id}`} set:html={richText(s.title)} />
+                </dt>
+                {s.uses.size > 0 && (
+                  <dd>
+                    <span class="math-deps-kind">証明で使う</span>
+                    <ul>
+                      {[...s.uses].map((key) => (
+                        <li>
+                          <a href={statementHref(key, note.id)} set:html={richText(statementTitle(key))} />
+                          {!key.startsWith(`${note.id}#`) && (
+                            <span class="math-deps-note">（{titleOf(key.split('#')[0])}）</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </dd>
+                )}
+                {s.usedBy.size > 0 && (
+                  <dd>
+                    <span class="math-deps-kind">この結果を使う証明</span>
+                    <ul>
+                      {[...s.usedBy].map((key) => (
+                        <li>
+                          <a href={statementHref(key, note.id)} set:html={richText(statementTitle(key))} />
+                          {!key.startsWith(`${note.id}#`) && (
+                            <span class="math-deps-note">（{titleOf(key.split('#')[0])}）</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </dd>
+                )}
+              </div>
+            ))}
+          </dl>
+        </section>
+      )
+    }
+
+    {
+      (prerequisites.length > 0 || dependents.length > 0) && (
+        <nav class="math-note-links" aria-labelledby="math-note-links">
+          <h2 class="sub-head" id="math-note-links">Dependencies</h2>
+          <dl>
+            {prerequisites.length > 0 && (
+              <div>
+                <dt>証明で使うノート</dt>
+                <dd>
+                  <ul>
+                    {prerequisites.map((n) => (
+                      <li>
+                        <a href={`/math/${n.id}`}>{n.data.title}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )}
+            {dependents.length > 0 && (
+              <div>
+                <dt>このノートの結果を使うノート</dt>
+                <dd>
+                  <ul>
+                    {dependents.map((n) => (
+                      <li>
+                        <a href={`/math/${n.id}`}>{n.data.title}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )}
+          </dl>
+        </nav>
+      )
+    }
+
+    {
       related.length > 0 && (
         <nav class="math-related" aria-labelledby="math-related">
           <h2 class="sub-head" id="math-related">Related</h2>
+          <p class="math-deps-lead">内容が関連するノート。証明で使っているとは限らない。</p>
           <ul class="others math-list">
             {related.map((n) => (
               <li>
