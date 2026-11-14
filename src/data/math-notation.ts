@@ -259,7 +259,7 @@ export const symbolSections: SymbolSection[] = [
   {
     id: 'logic',
     title: '論理・証明',
-    lead: '詳しくは[命題論理の基礎](/math/propositional-logic)と[含意と対偶](/math/implication)。',
+    lead: '詳しくは[論理の基礎](/math/propositional-logic)。',
     entries: [
       {
         tex: '\\forall',

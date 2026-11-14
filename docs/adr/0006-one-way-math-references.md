@@ -23,6 +23,8 @@
 - `sets`（集合と包含関係）と `set-operations`（集合演算とド・モルガンの法則）を `sets`「集合の基本と演算」に統合した。
   アンカーはすべて引き継ぎ、`/math/set-operations` は `public/_redirects` で `/math/sets` へ 301 リダイレクトする
   （Cloudflare Workers Static Assets が `_redirects` を読む。リダイレクト後もフラグメントはブラウザが引き継ぐ）
+- 同じ方針で、`propositional-logic`（命題論理の基礎）と `implication`（含意と対偶）を `propositional-logic`「論理の基礎」に統合した。
+  URL の互換性を優先してスラッグは変えず、`/math/implication` は `/math/propositional-logic` へ 301 リダイレクトする
 
 ## 見送ったこと
 
