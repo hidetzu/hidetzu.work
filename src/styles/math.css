@@ -365,3 +365,205 @@
 .section > .sub-head:first-child {
   margin-top: 0;
 }
+
+/* --- 記号・文字リファレンス（/math/notation） -------------------------------- */
+
+.math-ref {
+  max-width: 56rem;
+}
+
+.math-toc ul {
+  margin: 0.15rem 0 0.35rem;
+  padding-left: 1.1rem;
+  list-style: none;
+}
+
+.math-toc ul li {
+  display: inline;
+  margin-right: 0.9rem;
+}
+
+.prose .ref-table {
+  display: table;
+  width: 100%;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.prose .ref-table th {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* 英単語を途中で折らない。列の幅は内容が読める最小限を確保する */
+.prose .ref-table th,
+.prose .ref-table td {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.ref-table td[lang='en'] {
+  min-width: 8.5rem;
+}
+
+.ref-table td[data-label='名前'],
+.ref-table td[data-label='日本語名'],
+.ref-table td[data-label='日本語'] {
+  min-width: 6rem;
+}
+
+.ref-table .ref-latex {
+  width: 10rem;
+}
+
+.ref-symbol {
+  white-space: nowrap;
+}
+
+.ref-symbol .katex {
+  font-size: 1.25em;
+}
+
+/* LaTeX は 1 回のクリック（タップ）で全体が選択されるようにして、コピーしやすくする */
+.ref-latex code {
+  display: inline-block;
+  margin: 0 0.3rem 0.25rem 0;
+  padding: 0 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  overflow-wrap: anywhere;
+  user-select: all;
+  -webkit-user-select: all;
+  cursor: text;
+}
+
+.ref-note {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.prose kbd {
+  font-family: var(--font-mono);
+  font-size: 0.8125em;
+  padding: 0 0.25rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+
+/* 書体の比較（A〜Z × 書体）は狭い画面では表だけを横にスクロールさせる */
+.ref-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 0 0 1.1rem;
+}
+
+.prose .ref-grid {
+  display: table;
+  margin: 0;
+}
+
+.prose .ref-grid th,
+.prose .ref-grid td {
+  padding: 0.2rem 0.6rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.prose .ref-grid td .katex {
+  font-size: 1.3em;
+}
+
+.ref-letters {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4.75rem, 1fr));
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+}
+
+.prose .ref-letters li + li {
+  margin-top: 0;
+}
+
+.ref-letters li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.35rem 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.ref-letters-glyph .katex {
+  font-size: 1.35em;
+}
+
+.ref-letters-name {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--faint);
+}
+
+/* スマートフォンでは表の 1 行を 1 枚のカードにし、各欄に見出しを付ける */
+@media (max-width: 40rem) {
+  .prose .ref-table,
+  .ref-table tbody,
+  .ref-table tr,
+  .ref-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .ref-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .ref-table tr {
+    margin: 0 0 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+  }
+
+  .prose .ref-table td {
+    position: relative;
+    min-height: 1.9rem;
+    padding: 0.15rem 0 0.15rem 5.75rem;
+    border: 0;
+    white-space: normal;
+  }
+
+  /* 欄の見出しは左に置き、内容は右側でそのまま折り返す */
+  .ref-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    top: 0.15rem;
+    left: 0;
+    width: 5.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    line-height: 2.2;
+    color: var(--faint);
+  }
+
+  .ref-table td[lang='en'],
+  .ref-table td[data-label='名前'],
+  .ref-table td[data-label='日本語名'],
+  .ref-table td[data-label='日本語'],
+  .ref-table .ref-latex {
+    min-width: 0;
+  }
+}

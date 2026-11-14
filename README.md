@@ -167,6 +167,19 @@ $$
 - 上の表にない名前はビルドエラーになる
 - ブロックは `src/lib/math-markdown.mjs` で HTML にし、見た目は `src/styles/math.css`（数学ノートのページでだけ読み込む）
 
+### 記号・文字リファレンス（/math/notation）
+
+英語の数学書を読むときに引く、記号・文字・数学英語の辞書（[ADR 0004](docs/adr/0004-add-notation-reference.md)）。
+学習ノートではないので Content Collections には入れず、`src/pages/math/notation.astro` で表を組む。
+
+- 中身は `src/data/math-notation.ts` に書く。項目を足すときはこのファイルだけを触る
+- 説明文の `$...$` は数式、`` `...` `` はコード、`[文字](/math/...)` はサイト内リンクになる（`src/lib/tex.ts`）
+- TeX の誤りはビルドで落ちる。LaTeX の欄には、標準の LaTeX（amsmath / amssymb など）で書ける形を書く
+- 本によって意味が違う記号は `note` に書く。Munkres 固有の書き方は、確かめられたものだけを書き、
+  確かめた資料を `references` に足す
+- まだ学んでいない分野は、記号と一般的な意味だけにする
+- クライアント JS は使わない。探すのはブラウザのページ内検索、LaTeX は `user-select: all` でコピーする
+
 ### 書くときの約束
 
 - 本の証明や本文を書き写さない。定理の主張と、自分の理解・自分で考えた証明を中心に書く
