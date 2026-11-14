@@ -25,7 +25,10 @@
   （Cloudflare Workers Static Assets が `_redirects` を読む。リダイレクト後もフラグメントはブラウザが引き継ぐ）
 - 同じ方針で、`propositional-logic`（命題論理の基礎）と `implication`（含意と対偶）を `propositional-logic`「論理の基礎」に統合した。
   URL の互換性を優先してスラッグは変えず、`/math/implication` は `/math/propositional-logic` へ 301 リダイレクトする
+- `cartesian-product`（直積）と `finite-infinite-products`（有限直積と無限直積）を `cartesian-product`「直積（Cartesian Products）」に統合し、
+  `/math/finite-infinite-products` は `/math/cartesian-product` へ 301 リダイレクトする。冪集合と集合族は別の主題として独立ページのまま残す
+- 添字付き集合族（添字付け関数）の定義は集合族のノートに一本化し、直積のノートからはそれを参照する
 
 ## 見送ったこと
 
-- 冪集合・集合族・直積などのノート本文に残る、後続の節への言及の削除。今回の対象外で、必要になったときにノートごとに整理する
+- ほかのノート（写像・関係・位相など）の本文に残る、後続の節への言及の削除。必要になったときにノートごとに整理する

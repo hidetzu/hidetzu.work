@@ -1,3 +1,4 @@
 # 統合したノートの旧 URL（Cloudflare Workers Static Assets が読む）
 /math/set-operations /math/sets 301
 /math/implication /math/propositional-logic 301
+/math/finite-infinite-products /math/cartesian-product 301
