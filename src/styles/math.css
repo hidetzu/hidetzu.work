@@ -843,3 +843,51 @@ nav.math-toc > ul > li {
     margin-left: 0;
   }
 }
+
+/* --- 図（ノート本文に直接書いた SVG） ---------------------------------------- */
+
+.prose .math-figure {
+  margin: 1.5rem 0 1.75rem;
+}
+
+.prose .math-figure svg {
+  display: block;
+  width: 100%;
+  max-width: 26rem;
+  height: auto;
+  margin: 0 auto;
+}
+
+.math-figure-lines {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.25;
+}
+
+.math-figure-text {
+  fill: var(--body);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  text-anchor: middle;
+}
+
+.math-figure-text .muted {
+  fill: var(--muted);
+}
+
+.math-figure-text .strong {
+  fill: var(--fg);
+  font-weight: 700;
+}
+
+.math-figure-text .accent {
+  fill: var(--accent);
+  font-weight: 700;
+}
+
+.prose .math-figure figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  text-align: center;
+}
