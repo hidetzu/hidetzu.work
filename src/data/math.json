@@ -28,6 +28,10 @@
         {
           "number": 5,
           "title": "Cartesian Products"
+        },
+        {
+          "number": 6,
+          "title": "Finite Sets"
         }
       ]
     },
