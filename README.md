@@ -244,6 +244,32 @@ $$
 - Claude Code でノートを編集するときのルールは [.claude/rules/math-notes.md](.claude/rules/math-notes.md)。
   数学ノートのファイル（`src/content/math/` など）や `tmp/input.md` を読むと自動で読み込まれる
 
+## 機械学習の学習マップ（/ml）
+
+機械学習の理論と歴史を学ぶための学習マップ（[ADR 0007](docs/adr/0007-add-ml-learning-map.md)）。/math とは独立している。
+
+- 学習マップのデータは `src/data/ml.json`。8 つの領域（問い・主な分類軸・学ぶ項目・前提・状態）、領域のつながり（`edges`）、学ぶ順序、年表を書く
+  - `edges` の実線（`dashed` なし）は前提で、領域の `prerequisites` と一致させる（一致しないとビルドエラー）。破線は内容の関連
+  - 年表の年と出典は、一次資料（DOI・arXiv・プロシーディングス）で確かめたものだけを書く。主要な転換点には `detail`（それ以前の問題・解決の発想・できるようになったこと・残った課題・その後の発展）を付ける
+  - 研究中のテーマは、項目に `"research": true` を付ける
+- 理解の状態は自己申告で、本人だけが変える。領域ごとは `ml.json` の `status`、ノートごとは frontmatter の `status`
+
+| 値 | 表示 | 意味 |
+| --- | --- | --- |
+| `unassessed` | 未評価 | まだ理解の程度を評価していない（初期値） |
+| `studying` | 学習中 | 学んでいる途中 |
+| `concept` | 概念理解 | 何をする技術で、なぜ必要だったのかが分かる |
+| `explainable` | 自分の言葉で説明可能 | 背景・仕組み・限界・その後の発展を、自分の言葉で説明できる |
+
+### 学習ノートを追加する
+
+1. [docs/ml-note-template.md](docs/ml-note-template.md) を `src/content/ml/<slug>.md` にコピーする。URL は `/ml/<slug>`
+2. frontmatter の `area` に領域の id を書く。`/ml` の該当する領域の下に一覧される
+3. 本文は「概要・登場した背景・解決した問題・基本的な仕組み・数式と具体例・限界・その後の発展・自分の理解・未解決の疑問」の順に書く。参考文献・原論文は frontmatter の `references` に書く
+4. 「自分の理解」には、本人が実際に説明した内容だけを書く。Claude が補足した説明を本人の理解として記録しない
+
+数式とブロック（`:::definition`、`:::question` など）は数学ノートと同じ書き方が使える。
+
 ## デプロイ
 
 配信は Cloudflare Workers Static Assets。設定は `wrangler.toml`（Worker スクリプトなし、`dist/` をそのまま配信）。
@@ -328,7 +354,7 @@ npm run deploy     # astro build && wrangler deploy
 
 - React などのフレームワークは、必要になるまで入れない
 - クライアント JS は 0 のまま維持する。動きは CSS アニメーションだけで付ける（CSS は `inlineStylesheets: 'always'` で HTML に埋め込む）
-- 画像・フォントを増やさない。Web フォントは読み込まない（例外は数学ノートの記事ページの KaTeX フォント。ADR 0002）
+- 画像・フォントを増やさない。Web フォントは読み込まない（例外は数学ノートと /ml のページの KaTeX フォント。ADR 0002、0007）
 - コンポーネントを細かく割らない。デザインシステムを作らない
 - 情報構成は Header / Hero / Current Questions / Selected Work（+ Other projects）/ Experiments / Writing / About
   （[ADR 0001](docs/adr/0001-split-roles-between-github-profile-and-site.md)）。セクションを増やすときは ADR を足す。
@@ -341,17 +367,18 @@ npm run deploy     # astro build && wrangler deploy
 
 ```
 src/
-  data/          コンテンツ（JSON）と型。math.json は /math の入口の文言と学習の目安
+  data/          コンテンツ（JSON）と型。math.json は /math の入口の文言と学習の目安、ml.json は /ml の学習マップ
   content/math/  数学ノート（Markdown）
-  content.config.ts  数学ノートの frontmatter の定義
-  lib/           math-markdown.mjs（数式とブロックの Markdown プラグイン）, math-notes.ts
+  content/ml/    機械学習の学習ノート（Markdown）
+  content.config.ts  数学ノートと機械学習ノートの frontmatter の定義
+  lib/           math-markdown.mjs（数式とブロックの Markdown プラグイン）, math-notes.ts, ml.ts
   components/    LoopDiagram.astro, Motif.astro（インライン SVG）
   layouts/       Base.astro（<head> / metadata / header / footer）
-  pages/         index.astro, 404.astro, math/index.astro, math/[slug].astro
-  styles/        global.css, math.css（数学ノートのページだけ）
+  pages/         index.astro, 404.astro, math/index.astro, math/[slug].astro, ml/index.astro, ml/[slug].astro
+  styles/        global.css, math.css（数学ノートと /ml のページ）, ml.css（/ml のページだけ）
 tests/           数学ノート用 Markdown プラグインのテスト
 public/          favicon.svg, ogp.png, robots.txt, _redirects
-docs/            ADR、プロフィール・公開情報の棚卸し、数学ノートの雛形
+docs/            ADR、プロフィール・公開情報の棚卸し、数学ノートと機械学習ノートの雛形
 wrangler.toml    Cloudflare Workers Static Assets の設定
 .node-version    ビルドに使う Node のバージョン（CI / Cloudflare 共通）
 ```

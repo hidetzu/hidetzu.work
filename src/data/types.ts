@@ -106,3 +106,51 @@ export type MathIndex = {
   roadmap: { title: string; note?: string }[];
   goals: string;
 };
+
+// 機械学習の学習マップ（/ml）。src/data/ml.json の形
+export type MlStatus = 'unassessed' | 'studying' | 'concept' | 'explainable';
+
+// 主な分類軸。学習方法・モデルの種類・応用分野は別の軸で、領域はそのどれかを主に扱う
+export type MlAxis = 'foundation' | 'method' | 'model' | 'application';
+
+export type MlArea = {
+  // URL のアンカーとノートの frontmatter の area に使う
+  id: string;
+  number: string;
+  title: string;
+  axis: MlAxis[];
+  // この領域が答える問い
+  question: string;
+  // 自己申告。本人だけが変える
+  status: MlStatus;
+  // 先に学ぶとよい領域の id（学習マップの矢印）
+  prerequisites: string[];
+  topics: { title: string; research?: boolean }[];
+};
+
+export type MlEdge = { from: string; to: string; label: string; dashed?: boolean };
+
+export type MlEvent = {
+  year: string;
+  title: string;
+  area: string;
+  // 一次資料（原論文など）。年はここで確かめたもの
+  source: { label: string; url: string };
+  summary: string;
+  // 主要な転換点だけ。6 つの観点で整理する
+  detail?: {
+    before: string;
+    idea: string;
+    enabled: string;
+    remaining: string;
+    next: string;
+  };
+};
+
+export type MlIndex = {
+  lead: string[];
+  areas: MlArea[];
+  edges: MlEdge[];
+  order: { area: string; reason: string }[];
+  timeline: MlEvent[];
+};
