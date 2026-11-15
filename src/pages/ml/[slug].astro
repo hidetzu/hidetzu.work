@@ -19,7 +19,7 @@ interface Props {
 
 const { note } = Astro.props;
 const { Content, headings } = await render(note);
-const { title, description, status, createdAt, updatedAt, tags, references, draft } = note.data;
+const { title, description, status, progress, createdAt, updatedAt, tags, references, draft } = note.data;
 const area = areaOf(note);
 const toc = headings.filter((h) => h.depth === 2);
 ---
@@ -37,7 +37,7 @@ const toc = headings.filter((h) => h.depth === 2);
           <dd>
             <span class={`status ml-status ml-status--${status}`}>{mlStatusLabel[status]}</span>
             {draft && <span class="status">draft</span>}
-            {mlStatusNote[status]}（自己申告）
+            {progress ? `${progress}（自己申告）` : `${mlStatusNote[status]}（自己申告）`}
           </dd>
         </div>
         <div>

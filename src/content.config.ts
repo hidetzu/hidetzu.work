@@ -50,6 +50,8 @@ const ml = defineCollection({
     order: z.number().optional(),
     // 理解の状態。自己申告で、本人だけが変える
     status: z.enum(['unassessed', 'studying', 'concept', 'explainable']).default('unassessed'),
+    // 状態の補足（例: 「初回学習完了・再学習予定」）。状態の横に出す
+    progress: z.string().optional(),
     createdAt: z.coerce.date(),
     updatedAt: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),

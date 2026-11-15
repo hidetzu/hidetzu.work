@@ -13,7 +13,8 @@
         "method"
       ],
       "question": "データからどうやって「規則」を作るのか。何をもって学習がうまくいったと言えるのか。",
-      "status": "unassessed",
+      "status": "studying",
+      "progress": "初回学習完了・再学習予定",
       "prerequisites": [],
       "topics": [
         {

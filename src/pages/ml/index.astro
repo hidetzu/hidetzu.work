@@ -206,7 +206,7 @@ const formula = {
             </tr>
             <tr>
               <th scope="row">モデルの種類</th>
-              <td>入力から出力を計算する関数 $f_\theta$ の形</td>
+              <td>入力から出力を計算する関数 <span set:html={tex('f_\\theta')} /> の形</td>
               <td>線形モデル、決定木、SVM、多層パーセプトロン、CNN、RNN・LSTM、Transformer、VAE、GAN、拡散モデル</td>
             </tr>
             <tr>
@@ -273,6 +273,7 @@ const formula = {
               </h3>
               <p class="entry-meta ml-area-meta">
                 <span class={`status ml-status ml-status--${a.status}`}>{mlStatusLabel[a.status]}</span>
+                {a.progress && <span>{a.progress}</span>}
                 <span>主な軸：{a.axis.map((x) => mlAxisLabel[x]).join(' / ')}</span>
                 {a.prerequisites.length > 0 && (
                   <span>
@@ -301,6 +302,7 @@ const formula = {
                     <li>
                       <span class="entry-meta">
                         <span class={`status ml-status ml-status--${n.data.status}`}>{mlStatusLabel[n.data.status]}</span>
+                        {n.data.progress && <span>{n.data.progress}</span>}
                       </span>
                       <p class="other-name">
                         <a href={`/ml/${n.id}`}>
