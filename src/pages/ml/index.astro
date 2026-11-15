@@ -1,0 +1,407 @@
+---
+// 機械学習の学習マップ（/ml）。データは src/data/ml.json、学習ノートは src/content/ml にある。
+// /math とは独立したセクション（docs/adr/0007）。クライアント JS は使わない
+import 'katex/dist/katex.min.css';
+import Base from '../../layouts/Base.astro';
+import '../../styles/math.css';
+import '../../styles/ml.css';
+import { richText, tex } from '../../lib/tex';
+import {
+  byOrder,
+  getMlNotes,
+  mlAxisLabel,
+  mlIndex,
+  mlStatusKeys,
+  mlStatusLabel,
+  mlStatusNote,
+  validateMlData,
+} from '../../lib/ml';
+
+validateMlData(mlIndex);
+const { lead, areas, edges, order, timeline } = mlIndex;
+const notes = await getMlNotes();
+const notesOf = (areaId: string) => notes.filter((n) => n.data.area === areaId).sort(byOrder);
+const areaById = new Map(areas.map((a) => [a.id, a]));
+const title = 'Machine Learning';
+const description =
+  '機械学習の理論と歴史を学ぶための学習マップ。8 つの領域のつながりと学ぶ順序、主要な歴史的転換点、領域ごとの理解の状態をまとめる。';
+
+// 領域ごとの状態の数
+const statusCounts = mlStatusKeys.map((s) => ({ status: s, count: areas.filter((a) => a.status === s).length }));
+
+// --- 学習マップの図（インライン SVG）。幅 360 の座標で描き、画面幅に合わせて縮める ---
+const W = 360;
+const NODE_W = 164;
+const NODE_H = 50;
+const col = { left: 90, center: 180, right: 270 } as const;
+const rowY = (row: number) => 10 + row * 90;
+// 学ぶ順に上から下へ。実線は前提、破線は関連
+const layout: Record<string, { x: number; row: number }> = {
+  foundations: { x: col.center, row: 0 },
+  classical: { x: col.left, row: 1 },
+  'neural-networks': { x: col.right, row: 1 },
+  reinforcement: { x: col.left, row: 2 },
+  'deep-learning': { x: col.right, row: 2 },
+  'transformers-llm': { x: col.left, row: 3 },
+  generative: { x: col.right, row: 3 },
+  'modern-ai': { x: col.center, row: 4 },
+};
+const H = rowY(4) + NODE_H + 12;
+for (const a of areas) if (!layout[a.id]) throw new Error(`ml: no layout for area "${a.id}"`);
+
+const box = (id: string) => {
+  const { x, row } = layout[id];
+  const y = rowY(row);
+  return { cx: x, x: x - NODE_W / 2, y, top: y, bottom: y + NODE_H, mid: y + NODE_H / 2 };
+};
+
+// 矢印の経路。同じ行なら横に、下の行へは下辺から上辺へ。離れた列へ 2 行下りるものは左端を回る
+const edgePath = (from: string, to: string) => {
+  const a = box(from);
+  const b = box(to);
+  if (layout[from].row === layout[to].row) {
+    const [l, r] = a.cx < b.cx ? [a, b] : [b, a];
+    const x1 = l.cx + NODE_W / 2;
+    const x2 = r.cx - NODE_W / 2;
+    return a.cx < b.cx ? `M${x1} ${a.mid} H${x2 - 1}` : `M${x2} ${a.mid} H${x1 + 1}`;
+  }
+  if (layout[to].row - layout[from].row >= 2) {
+    const xl = a.x;
+    return `M${xl} ${a.mid} H4 V${b.mid} H${b.x - 1}`;
+  }
+  const dx = b.cx === a.cx ? 0 : b.cx > a.cx ? 1 : -1;
+  const x1 = a.cx + dx * 36;
+  const x2 = b.cx - dx * 36;
+  return `M${x1} ${a.bottom} L${x2} ${b.top - 1}`;
+};
+
+const formula = {
+  model: tex('\\hat{y} = f_\\theta(x)', true),
+  loss: tex('L(\\theta) = \\frac{1}{n} \\sum_{i=1}^{n} \\left( y_i - \\hat{y}_i \\right)^2', true),
+  gd: tex('\\theta_{t+1} = \\theta_t - \\eta \\, \\nabla_\\theta L(\\theta_t)', true),
+};
+---
+
+<Base title={title} description={description}>
+  <main id="main" class="math-index ml-index">
+    <section class="section" aria-labelledby="ml-title">
+      <div class="section-head">
+        <span class="num">ML</span>
+        <h1 id="ml-title">Machine Learning</h1>
+      </div>
+      {lead.map((p) => <p class="lede">{p}</p>)}
+      <nav class="math-fields math-views" aria-label="このページの内容">
+        <ul>
+          <li><a href="#map">学習マップ</a></li>
+          <li><a href="#axes">3 つの分類軸</a></li>
+          <li><a href="#framework">共通の枠組み</a></li>
+          <li><a href="#areas">8 つの領域</a></li>
+          <li><a href="#history">歴史の転換点</a></li>
+          <li><a href="#legend">表示の意味</a></li>
+        </ul>
+      </nav>
+    </section>
+
+    <section class="section" aria-labelledby="map">
+      <h2 class="sub-head" id="map">Map</h2>
+      <p class="math-section-lead">
+        上から下へ、学ぶ順に並べた。実線の矢印は「先に学ぶとよい領域」、破線は内容の関連を表す。枠をクリックすると、その領域の説明へ移動する。
+      </p>
+      <p class="ml-progress">
+        {
+          statusCounts.map(({ status, count }) => (
+            <span>
+              <span class={`status ml-status ml-status--${status}`}>{mlStatusLabel[status]}</span> {count}
+            </span>
+          ))
+        }
+      </p>
+      <figure class="ml-map">
+        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="ml-map-title" xmlns="http://www.w3.org/2000/svg">
+          <title id="ml-map-title">機械学習の 8 つの領域と、学ぶ順序・関連を示す図</title>
+          <defs>
+            <marker id="ml-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L8 4 L0 8 z" class="ml-map-arrowhead" />
+            </marker>
+          </defs>
+          <g class="ml-map-edges">
+            {
+              edges.map((e) => (
+                <path
+                  d={edgePath(e.from, e.to)}
+                  class={e.dashed ? 'dashed' : undefined}
+                  marker-end={e.dashed ? undefined : 'url(#ml-arrow)'}
+                />
+              ))
+            }
+          </g>
+          {
+            areas.map((a) => {
+              const b = box(a.id);
+              return (
+                <a href={`#area-${a.id}`} class={`ml-map-node ml-map-node--${a.status}`}>
+                  <rect x={b.x} y={b.y} width={NODE_W} height={NODE_H} rx="4" />
+                  <text x={b.cx} y={b.y + 21} class="ml-map-title">
+                    <tspan class="ml-map-num">{a.number}</tspan> {a.title}
+                  </text>
+                  <text x={b.cx} y={b.y + 39} class="ml-map-status">
+                    {mlStatusLabel[a.status]}
+                  </text>
+                </a>
+              );
+            })
+          }
+        </svg>
+      </figure>
+
+      <h3 class="math-legend-title">矢印の意味</h3>
+      <ul class="ml-edges">
+        {
+          edges.map((e) => (
+            <li>
+              <span class="ml-edge-ends">
+                {areaById.get(e.from)!.number} {e.dashed ? '⋯' : '→'} {areaById.get(e.to)!.number}
+              </span>
+              <span set:html={richText(e.label)} />
+              {e.dashed && <span class="math-row-note">関連</span>}
+            </li>
+          ))
+        }
+      </ul>
+
+      <h3 class="math-legend-title">学ぶ順序</h3>
+      <ol class="ml-order">
+        {
+          order.map((o) => (
+            <li>
+              <a href={`#area-${o.area}`}>
+                {areaById.get(o.area)!.number} {areaById.get(o.area)!.title}
+              </a>
+              <span class="ml-order-reason">{o.reason}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="section" aria-labelledby="axes">
+      <h2 class="sub-head" id="axes">Axes</h2>
+      <p class="math-section-lead">
+        機械学習の技術は、少なくとも 3 つの別々の軸で分類できる。8 つの領域はこの軸が混ざっているので、各領域に主な軸を添えた。
+      </p>
+      <div class="ml-table-wrap">
+        <table class="ml-table">
+          <thead>
+            <tr>
+              <th scope="col">分類軸</th>
+              <th scope="col">何を分けるか</th>
+              <th scope="col">例</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">学習方法</th>
+              <td>どんな信号から学ぶか</td>
+              <td>教師あり（正解ラベル）、教師なし（ラベルなし）、自己教師あり（データ自身から作った課題）、強化学習（報酬）</td>
+            </tr>
+            <tr>
+              <th scope="row">モデルの種類</th>
+              <td>入力から出力を計算する関数 $f_\theta$ の形</td>
+              <td>線形モデル、決定木、SVM、多層パーセプトロン、CNN、RNN・LSTM、Transformer、VAE、GAN、拡散モデル</td>
+            </tr>
+            <tr>
+              <th scope="row">応用分野</th>
+              <td>何に使うか</td>
+              <td>画像認識、自然言語処理、音声、画像・音声の生成、対話、ゲームやロボットの制御、検索と組み合わせた質問応答</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="math-section-lead">
+        同じモデルが複数の学習方法で学習されることがあり、1 つの応用に複数のモデルが使われる。たとえば GPT 系の LLM は、モデルとしては Transformer、学習方法としては自己教師あり学習（次トークン予測）による事前学習に、指示チューニングや RLHF（強化学習）を組み合わせたもの、応用としては自然言語処理や対話にあたる。
+      </p>
+    </section>
+
+    <section class="section" aria-labelledby="framework">
+      <h2 class="sub-head" id="framework">Framework</h2>
+      <p class="math-section-lead">
+        ほとんどの領域は、「パラメータをもつモデル」「予測の悪さを測る損失関数」「損失を小さくする最適化」という共通の枠組みで書ける。
+      </p>
+      <div class="ml-formulas prose">
+        <h3>予測モデル</h3>
+        <div class="math-display" set:html={formula.model} />
+        <ul>
+          <li><span set:html={tex('x')} /> は入力（画像の画素値、文章のトークン列など）、<span set:html={tex('\\hat{y}')} /> はモデルの予測。</li>
+          <li><span set:html={tex('\\theta')} /> はパラメータ（重み）。学習で決める値の集まりで、LLM では数十億個以上になることもある。</li>
+          <li><span set:html={tex('f_\\theta')} /> は、<span set:html={tex('\\theta')} /> を決めると入力から予測を計算する関数。モデルの種類とは、この関数の形のことである。</li>
+        </ul>
+
+        <h3>損失関数（平均二乗誤差の例）</h3>
+        <div class="math-display" set:html={formula.loss} />
+        <ul>
+          <li><span set:html={tex('(x_i, y_i)')} />（<span set:html={tex('i = 1, \\dots, n')} />）は学習データ、<span set:html={tex('y_i')} /> は正解、<span set:html={tex('\\hat{y}_i = f_\\theta(x_i)')} /> は予測。</li>
+          <li>予測と正解の差を 2 乗して平均したもので、<span set:html={tex('\\theta')} /> の関数として見る。小さいほど、学習データによく当てはまっている。</li>
+          <li>分類では交差エントロピーなど、目的に合わせて別の損失関数を使う。</li>
+        </ul>
+
+        <h3>勾配降下法</h3>
+        <div class="math-display" set:html={formula.gd} />
+        <ul>
+          <li><span set:html={tex('\\nabla_\\theta L')} /> は損失の勾配で、<span set:html={tex('\\theta')} /> の各成分を少し動かしたときに損失がどれだけ増えるかを並べたベクトル。</li>
+          <li>勾配と逆向きに少しずつ <span set:html={tex('\\theta')} /> を動かすと、損失が減る方向に進む。<span set:html={tex('\\eta > 0')} /> は 1 回に動かす幅（学習率）、<span set:html={tex('t')} /> は更新の回数。</li>
+          <li>多層のネットワークでは、この勾配を効率よく計算する方法が誤差逆伝播法である。</li>
+        </ul>
+        <p>
+          学習の目的は、学習データの損失を下げることそのものではなく、まだ見ていないデータでもよく予測できること（汎化）である。学習データにだけ合いすぎて、新しいデータで外れる状態を過学習という。
+        </p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="areas">
+      <h2 class="sub-head" id="areas">Areas</h2>
+      <p class="math-section-lead">
+        各領域の問いと、学ぶ項目。<span class="status ml-research">研究中</span> は、確立した理論・手法ではなく、研究が進行中のテーマ。学習ノートは、書いたものだけを各領域の下に並べる。
+      </p>
+      {
+        areas.map((a) => {
+          const areaNotes = notesOf(a.id);
+          return (
+            <section class="ml-area" id={`area-${a.id}`} aria-labelledby={`area-${a.id}-title`}>
+              <h3 id={`area-${a.id}-title`}>
+                <span class="ml-area-num">{a.number}</span>
+                {a.title}
+              </h3>
+              <p class="entry-meta ml-area-meta">
+                <span class={`status ml-status ml-status--${a.status}`}>{mlStatusLabel[a.status]}</span>
+                <span>主な軸：{a.axis.map((x) => mlAxisLabel[x]).join(' / ')}</span>
+                {a.prerequisites.length > 0 && (
+                  <span>
+                    前提：
+                    {a.prerequisites.map((p, i) => (
+                      <>
+                        {i > 0 && '、'}
+                        <a href={`#area-${p}`}>{areaById.get(p)!.number}</a>
+                      </>
+                    ))}
+                  </span>
+                )}
+              </p>
+              <p class="ml-area-question">{a.question}</p>
+              <ul class="ml-topics">
+                {a.topics.map((t) => (
+                  <li>
+                    {t.title}
+                    {t.research && <span class="status ml-research">研究中</span>}
+                  </li>
+                ))}
+              </ul>
+              {areaNotes.length > 0 ? (
+                <ul class="others math-list ml-notes">
+                  {areaNotes.map((n) => (
+                    <li>
+                      <span class="entry-meta">
+                        <span class={`status ml-status ml-status--${n.data.status}`}>{mlStatusLabel[n.data.status]}</span>
+                      </span>
+                      <p class="other-name">
+                        <a href={`/ml/${n.id}`}>
+                          <strong>{n.data.title}</strong>
+                        </a>
+                      </p>
+                      <p class="other-summary">{n.data.description}</p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p class="math-empty">学習ノートはまだない。</p>
+              )}
+            </section>
+          );
+        })
+      }
+    </section>
+
+    <section class="section" aria-labelledby="history">
+      <h2 class="sub-head" id="history">History</h2>
+      <p class="math-section-lead">
+        主要な歴史的転換点。年は原論文などの一次資料で確かめたもので、論文が先にプレプリントで公開された場合は注記した。主要な転換点には、登場の背景・それ以前の問題・解決の発想・できるようになったこと・残った課題・その後の発展を添えた。
+      </p>
+      <ol class="ml-timeline">
+        {
+          timeline.map((t) => (
+            <li class={t.detail ? 'ml-event ml-event--major' : 'ml-event'}>
+              <span class="ml-event-year">{t.year}</span>
+              <div class="ml-event-body">
+                <p class="ml-event-title">
+                  <strong>{t.title}</strong>
+                  <a class="ml-event-area" href={`#area-${t.area}`}>
+                    {areaById.get(t.area)!.number}
+                  </a>
+                </p>
+                <p class="ml-event-summary" set:html={richText(t.summary)} />
+                {t.detail && (
+                  <dl class="ml-event-detail">
+                    <div>
+                      <dt>それ以前の問題</dt>
+                      <dd>{t.detail.before}</dd>
+                    </div>
+                    <div>
+                      <dt>解決の発想</dt>
+                      <dd>{t.detail.idea}</dd>
+                    </div>
+                    <div>
+                      <dt>できるようになったこと</dt>
+                      <dd>{t.detail.enabled}</dd>
+                    </div>
+                    <div>
+                      <dt>残った課題</dt>
+                      <dd>{t.detail.remaining}</dd>
+                    </div>
+                    <div>
+                      <dt>その後の発展</dt>
+                      <dd>{t.detail.next}</dd>
+                    </div>
+                  </dl>
+                )}
+                <p class="ml-event-source">
+                  <a href={t.source.url} rel="noopener" lang="en">
+                    {t.source.label}
+                  </a>
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="section" aria-labelledby="legend">
+      <h2 class="sub-head" id="legend">Legend</h2>
+      <h3 class="math-legend-title">理解の状態（領域・ノートごとの自己申告）</h3>
+      <dl class="legend">
+        {
+          mlStatusKeys.map((s) => (
+            <div>
+              <dt>{mlStatusLabel[s]}</dt>
+              <dd>{mlStatusNote[s]}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <h3 class="math-legend-title">内容の種類</h3>
+      <dl class="legend">
+        <div>
+          <dt>歴史的事実</dt>
+          <dd>年表の出来事。論文の発表など、一次資料で確かめられるもの</dd>
+        </div>
+        <div>
+          <dt>確立した理論・手法</dt>
+          <dd>領域の項目のうち、印のないもの</dd>
+        </div>
+        <div>
+          <dt>研究中</dt>
+          <dd>評価の方法や結論がまだ定まっていないテーマ</dd>
+        </div>
+      </dl>
+    </section>
+  </main>
+</Base>

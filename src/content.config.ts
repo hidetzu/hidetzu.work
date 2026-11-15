@@ -2,6 +2,7 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import mathData from './data/math.json';
+import mlData from './data/ml.json';
 
 // 分野の id。src/data/math.json の fields に書いたものだけを topic に使える
 const fieldIds = mathData.fields.map((f) => f.id) as [string, ...string[]];
@@ -35,4 +36,29 @@ const math = defineCollection({
   }),
 });
 
-export const collections = { math };
+// 機械学習の学習ノート。src/content/ml/<slug>.md を置くと /ml/<slug> として公開される。
+// /math とは独立したセクション（docs/adr/0007）。書き方は README の「機械学習の学習マップ」と docs/ml-note-template.md
+const areaIds = mlData.areas.map((a) => a.id) as [string, ...string[]];
+
+const ml = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/ml' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    // 領域（src/data/ml.json の areas の id）。/ml の学習マップでこの領域の下に出す
+    area: z.enum(areaIds),
+    order: z.number().optional(),
+    // 理解の状態。自己申告で、本人だけが変える
+    status: z.enum(['unassessed', 'studying', 'concept', 'explainable']).default('unassessed'),
+    createdAt: z.coerce.date(),
+    updatedAt: z.coerce.date().optional(),
+    tags: z.array(z.string()).default([]),
+    // 参考文献・原論文。year と url は一次資料で確かめたものだけを書く
+    references: z
+      .array(z.object({ title: z.string(), year: z.number().int().optional(), url: z.url().optional() }))
+      .default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { math, ml };

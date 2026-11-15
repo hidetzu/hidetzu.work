@@ -1,0 +1,731 @@
+{
+  "lead": [
+    "機械学習の理論と歴史を、プログラマーの視点から学ぶための学習マップです。基礎理論からニューラルネットワーク、深層学習、Transformer と LLM、現代の AI 技術までを 8 つの領域に分け、つながりと学ぶ順序を整理しています。",
+    "証明を厳密に完成させることよりも、技術が登場した背景、解決した問題、仕組み、限界、その後の発展を自分の言葉で説明できることを目標にしています。このページの領域の説明と年表は、学び始める前の見取り図として Claude がまとめたものです。自分の理解は、各領域の学習ノートの「自分の理解」にだけ書きます。"
+  ],
+  "areas": [
+    {
+      "id": "foundations",
+      "number": "01",
+      "title": "機械学習の基本原理",
+      "axis": [
+        "foundation",
+        "method"
+      ],
+      "question": "データからどうやって「規則」を作るのか。何をもって学習がうまくいったと言えるのか。",
+      "status": "unassessed",
+      "prerequisites": [],
+      "topics": [
+        {
+          "title": "人工知能と機械学習の関係"
+        },
+        {
+          "title": "従来のプログラミングとの違い"
+        },
+        {
+          "title": "データ、モデル、パラメータ"
+        },
+        {
+          "title": "損失関数と最適化"
+        },
+        {
+          "title": "学習、汎化、過学習"
+        },
+        {
+          "title": "教師あり・教師なし・自己教師あり学習"
+        }
+      ]
+    },
+    {
+      "id": "classical",
+      "number": "02",
+      "title": "古典的機械学習",
+      "axis": [
+        "model"
+      ],
+      "question": "ニューラルネットワーク以外に、どんなモデルがあり、それぞれ何を仮定しているのか。",
+      "status": "unassessed",
+      "prerequisites": [
+        "foundations"
+      ],
+      "topics": [
+        {
+          "title": "線形回帰"
+        },
+        {
+          "title": "ロジスティック回帰"
+        },
+        {
+          "title": "決定木"
+        },
+        {
+          "title": "ベイズモデル"
+        },
+        {
+          "title": "SVM"
+        },
+        {
+          "title": "統計的学習理論の基本"
+        }
+      ]
+    },
+    {
+      "id": "neural-networks",
+      "number": "03",
+      "title": "ニューラルネットワーク",
+      "axis": [
+        "model",
+        "method"
+      ],
+      "question": "単純な計算単位を重ねると何が表せるようになり、その重みをどう学習するのか。",
+      "status": "unassessed",
+      "prerequisites": [
+        "foundations"
+      ],
+      "topics": [
+        {
+          "title": "パーセプトロン"
+        },
+        {
+          "title": "単層モデルの限界"
+        },
+        {
+          "title": "多層ニューラルネットワーク"
+        },
+        {
+          "title": "活性化関数"
+        },
+        {
+          "title": "勾配降下法"
+        },
+        {
+          "title": "誤差逆伝播法"
+        }
+      ]
+    },
+    {
+      "id": "deep-learning",
+      "number": "04",
+      "title": "深層学習",
+      "axis": [
+        "model"
+      ],
+      "question": "層を深くすると何が変わったのか。なぜ 2010 年代に急に実用になったのか。",
+      "status": "unassessed",
+      "prerequisites": [
+        "neural-networks"
+      ],
+      "topics": [
+        {
+          "title": "深層学習が発展した背景"
+        },
+        {
+          "title": "CNN"
+        },
+        {
+          "title": "RNN"
+        },
+        {
+          "title": "LSTM"
+        },
+        {
+          "title": "GPU と計算能力"
+        },
+        {
+          "title": "特徴表現の学習"
+        }
+      ]
+    },
+    {
+      "id": "transformers-llm",
+      "number": "05",
+      "title": "Transformer と LLM",
+      "axis": [
+        "model",
+        "method"
+      ],
+      "question": "Attention は系列モデルの何を変えたのか。大規模言語モデルはどう作られ、何を予測しているのか。",
+      "status": "unassessed",
+      "prerequisites": [
+        "deep-learning"
+      ],
+      "topics": [
+        {
+          "title": "Attention"
+        },
+        {
+          "title": "Self-Attention"
+        },
+        {
+          "title": "Transformer"
+        },
+        {
+          "title": "Embedding"
+        },
+        {
+          "title": "BERT と GPT"
+        },
+        {
+          "title": "トークンと次トークン予測"
+        },
+        {
+          "title": "事前学習とファインチューニング"
+        },
+        {
+          "title": "指示チューニング"
+        }
+      ]
+    },
+    {
+      "id": "generative",
+      "number": "06",
+      "title": "生成モデル",
+      "axis": [
+        "model",
+        "application"
+      ],
+      "question": "データを分類するのではなく、新しいデータを作るには、何を学習すればよいのか。",
+      "status": "unassessed",
+      "prerequisites": [
+        "deep-learning"
+      ],
+      "topics": [
+        {
+          "title": "自己回帰モデル"
+        },
+        {
+          "title": "VAE"
+        },
+        {
+          "title": "GAN"
+        },
+        {
+          "title": "拡散モデル"
+        },
+        {
+          "title": "画像・音声生成"
+        }
+      ]
+    },
+    {
+      "id": "reinforcement",
+      "number": "07",
+      "title": "強化学習",
+      "axis": [
+        "method"
+      ],
+      "question": "正解ラベルがなく、行動の結果として報酬だけが返ってくるとき、どう学習するのか。",
+      "status": "unassessed",
+      "prerequisites": [
+        "neural-networks"
+      ],
+      "topics": [
+        {
+          "title": "エージェントと環境"
+        },
+        {
+          "title": "報酬と方策"
+        },
+        {
+          "title": "Q 学習"
+        },
+        {
+          "title": "深層強化学習"
+        },
+        {
+          "title": "RLHF"
+        },
+        {
+          "title": "推論能力の改善と強化学習",
+          "research": true
+        }
+      ]
+    },
+    {
+      "id": "modern-ai",
+      "number": "08",
+      "title": "現代 AI と研究課題",
+      "axis": [
+        "application"
+      ],
+      "question": "LLM を部品として、どんなシステムが作られているのか。何がまだ分かっていないのか。",
+      "status": "unassessed",
+      "prerequisites": [
+        "transformers-llm",
+        "generative",
+        "reinforcement"
+      ],
+      "topics": [
+        {
+          "title": "RAG"
+        },
+        {
+          "title": "Tool Calling"
+        },
+        {
+          "title": "AI エージェント",
+          "research": true
+        },
+        {
+          "title": "マルチモーダル AI"
+        },
+        {
+          "title": "推論能力とその評価",
+          "research": true
+        },
+        {
+          "title": "ハルシネーション",
+          "research": true
+        },
+        {
+          "title": "AI の安全性と限界",
+          "research": true
+        },
+        {
+          "title": "今後の研究課題",
+          "research": true
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "foundations",
+      "to": "classical",
+      "label": "損失と最適化の枠組みを、線形モデルや決定木などで具体化する"
+    },
+    {
+      "from": "foundations",
+      "to": "neural-networks",
+      "label": "同じ枠組みを、多層の関数 $f_\\theta$ に当てはめる"
+    },
+    {
+      "from": "classical",
+      "to": "neural-networks",
+      "label": "ロジスティック回帰は、シグモイド関数を使う 1 層のネットワークと見なせる",
+      "dashed": true
+    },
+    {
+      "from": "neural-networks",
+      "to": "deep-learning",
+      "label": "層を深くし、畳み込みや再帰の構造を入れる"
+    },
+    {
+      "from": "neural-networks",
+      "to": "reinforcement",
+      "label": "価値関数や方策をニューラルネットワークで近似する（深層強化学習）"
+    },
+    {
+      "from": "deep-learning",
+      "to": "transformers-llm",
+      "label": "RNN・LSTM で系列を扱う難しさから、Attention へ進む"
+    },
+    {
+      "from": "deep-learning",
+      "to": "generative",
+      "label": "深いネットワークで、データの分布そのものを学習する"
+    },
+    {
+      "from": "transformers-llm",
+      "to": "generative",
+      "label": "LLM の次トークン予測は、自己回帰型の生成モデルでもある",
+      "dashed": true
+    },
+    {
+      "from": "reinforcement",
+      "to": "transformers-llm",
+      "label": "RLHF で、人間の評価を報酬として LLM を調整する",
+      "dashed": true
+    },
+    {
+      "from": "reinforcement",
+      "to": "modern-ai",
+      "label": "報酬による学習が、推論能力の改善やエージェントの研究につながる"
+    },
+    {
+      "from": "transformers-llm",
+      "to": "modern-ai",
+      "label": "LLM を部品として、検索・ツール・エージェントを組み合わせる"
+    },
+    {
+      "from": "generative",
+      "to": "modern-ai",
+      "label": "画像・音声の生成が、マルチモーダル AI につながる"
+    }
+  ],
+  "order": [
+    {
+      "area": "foundations",
+      "reason": "あとのすべての領域が、モデル・損失関数・最適化という同じ枠組みの上にある"
+    },
+    {
+      "area": "classical",
+      "reason": "仮定がはっきりした小さなモデルで、汎化と過学習を具体的に確かめられる"
+    },
+    {
+      "area": "neural-networks",
+      "reason": "パーセプトロンの限界から多層化と誤差逆伝播法へ進む流れが、深層学習の出発点になる"
+    },
+    {
+      "area": "deep-learning",
+      "reason": "CNN・RNN・LSTM を知ると、Transformer が何を置き換えたのかが分かる"
+    },
+    {
+      "area": "transformers-llm",
+      "reason": "LLM の仕組みは、強化学習（RLHF）と現代の AI システムの前提になる"
+    },
+    {
+      "area": "reinforcement",
+      "reason": "RLHF と、推論能力を強化学習で改善する研究を理解するために必要になる"
+    },
+    {
+      "area": "generative",
+      "reason": "VAE・GAN・拡散モデルは、Transformer と並ぶもう 1 つの系統として学べる"
+    },
+    {
+      "area": "modern-ai",
+      "reason": "ほかの領域を前提に、RAG・ツール・エージェントと未解決の課題を整理する"
+    }
+  ],
+  "timeline": [
+    {
+      "year": "1955",
+      "title": "Dartmouth 会議の提案書",
+      "area": "foundations",
+      "source": {
+        "label": "McCarthy, Minsky, Rochester, Shannon, A Proposal for the Dartmouth Summer Research Project on Artificial Intelligence, 1955（AI Magazine 27(4) に再録）",
+        "url": "https://doi.org/10.1609/aimag.v27i4.1904"
+      },
+      "summary": "「artificial intelligence」という語を使った研究計画の提案書。ワークショップは 1956 年夏に開かれた。"
+    },
+    {
+      "year": "1958",
+      "title": "パーセプトロン",
+      "area": "neural-networks",
+      "source": {
+        "label": "Rosenblatt, The perceptron, Psychological Review 65(6), 1958",
+        "url": "https://doi.org/10.1037/h0042519"
+      },
+      "summary": "例から重みを学習する、ニューロンを模した分類モデル。",
+      "detail": {
+        "before": "神経細胞を論理素子として表すモデルはあったが、結合の重みを例から自動で決める方法は確立していなかった。",
+        "idea": "出力の誤りに応じて重みを修正する学習規則で、例から分類の規則を獲得する。",
+        "enabled": "線形に分離できるパターンを、例から学習して分類できる。",
+        "remaining": "1 層では、線形に分離できない問題を表せない。",
+        "next": "多層のネットワークと、その重みを学習する誤差逆伝播法。"
+      }
+    },
+    {
+      "year": "1969",
+      "title": "『Perceptrons』による限界の分析",
+      "area": "neural-networks",
+      "source": {
+        "label": "Minsky, Papert, Perceptrons, MIT Press, 1969（初版）",
+        "url": "https://doi.org/10.7551/mitpress/11301.001.0001"
+      },
+      "summary": "局所的な情報しか見ないパーセプトロンでは、パリティや図形の連結性を判定できないことなどを示した。XOR は 2 入力のパリティで、その最も簡単な例にあたる。"
+    },
+    {
+      "year": "1986",
+      "title": "誤差逆伝播法の普及",
+      "area": "neural-networks",
+      "source": {
+        "label": "Rumelhart, Hinton, Williams, Learning representations by back-propagating errors, Nature 323, 1986",
+        "url": "https://doi.org/10.1038/323533a0"
+      },
+      "summary": "多層ネットワークの重みを、出力の誤差から逆向きに計算した勾配で学習する方法。同様の計算法はそれ以前にも提案されていたが、この論文で広く知られるようになった。",
+      "detail": {
+        "before": "多層にすれば表せる関数は増えるが、出力から遠い隠れ層の重みをどう調整すればよいかが問題だった。",
+        "idea": "微分の連鎖律を使い、出力の誤差を出力側から入力側へ逆向きに伝えて、すべての重みについての損失の勾配をまとめて計算する。",
+        "enabled": "隠れ層が、課題に役立つ内部表現を自分で学習できることが示された。",
+        "remaining": "層を深くすると学習がうまく進まない（勾配消失など）。データと計算資源も足りなかった。",
+        "next": "畳み込みニューラルネットワーク（CNN）、LSTM、のちの深層学習。"
+      }
+    },
+    {
+      "year": "1989",
+      "title": "誤差逆伝播法で学習する CNN",
+      "area": "deep-learning",
+      "source": {
+        "label": "LeCun et al., Backpropagation applied to handwritten zip code recognition, Neural Computation 1(4), 1989",
+        "url": "https://doi.org/10.1162/neco.1989.1.4.541"
+      },
+      "summary": "畳み込みの構造をもつネットワークを誤差逆伝播法で学習し、手書きの郵便番号を認識した。1998 年の LeNet の論文（Proc. IEEE）につながる。"
+    },
+    {
+      "year": "1989",
+      "title": "Q 学習",
+      "area": "reinforcement",
+      "source": {
+        "label": "Watkins, Learning from Delayed Rewards, PhD thesis, Cambridge, 1989",
+        "url": "https://www.cs.rhul.ac.uk/~chrisw/thesis.html"
+      },
+      "summary": "報酬が遅れて返ってくる問題で、行動の価値を推定しながら学習する方法。収束の証明は Watkins と Dayan の論文（Machine Learning, 1992）にある。"
+    },
+    {
+      "year": "1995",
+      "title": "ソフトマージン SVM",
+      "area": "classical",
+      "source": {
+        "label": "Cortes, Vapnik, Support-vector networks, Machine Learning 20(3), 1995",
+        "url": "https://doi.org/10.1007/BF00994018"
+      },
+      "summary": "1990 年代の統計的機械学習を代表する手法の 1 つ。カーネルを使う最大マージン分類器（Boser, Guyon, Vapnik, 1992）を、誤分類を許す形に広げた。",
+      "detail": {
+        "before": "多層ネットワークの学習は非凸な最適化で、結果が初期値などに左右されやすかった。",
+        "idea": "クラスの間の余白（マージン）を最大にする境界を、凸最適化で求める。カーネルを使うと、入力を高次元の特徴空間に写して分類するのと同じ計算ができる。",
+        "enabled": "統計的学習理論の考え方に基づく分類器を、大域的な最適解として学習できる。",
+        "remaining": "どの特徴量やカーネルを使うかは、人が設計する必要があった。データが大きいと計算が重い。",
+        "next": "2000 年代のカーネル法と統計的機械学習。特徴を人手で設計する限界は、深層学習の特徴表現の学習へつながる。"
+      }
+    },
+    {
+      "year": "1997",
+      "title": "LSTM",
+      "area": "deep-learning",
+      "source": {
+        "label": "Hochreiter, Schmidhuber, Long short-term memory, Neural Computation 9(8), 1997",
+        "url": "https://doi.org/10.1162/neco.1997.9.8.1735"
+      },
+      "summary": "ゲートで情報の保持と忘却を制御し、RNN で長い時間差の依存関係を学習しやすくした。"
+    },
+    {
+      "year": "2006",
+      "title": "深層信念ネットワーク",
+      "area": "deep-learning",
+      "source": {
+        "label": "Hinton, Osindero, Teh, A fast learning algorithm for deep belief nets, Neural Computation 18(7), 2006",
+        "url": "https://doi.org/10.1162/neco.2006.18.7.1527"
+      },
+      "summary": "層ごとの教師なし事前学習で、深いネットワークを学習する方法を示した。"
+    },
+    {
+      "year": "2012",
+      "title": "AlexNet",
+      "area": "deep-learning",
+      "source": {
+        "label": "Krizhevsky, Sutskever, Hinton, ImageNet classification with deep convolutional neural networks, NIPS 2012",
+        "url": "https://papers.nips.cc/paper_files/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html"
+      },
+      "summary": "深い CNN を GPU で大規模な画像データから学習し、画像分類のコンテスト（ILSVRC-2012）で大きな差をつけて優勝した。",
+      "detail": {
+        "before": "画像認識では、人が設計した特徴量を抽出し、その上で分類器を学習するのが主流だった。",
+        "idea": "深い CNN を、大規模なラベル付き画像データ（ImageNet）で、GPU を使って学習する。ReLU やドロップアウトなどの工夫も組み合わせた。",
+        "enabled": "特徴を人手で設計せず、データから学習する方法が画像認識で有効であることが広く認められた。",
+        "remaining": "大量のラベル付きデータと計算資源が必要になる。さらに深くすると学習が難しくなる。",
+        "next": "より深い CNN（ResNet など）と、音声・言語など他の分野への深層学習の広がり。"
+      }
+    },
+    {
+      "year": "2013",
+      "title": "word2vec",
+      "area": "transformers-llm",
+      "source": {
+        "label": "Mikolov et al., Efficient estimation of word representations in vector space, arXiv:1301.3781, 2013",
+        "url": "https://arxiv.org/abs/1301.3781"
+      },
+      "summary": "大量のテキストから、単語をベクトル（埋め込み）として学習する効率的な方法。"
+    },
+    {
+      "year": "2014",
+      "title": "VAE",
+      "area": "generative",
+      "source": {
+        "label": "Kingma, Welling, Auto-encoding variational Bayes, ICLR 2014（arXiv 2013）",
+        "url": "https://arxiv.org/abs/1312.6114"
+      },
+      "summary": "潜在変数をもつ確率モデルを、変分推論とニューラルネットワークで学習する生成モデル。"
+    },
+    {
+      "year": "2014",
+      "title": "GAN",
+      "area": "generative",
+      "source": {
+        "label": "Goodfellow et al., Generative adversarial nets, NIPS 2014",
+        "url": "https://papers.nips.cc/paper_files/paper/2014/hash/f033ed80deb0234979a61f95710dbe25-Abstract.html"
+      },
+      "summary": "データを生成するネットワークと、本物か生成されたものかを見分けるネットワークを競わせて学習する。"
+    },
+    {
+      "year": "2015",
+      "title": "Attention による機械翻訳",
+      "area": "transformers-llm",
+      "source": {
+        "label": "Bahdanau, Cho, Bengio, Neural machine translation by jointly learning to align and translate, ICLR 2015（arXiv 2014）",
+        "url": "https://arxiv.org/abs/1409.0473"
+      },
+      "summary": "翻訳の各時点で、入力文のどの位置に注目するかを学習する Attention を、RNN による機械翻訳に導入した。"
+    },
+    {
+      "year": "2015",
+      "title": "DQN",
+      "area": "reinforcement",
+      "source": {
+        "label": "Mnih et al., Human-level control through deep reinforcement learning, Nature 518, 2015",
+        "url": "https://doi.org/10.1038/nature14236"
+      },
+      "summary": "Q 学習の価値関数を深い CNN で近似し、画面の画素から Atari のゲームを学習した。前身は 2013 年の arXiv 論文。"
+    },
+    {
+      "year": "2015",
+      "title": "拡散モデルの提案",
+      "area": "generative",
+      "source": {
+        "label": "Sohl-Dickstein et al., Deep unsupervised learning using nonequilibrium thermodynamics, ICML 2015",
+        "url": "https://proceedings.mlr.press/v37/sohl-dickstein15.html"
+      },
+      "summary": "データに少しずつノイズを加える過程を考え、その逆向きの過程を学習して生成する考え方を示した。"
+    },
+    {
+      "year": "2016",
+      "title": "ResNet",
+      "area": "deep-learning",
+      "source": {
+        "label": "He et al., Deep residual learning for image recognition, CVPR 2016（arXiv 2015）",
+        "url": "https://doi.org/10.1109/CVPR.2016.90"
+      },
+      "summary": "入力をそのまま足し合わせる残差接続で、非常に深いネットワークを学習できるようにした。"
+    },
+    {
+      "year": "2017",
+      "title": "Transformer",
+      "area": "transformers-llm",
+      "source": {
+        "label": "Vaswani et al., Attention is all you need, NIPS 2017",
+        "url": "https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html"
+      },
+      "summary": "再帰をやめ、Attention だけで系列を変換するモデル。",
+      "detail": {
+        "before": "系列の変換は RNN・LSTM（と Attention）が主流で、時刻ごとに順に計算するため並列化しにくく、離れた位置どうしの関係も捉えにくかった。",
+        "idea": "系列のすべての位置どうしの関係を Self-Attention で直接計算する。語順の情報は位置エンコーディングで加える。",
+        "enabled": "学習を並列化でき、機械翻訳で当時の最高水準の精度を、より少ない学習コストで達成した。",
+        "remaining": "Self-Attention の計算量とメモリは、系列の長さの 2 乗に比例して増える。",
+        "next": "BERT、GPT などの事前学習型言語モデル。画像や音声にも使われるようになった。"
+      }
+    },
+    {
+      "year": "2017",
+      "title": "人間の選好からの強化学習",
+      "area": "reinforcement",
+      "source": {
+        "label": "Christiano et al., Deep reinforcement learning from human preferences, NIPS 2017",
+        "url": "https://papers.nips.cc/paper_files/paper/2017/hash/d5e2c0adad503c91f91df240d0cd4e49-Abstract.html"
+      },
+      "summary": "報酬を人が直接書く代わりに、2 つの行動の比較という人の判断から報酬を学習した。のちの RLHF の基礎になる。"
+    },
+    {
+      "year": "2018",
+      "title": "GPT（生成的な事前学習）",
+      "area": "transformers-llm",
+      "source": {
+        "label": "Radford et al., Improving language understanding by generative pre-training, OpenAI, 2018",
+        "url": "https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf"
+      },
+      "summary": "Transformer を大量のテキストで事前学習してから、各タスクにファインチューニングする。",
+      "detail": {
+        "before": "自然言語処理ではタスクごとにラベル付きデータを集めて学習する必要があり、ラベル付きデータは限られていた。",
+        "idea": "大量のラベルなしテキストで次の単語を予測する事前学習（自己教師あり学習）をしてから、少量のラベル付きデータで各タスクにファインチューニングする。",
+        "enabled": "1 つの事前学習モデルを、多くのタスクに転用できるようになった。",
+        "remaining": "タスクごとにファインチューニングが必要だった。",
+        "next": "BERT（双方向の事前学習）、より大規模な GPT-2・GPT-3。"
+      }
+    },
+    {
+      "year": "2019",
+      "title": "BERT",
+      "area": "transformers-llm",
+      "source": {
+        "label": "Devlin et al., BERT, NAACL 2019（arXiv 2018）",
+        "url": "https://doi.org/10.18653/v1/N19-1423"
+      },
+      "summary": "文の一部を隠して前後の文脈から当てる課題で、双方向の Transformer を事前学習した。"
+    },
+    {
+      "year": "2020",
+      "title": "GPT-3",
+      "area": "transformers-llm",
+      "source": {
+        "label": "Brown et al., Language models are few-shot learners, NeurIPS 2020",
+        "url": "https://papers.nips.cc/paper_files/paper/2020/hash/1457c0d6bfcb4967418bfb8ac142f64a-Abstract.html"
+      },
+      "summary": "非常に大きな言語モデルが、ファインチューニングなしに、指示と少数の例を入力に書くだけで多くのタスクをこなせることを示した。"
+    },
+    {
+      "year": "2020",
+      "title": "言語モデルのスケーリング則",
+      "area": "transformers-llm",
+      "source": {
+        "label": "Kaplan et al., Scaling laws for neural language models, arXiv:2001.08361, 2020",
+        "url": "https://arxiv.org/abs/2001.08361"
+      },
+      "summary": "損失が、モデルの大きさ・データ量・計算量のべき乗則に従って減ることを実験で示した。経験的な法則で、どこまで成り立つかは研究が続いている。"
+    },
+    {
+      "year": "2020",
+      "title": "RAG",
+      "area": "modern-ai",
+      "source": {
+        "label": "Lewis et al., Retrieval-augmented generation for knowledge-intensive NLP tasks, NeurIPS 2020",
+        "url": "https://papers.nips.cc/paper_files/paper/2020/hash/6b493230205f780e1bc26945df7481e5-Abstract.html"
+      },
+      "summary": "文書を検索して得た内容を、生成モデルの入力に加えて答えを生成する。"
+    },
+    {
+      "year": "2020",
+      "title": "DDPM",
+      "area": "generative",
+      "source": {
+        "label": "Ho, Jain, Abbeel, Denoising diffusion probabilistic models, NeurIPS 2020",
+        "url": "https://papers.nips.cc/paper_files/paper/2020/hash/4c5bcfec8584af0d967f1ab10179ca4b-Abstract.html"
+      },
+      "summary": "ノイズを少しずつ取り除く学習で、高品質な画像を生成できることを示し、拡散モデルが広く使われるきっかけになった。"
+    },
+    {
+      "year": "2021",
+      "title": "CLIP",
+      "area": "modern-ai",
+      "source": {
+        "label": "Radford et al., Learning transferable visual models from natural language supervision, ICML 2021",
+        "url": "https://proceedings.mlr.press/v139/radford21a.html"
+      },
+      "summary": "画像とその説明文の組を大量に使い、画像とテキストを同じ埋め込み空間で扱えるように学習した。マルチモーダル AI の基礎の 1 つ。"
+    },
+    {
+      "year": "2022",
+      "title": "InstructGPT（RLHF）",
+      "area": "reinforcement",
+      "source": {
+        "label": "Ouyang et al., Training language models to follow instructions with human feedback, NeurIPS 2022",
+        "url": "https://papers.nips.cc/paper_files/paper/2022/hash/b1efde53be364a73914f58805a001731-Abstract-Conference.html"
+      },
+      "summary": "人の手本と、人による出力の比較を使って、言語モデルを指示に従うように調整した。",
+      "detail": {
+        "before": "次トークン予測で事前学習した言語モデルは、利用者の指示に従うようには学習されておらず、事実と異なる内容や有害な内容を出力することがあった。",
+        "idea": "人が書いた手本で教師ありファインチューニングをし、さらに人が出力を比較した結果から報酬モデルを学習して、強化学習でモデルを調整する（RLHF）。",
+        "enabled": "論文の評価では、パラメータ数がずっと少ない InstructGPT の出力が、GPT-3 の出力より人に好まれた。",
+        "remaining": "事実と異なる出力（ハルシネーション）は残る。人の評価そのものの偏りや、何に合わせて調整するかも問題になる。いずれも研究中。",
+        "next": "対話型のアシスタント。推論能力を強化学習で改善する研究（研究中）。"
+      }
+    },
+    {
+      "year": "2022",
+      "title": "Chain-of-Thought",
+      "area": "modern-ai",
+      "source": {
+        "label": "Wei et al., Chain-of-thought prompting elicits reasoning in large language models, NeurIPS 2022",
+        "url": "https://papers.nips.cc/paper_files/paper/2022/hash/9d5609613524ecf4f15af0f7b31abca4-Abstract-Conference.html"
+      },
+      "summary": "途中の推論を書いた例を入力に含めると、大きな言語モデルで多段階の推論問題の正答率が上がることを示した。モデルが内部で何をしているかの理解は研究中。"
+    },
+    {
+      "year": "2023",
+      "title": "ReAct と Toolformer",
+      "area": "modern-ai",
+      "source": {
+        "label": "Yao et al., ReAct, ICLR 2023（arXiv 2022）",
+        "url": "https://arxiv.org/abs/2210.03629"
+      },
+      "summary": "推論と、検索などの外部ツールの呼び出しを交互に行う方法（ReAct）。同じ年に、言語モデルが自分でツールの使い方を学ぶ Toolformer（Schick et al., NeurIPS 2023）も発表された。AI エージェントの研究につながる。"
+    }
+  ]
+}
