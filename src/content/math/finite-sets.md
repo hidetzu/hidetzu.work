@@ -1,0 +1,189 @@
+---
+title: "有限集合（Finite Sets）"
+description: "有限集合と濃度の定義。要素を 1 つ取り除く補題、有限集合の真部分集合、有限集合はその真部分集合と全単射で対応しないこと、濃度の一意性、部分集合・和集合・直積の有限性。Munkres §6 の Lemma 6.1 〜 Corollary 6.8。"
+topic: set-theory
+order: 8
+status: understood
+createdAt: 2026-11-15
+related:
+  - functions
+tags:
+  - set-theory
+  - munkres
+sources:
+  - title: "James R. Munkres, Topology, 2nd ed."
+    location: "Chapter 1, §6 Finite Sets"
+textbook:
+  chapter: 1
+  section: 6
+---
+
+以下、$n \in \mathbb{Z}_{+}$ に対して $\{1, \dots, n\} = \{\, k \in \mathbb{Z}_{+} \mid k \le n \,\}$ と書く（[整数と実数のノート](/math/integers-reals#thm-well-ordering)と同じ記法）。
+全単射・制限・合成は[写像のノート](/math/functions#def-injective-surjective)の定義を使う。
+
+## 1. 有限集合と濃度
+
+:::definition[有限集合・濃度]{#def-finite}
+集合 $A$ が**有限**であるとは、次のどちらかが成り立つことをいう。
+
+- $A = \varnothing$ である
+- ある $n \in \mathbb{Z}_{+}$ について、$A$ から $\{1, \dots, n\}$ への全単射が存在する
+
+$A = \varnothing$ のとき $A$ の**濃度**は $0$、$A$ から $\{1, \dots, n\}$ への全単射が存在するとき $A$ の濃度は $n$ であるという。有限でない集合を**無限**であるという。
+:::
+
+この定義だけでは、濃度が 1 つに定まるかどうかは分からない。$A$ から $\{1, \dots, n\}$ への全単射と、$A$ から $\{1, \dots, m\}$ への全単射が、$n \ne m$ で両方存在するかもしれないからである。
+数え上げの経験からは明らかに思えるが、これは証明すべき事実であり、[Corollary 6.5](#cor-6-5) で示される。そのための準備が Lemma 6.1、Theorem 6.2、Corollary 6.3 である。
+
+## 2. 要素を 1 つ取り除く
+
+:::lemma[6.1]{#lem-6-1}
+$n \in \mathbb{Z}_{+}$、$A$ を集合、$a_0 \in A$ とする。次の 2 つは同値である。
+
+- $A$ から $\{1, \dots, n+1\}$ への全単射が存在する。
+- $A \setminus \{a_0\}$ から $\{1, \dots, n\}$ への全単射が存在する。
+
+:::
+
+:::proof{origin=self text=ai note="本人の証明の要点から Claude が文章にした。本人の証明と同じか照合中"}
+**（⇒）** $f \colon A \to \{1, \dots, n+1\}$ を全単射とする。
+
+**場合 1：$f(a_0) = n + 1$ のとき。** $f$ の[制限](/math/functions#def-restriction-composition) $g = f|_{A \setminus \{a_0\}}$ を考える。
+$a \in A \setminus \{a_0\}$ なら $a \ne a_0$ で、$f$ は単射だから $f(a) \ne f(a_0) = n + 1$。よって $g(a) \in \{1, \dots, n\}$ であり、$g \colon A \setminus \{a_0\} \to \{1, \dots, n\}$ と見なせる。
+
+- $g$ は単射 $f$ の制限なので単射である。
+- $k \in \{1, \dots, n\}$ をとる。$f$ は全射なので $f(a) = k$ となる $a \in A$ がある。$k \ne n + 1 = f(a_0)$ より $a \ne a_0$、すなわち $a \in A \setminus \{a_0\}$ で $g(a) = k$。よって $g$ は全射である。
+
+したがって $g$ は全単射である。
+
+**場合 2：$f(a_0) = m \ne n + 1$ のとき。** $f$ は全射なので、$f(a_1) = n + 1$ となる $a_1 \in A$ がある。$f(a_0) \ne n + 1$ より $a_1 \ne a_0$ である。
+$a_0$ と $a_1$ の像を交換して、$h \colon A \to \{1, \dots, n+1\}$ を
+
+$$
+h(a) =
+\begin{cases}
+n + 1 & (a = a_0) \\
+m & (a = a_1) \\
+f(a) & (\text{それ以外})
+\end{cases}
+$$
+
+で定める。$h$ が全単射であることを確かめる。$\{1, \dots, n+1\}$ の上で $m$ と $n + 1$ を入れ替え、ほかの元は動かさない写像を $\tau$ とする。
+$\tau \circ \tau$ は恒等写像なので、[Lemma 2.1](/math/functions#lem-2-1) より $\tau$ は全単射である。
+$f$ は単射なので、値 $m$、$n + 1$ をとるのはそれぞれ $a_0$、$a_1$ だけであり、$a \ne a_0, a_1$ なら $f(a)$ は $\tau$ で動かない。よって $h = \tau \circ f$ であり、全単射の合成なので（[合成と単射・全射](/math/functions#thm-composition)）、$h$ は全単射である。
+さらに $h(a_0) = n + 1$ なので、場合 1 を $h$ に使えば、$A \setminus \{a_0\}$ から $\{1, \dots, n\}$ への全単射が得られる。
+
+**（⇐）** $g \colon A \setminus \{a_0\} \to \{1, \dots, n\}$ を全単射とする。$f \colon A \to \{1, \dots, n+1\}$ を
+
+$$
+f(a) =
+\begin{cases}
+n + 1 & (a = a_0) \\
+g(a) & (a \ne a_0)
+\end{cases}
+$$
+
+で定めて、$g$ を $A$ 全体に拡張する。
+
+- 単射：$a \ne a_0$ の値は $g$ の値で $\{1, \dots, n\}$ に入り、互いに異なる（$g$ が単射）。$f(a_0) = n + 1$ はそれらのどれとも異なる。
+- 全射：$k \in \{1, \dots, n\}$ は $g$ の全射性から $f$ の値になり、$n + 1 = f(a_0)$ も値になる。
+
+よって $f$ は全単射である。
+:::
+
+## 3. 有限集合の真部分集合
+
+:::theorem[6.2]{#thm-6-2}
+$n \in \mathbb{Z}_{+}$ とし、$A$ から $\{1, \dots, n\}$ への全単射が存在するとする。$B \subsetneq A$ とすると、次が成り立つ。
+
+1. $B$ から $\{1, \dots, n\}$ への全単射は存在しない。
+2. $B \ne \varnothing$ ならば、ある $m < n$ について、$B$ から $\{1, \dots, m\}$ への全単射が存在する。
+:::
+
+:::proof{origin=self text=ai note="本人の証明の要点から Claude が文章にした。本人の証明と同じか照合中"}
+$n$ についての[数学的帰納法](/math/integers-reals#thm-induction)で示す。
+
+**基底段階：$n = 1$。** $A$ から $\{1\}$ への全単射があるので、$A$ はちょうど 1 つの元からなる。その真部分集合 $B$ は $\varnothing$ だけである。
+$\varnothing$ から $\{1\}$ への写像は全射にならないので、1 は成り立つ。$B = \varnothing$ なので、2 は仮定を満たす $B$ がなく成り立つ。
+
+**帰納段階。** $n$ について定理が成り立つと仮定する。$A$ から $\{1, \dots, n+1\}$ への全単射が存在し、$B \subsetneq A$ とする。
+
+$B = \varnothing$ のときは、$\varnothing$ から $\{1, \dots, n+1\}$ への写像は全射にならないので 1 が成り立ち、2 は仮定を満たさないので成り立つ。
+
+以下 $B \ne \varnothing$ とし、$a_0 \in B$、$a_1 \in A \setminus B$ をとる。
+
+- [Lemma 6.1](#lem-6-1) より、$A \setminus \{a_0\}$ から $\{1, \dots, n\}$ への全単射が存在する。
+- $B \setminus \{a_0\} \subsetneq A \setminus \{a_0\}$ である。実際、包含は $B \subseteq A$ から従う。また $a_0 \in B$、$a_1 \notin B$ より $a_1 \ne a_0$ なので、$a_1 \in A \setminus \{a_0\}$ だが $a_1 \notin B \setminus \{a_0\}$ である。
+
+よって、$A \setminus \{a_0\}$ と $B \setminus \{a_0\}$ に帰納法の仮定を使える。
+
+**1 の証明。** $B$ から $\{1, \dots, n+1\}$ への全単射が存在したとする。$a_0 \in B$ なので、[Lemma 6.1](#lem-6-1) より $B \setminus \{a_0\}$ から $\{1, \dots, n\}$ への全単射が存在する。
+これは帰納法の仮定の 1 に矛盾する。
+
+**2 の証明。**
+
+- $B \setminus \{a_0\} = \varnothing$ のとき、$B = \{a_0\}$ で、$a_0 \mapsto 1$ は $B$ から $\{1\}$ への全単射である。$1 < n + 1$ である。
+- $B \setminus \{a_0\} \ne \varnothing$ のとき、帰納法の仮定の 2 より、ある $m < n$ について $B \setminus \{a_0\}$ から $\{1, \dots, m\}$ への全単射が存在する。
+  $a_0 \in B$ なので、[Lemma 6.1](#lem-6-1) より $B$ から $\{1, \dots, m+1\}$ への全単射が存在し、$m + 1 < n + 1$ である。
+
+以上より、$n + 1$ についても定理が成り立つ。
+:::
+
+:::remark[この証明の要点]
+帰納法の仮定は「濃度 $n$ の集合と、その**真**部分集合」についての主張なので、要素を 1 つ取り除いたあとも真部分集合の関係が保たれている必要がある。
+$a_0$ を $B$ から選び、$B$ の外の元 $a_1$ を残しておくことで、$B \setminus \{a_0\} \subsetneq A \setminus \{a_0\}$ が保たれる。
+:::
+
+## 4. 真部分集合との全単射
+
+:::corollary[6.3]{#cor-6-3}
+$A$ を有限集合とすると、$A$ からその真部分集合への全単射は存在しない。
+:::
+
+:::proof{origin=self text=ai note="本人の証明の要点から Claude が文章にした。本人の証明と同じか照合中"}
+$A = \varnothing$ なら真部分集合が存在しないので、主張は成り立つ。
+
+$A \ne \varnothing$ とし、全単射 $g \colon A \to \{1, \dots, n\}$ をとる。$B \subsetneq A$ とし、全単射 $f \colon A \to B$ が存在したとする。
+$f^{-1} \colon B \to A$ は全単射である（$f \circ f^{-1}$ と $f^{-1} \circ f$ が恒等写像なので、[Lemma 2.1](/math/functions#lem-2-1) を $f^{-1}$ に使う）。
+全単射の合成は全単射なので（[合成と単射・全射](/math/functions#thm-composition)）、
+
+$$
+g \circ f^{-1} \colon B \to \{1, \dots, n\}
+$$
+
+は全単射である。これは [Theorem 6.2](#thm-6-2) の 1 に矛盾する。
+:::
+
+## 5. その後の系
+
+以下は主張を理解したもので、自分ではまだ証明していない。
+
+:::corollary[6.4]{#cor-6-4}
+$\mathbb{Z}_{+}$ は有限ではない。
+:::
+
+$f(n) = n + 1$ は、$\mathbb{Z}_{+}$ から真部分集合 $\mathbb{Z}_{+} \setminus \{1\}$ への全単射である。[Corollary 6.3](#cor-6-3) と並べると、「真部分集合と全単射で対応できるかどうか」が有限と無限を分けていることが分かる。
+
+:::corollary[6.5]{#cor-6-5}
+有限集合の濃度は一意に定まる。
+:::
+
+これにより、有限集合の要素の個数は、どの全単射を選んで数えても変わらない。
+
+:::corollary[6.6]{#cor-6-6}
+有限集合の部分集合は有限である。真部分集合ならば、その濃度は元の集合の濃度より小さい。
+:::
+
+:::corollary[6.7]{#cor-6-7}
+$B$ を空でない集合とすると、次の 3 つは同値である。
+
+1. $B$ は有限である。
+2. ある $n \in \mathbb{Z}_{+}$ について、$\{1, \dots, n\}$ から $B$ への全射が存在する。
+3. ある $n \in \mathbb{Z}_{+}$ について、$B$ から $\{1, \dots, n\}$ への単射が存在する。
+:::
+
+:::corollary[6.8]{#cor-6-8}
+有限集合の有限個の和集合は有限である。有限集合の有限個の直積は有限である。
+:::
+
+§6 の演習は未着手である。
