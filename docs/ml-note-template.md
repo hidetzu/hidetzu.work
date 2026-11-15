@@ -4,6 +4,7 @@ description: "一覧に出す一文。何を学ぶノートか。"
 area: neural-networks # 領域。src/data/ml.json の areas の id（foundations / classical / neural-networks / deep-learning / transformers-llm / generative / reinforcement / modern-ai）
 order: 1 # 領域の中での並び順（小さいほど先）
 status: unassessed # unassessed（未評価）/ studying（学習中）/ concept（概念理解）/ explainable（自分の言葉で説明可能）。自己申告
+# progress: "初回学習完了・再学習予定" # 状態の補足（任意）。状態の横に出す
 createdAt: 2026-01-01
 # updatedAt: 2026-01-02
 tags: []

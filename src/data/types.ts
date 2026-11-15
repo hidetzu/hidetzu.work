@@ -123,6 +123,8 @@ export type MlArea = {
   question: string;
   // 自己申告。本人だけが変える
   status: MlStatus;
+  // 状態の補足（例: 「初回学習完了・再学習予定」）。状態の横に出す
+  progress?: string;
   // 先に学ぶとよい領域の id（学習マップの矢印）
   prerequisites: string[];
   topics: { title: string; research?: boolean }[];

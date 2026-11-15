@@ -331,3 +331,107 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* --- 学習ノートの図（インライン SVG のグラフ・流れ図） ------------------------ */
+
+.ml-figure .start {
+  text-anchor: start;
+}
+
+.ml-figure .end {
+  text-anchor: end;
+}
+
+.ml-plot-axis,
+.ml-plot-guide {
+  fill: none;
+  stroke: var(--faint);
+  stroke-width: 1;
+}
+
+.ml-plot-guide {
+  stroke-dasharray: 3 3;
+}
+
+.ml-plot-tick text,
+.ml-plot-label text {
+  fill: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-anchor: middle;
+}
+
+.ml-plot-label text {
+  font-family: var(--font-sans);
+  font-size: 12px;
+}
+
+.ml-plot-curve {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.ml-plot-curve--alt {
+  stroke: var(--fg);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 4;
+}
+
+.ml-plot-tangent {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.25;
+}
+
+.ml-plot-step path {
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 1.25;
+}
+
+.ml-plot-arrowhead {
+  fill: var(--fg);
+}
+
+.ml-plot-point circle {
+  fill: var(--accent);
+}
+
+.ml-plot-point--data circle {
+  fill: var(--fg);
+}
+
+.ml-plot-point--open circle {
+  fill: var(--bg);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.ml-plot-note text {
+  font-size: 12px;
+}
+
+.ml-flow-box {
+  fill: var(--surface);
+  stroke: var(--line);
+  stroke-width: 1.25;
+}
+
+.ml-flow-box--accent {
+  stroke: var(--accent);
+}
+
+.ml-flow-text text {
+  font-size: 12px;
+}
+
+.ml-flow-lines path {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.25;
+}
+
+.ml-flow-lines path.dashed {
+  stroke-dasharray: 4 3;
+}
