@@ -241,6 +241,8 @@ $$
 - 章・節・定理番号・ページ番号は、本を見て確かめたものだけを書く
 - AI（Claude など）は証明を考える主体ではなく、レビューとヒントの補助に使う。
   自分で書いていない理解や証明を、自分の成果としてノートにしない
+- Claude Code でノートを編集するときのルールは [.claude/rules/math-notes.md](.claude/rules/math-notes.md)。
+  数学ノートのファイル（`src/content/math/` など）や `tmp/input.md` を読むと自動で読み込まれる
 
 ## デプロイ
 
