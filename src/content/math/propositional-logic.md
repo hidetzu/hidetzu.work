@@ -1,11 +1,11 @@
 ---
 title: "論理の基礎"
-description: "命題と真理値、論理演算と真理値表、数学の「または」、含意と空虚な真、含意の否定、対偶と逆、必要条件・十分条件、同値、ド・モルガンの法則、量化記号とその否定。"
+description: "命題と真理値、論理演算と真理値表、数学の「または」、含意と空虚な真、含意と論理和、含意の否定、対偶と逆、必要条件・十分条件、同値、ド・モルガンの法則、主な論理的同値の一覧、述語論理と量化記号（否定、作用範囲、論理積・論理和との関係）。"
 topic: logic
 order: 1
 status: understood
 createdAt: 2026-11-08
-updatedAt: 2026-11-14
+updatedAt: 2026-11-16
 tags:
   - logic
   - munkres
@@ -28,7 +28,7 @@ Munkres の Chapter 1 の本文で扱うのは、数学の「または」の意�
 :::
 
 - 「$2$ は偶数である」は真の命題、「$3 < 1$」は偽の命題である。
-- 「$x > 0$」は $x$ が決まらないと真偽が定まらないので、このままでは命題ではない。$x$ に値を入れるか、量化記号（8 節）を付けると命題になる。
+- 「$x > 0$」は $x$ が決まらないと真偽が定まらないので、このままでは命題ではない。$x$ に値を入れるか、量化記号（9 節）を付けると命題になる。
 
 命題を文字 $P, Q$ で表し（命題変数）、真を $\mathrm{T}$、偽を $\mathrm{F}$ と書く。
 
@@ -86,7 +86,30 @@ $P \Rightarrow Q$（$P$ ならば $Q$）は、$P$ が真で $Q$ が偽のとき�
 | F | T | T |
 | F | F | T |
 
+### 論理和による書き換え
+
+:::theorem[含意と論理和]{#thm-implication-or}
+$$
+(P \Rightarrow Q) \iff \neg P \lor Q
+$$
+:::
+
+| $P$ | $Q$ | $\neg P$ | $P \Rightarrow Q$ | $\neg P \lor Q$ |
+| --- | --- | --- | --- | --- |
+| T | T | F | T | T |
+| T | F | F | **F** | **F** |
+| F | T | T | T | T |
+| F | F | T | T | T |
+
+4 行すべてで $P \Rightarrow Q$ と $\neg P \lor Q$ の真偽が一致するので、両者は同値である。
+
+### 空虚な真
+
 $P$ が偽なら、$Q$ に関係なく $P \Rightarrow Q$ は真になる。これを**空虚な真**という。
+
+$P \Rightarrow Q$ は「$P$ が成り立つときは、必ず $Q$ も成り立つ」という主張で、$P$ が成り立たないときについては何も主張していない。
+この主張に反するのは「$P$ が真で $Q$ が偽」の場合だけなので、$P$ が偽なら主張に反する場合は起こらず、偽にはならない。
+$\neg P \lor Q$ の形で見ても、$P$ が偽なら $\neg P$ が真なので、$Q$ に関係なく真である。
 
 :::example[空虚な真]{#ex-vacuous}
 空集合はどの集合にも含まれる。
@@ -95,9 +118,23 @@ $x \in \varnothing$ はどの $x$ についても偽なので、「$x \in \varno
 
 ### 含意の否定
 
+:::theorem[含意の否定]{#thm-implication-negation}
 $$
 \neg (P \Rightarrow Q) \iff P \land \neg Q
 $$
+:::
+
+:::proof[記号による変形]{origin=ai}
+$$
+\begin{aligned}
+\neg (P \Rightarrow Q) &\iff \neg (\neg P \lor Q) \\
+&\iff \neg \neg P \land \neg Q \\
+&\iff P \land \neg Q
+\end{aligned}
+$$
+
+1 行目は[含意と論理和](#thm-implication-or)、2 行目は[ド・モルガンの法則](#thm-de-morgan)、3 行目は二重否定 $\neg \neg P \iff P$ による。
+:::
 
 「$P$ ならば $Q$」が成り立たないことを示すには、「$P$ なのに $Q$ でない」例を 1 つ挙げればよい。
 「$P$ ならば $\neg Q$」を示す必要はない。
@@ -116,6 +153,19 @@ $$
 :::
 
 真理値表で両辺が一致するので、$P \Rightarrow Q$ の代わりに対偶を示してもよい。
+
+:::proof[記号による変形]{origin=ai}
+$$
+\begin{aligned}
+(P \Rightarrow Q) &\iff \neg P \lor Q \\
+&\iff Q \lor \neg P \\
+&\iff \neg (\neg Q) \lor \neg P \\
+&\iff (\neg Q \Rightarrow \neg P)
+\end{aligned}
+$$
+
+1 行目は[含意と論理和](#thm-implication-or)、2 行目は $\lor$ の交換法則、3 行目は二重否定、4 行目は[含意と論理和](#thm-implication-or)を $\neg Q$ と $\neg P$ に使ったものである。
+:::
 一方、逆は元の命題と真偽が食い違うことがある。$P$ が偽で $Q$ が真のとき、$P \Rightarrow Q$ は真だが $Q \Rightarrow P$ は偽である。
 
 逆 $Q \Rightarrow P$、対偶 $\neg Q \Rightarrow \neg P$、[含意の否定](#含意の否定) $P \land \neg Q$ は、それぞれ別のものである。
@@ -173,10 +223,36 @@ $$
 
 どちらも、真理値表の 4 行で両辺の真偽が一致することから確かめられる。
 
-## 8. 量化記号
+## 8. 主な論理的同値
 
-$x$ を含む文 $P(x)$ は、$x$ を決めるまで真偽が定まらない。このような文と量化記号を扱うのは、厳密には命題論理ではなく述語論理である。
-$P(x)$ に**量化記号**を付けると命題になる。
+証明の中で式を変形するときに使う同値の一覧。どれも、真理値表で両辺の真偽がすべての行で一致することから確かめられる。
+
+| 名前 | 同値 |
+| --- | --- |
+| 二重否定 | $\neg \neg P \iff P$ |
+| 交換法則 | $P \land Q \iff Q \land P$、$P \lor Q \iff Q \lor P$ |
+| 結合法則 | $(P \land Q) \land R \iff P \land (Q \land R)$、$(P \lor Q) \lor R \iff P \lor (Q \lor R)$ |
+| 分配法則 | $P \land (Q \lor R) \iff (P \land Q) \lor (P \land R)$、$P \lor (Q \land R) \iff (P \lor Q) \land (P \lor R)$ |
+| [ド・モルガンの法則](#thm-de-morgan) | $\neg (P \land Q) \iff \neg P \lor \neg Q$、$\neg (P \lor Q) \iff \neg P \land \neg Q$ |
+| [含意と論理和](#thm-implication-or) | $(P \Rightarrow Q) \iff \neg P \lor Q$ |
+| [含意の否定](#thm-implication-negation) | $\neg (P \Rightarrow Q) \iff P \land \neg Q$ |
+| [対偶](#thm-contrapositive) | $(P \Rightarrow Q) \iff (\neg Q \Rightarrow \neg P)$ |
+| 同値と含意 | $(P \Leftrightarrow Q) \iff (P \Rightarrow Q) \land (Q \Rightarrow P)$ |
+
+逆 $Q \Rightarrow P$ は $P \Rightarrow Q$ と同値ではない（4 節）。
+
+## 9. 述語論理と量化記号
+
+### 命題論理と述語論理
+
+1〜8 節で扱ったのは**命題論理**である。命題論理では、$P, Q$ を真偽の定まった 1 つの単位として扱い、それらを $\neg, \land, \lor, \Rightarrow, \Leftrightarrow$ で組み合わせたときの真偽だけを考える。
+
+これに対し「$x > 0$」のように変数 $x$ を含み、$x$ を決めると真偽が定まる文 $P(x)$ を**述語**という。述語と量化記号を扱うのが**述語論理**である。
+$x$ を 1 つ固定すれば $P(x)$ は命題なので、8 節の同値は $P(x), Q(x)$ にもそのまま使える。
+
+### 量化記号
+
+$P(x)$ に**量化記号**を付けると命題になる。以下、$x$ の動く範囲を集合 $X$ とする（$\forall x \in X$ を $\forall x$ と略す）。
 
 - **全称記号**：$\forall x\, P(x)$ は「すべての $x$ について $P(x)$」
 - **存在記号**：$\exists x\, P(x)$ は「ある $x$ について $P(x)$」（$P(x)$ を満たす $x$ が少なくとも 1 つある）
@@ -194,7 +270,97 @@ $$
 
 「すべての $x$ で成り立つ」を否定するには、成り立たない $x$ を 1 つ挙げればよい。
 
-## 9. 確認問題
+### 作用範囲
+
+量化記号がかかる範囲を**作用範囲**という。括弧で範囲を区切る。
+
+- $\forall x\, (P(x) \land Q(x))$ では、$\forall x$ が $P(x) \land Q(x)$ 全体にかかる。各 $x$ について、同じ $x$ で $P(x)$ と $Q(x)$ の両方が成り立つ。
+- $(\forall x\, P(x)) \land (\forall x\, Q(x))$ では、2 つの $\forall x$ がそれぞれ $P(x)$、$Q(x)$ だけにかかる。
+
+量化記号で束ねられた変数は、作用範囲の中だけで意味をもつ。$(\exists x\, P(x)) \land (\exists x\, Q(x))$ の 2 つの $x$ は別の変数で、$(\exists x\, P(x)) \land (\exists y\, Q(y))$ と書いても意味は変わらない。
+このため、それぞれの $\exists$ で選ばれる要素は同じとは限らない。
+
+### 量化記号と論理積・論理和
+
+| 量化記号 | 論理演算 | 関係 |
+| --- | --- | --- |
+| $\forall$ | $\land$ | 同値：$\forall x\, (P(x) \land Q(x)) \iff \forall x\, P(x) \land \forall x\, Q(x)$ |
+| $\forall$ | $\lor$ | 一方向だけ：$\forall x\, P(x) \lor \forall x\, Q(x) \Rightarrow \forall x\, (P(x) \lor Q(x))$ |
+| $\exists$ | $\lor$ | 同値：$\exists x\, (P(x) \lor Q(x)) \iff \exists x\, P(x) \lor \exists x\, Q(x)$ |
+| $\exists$ | $\land$ | 一方向だけ：$\exists x\, (P(x) \land Q(x)) \Rightarrow \exists x\, P(x) \land \exists x\, Q(x)$ |
+
+:::theorem[全称記号と論理積]{#thm-forall-and}
+$$
+\forall x\, (P(x) \land Q(x)) \iff \forall x\, P(x) \land \forall x\, Q(x)
+$$
+:::
+
+:::proof{origin=ai}
+（⇒）任意の $x$ をとる。仮定より $P(x) \land Q(x)$ なので $P(x)$ が成り立つ。$x$ は任意なので $\forall x\, P(x)$。同様に $\forall x\, Q(x)$。
+
+（⇐）任意の $x$ をとる。$\forall x\, P(x)$ より $P(x)$、$\forall x\, Q(x)$ より $Q(x)$ なので、$P(x) \land Q(x)$。$x$ は任意なので $\forall x\, (P(x) \land Q(x))$。
+:::
+
+:::proposition[全称記号と論理和]{#prop-forall-or}
+$$
+\forall x\, P(x) \lor \forall x\, Q(x) \Rightarrow \forall x\, (P(x) \lor Q(x))
+$$
+
+逆は成り立たない。
+:::
+
+:::proof{origin=ai}
+$\forall x\, P(x)$ のとき、任意の $x$ で $P(x)$ なので $P(x) \lor Q(x)$。$\forall x\, Q(x)$ のときも同様。よって $\forall x\, (P(x) \lor Q(x))$。
+:::
+
+:::example[逆が成り立たない例]{#ex-forall-or}
+$X = \{1, 2\}$、$P(x)$ を「$x = 1$」、$Q(x)$ を「$x = 2$」とする。
+
+- $x = 1$ では $P(1)$、$x = 2$ では $Q(2)$ が成り立つので、$\forall x\, (P(x) \lor Q(x))$ は真。
+- $P(2)$ は偽なので $\forall x\, P(x)$ は偽、$Q(1)$ は偽なので $\forall x\, Q(x)$ は偽。よって $\forall x\, P(x) \lor \forall x\, Q(x)$ は偽。
+
+各 $x$ が $P$ か $Q$ のどちらかを満たしていても、満たすほうが $x$ ごとに違えば、どちらか一方がすべての $x$ で成り立つとは限らない。
+:::
+
+:::theorem[存在記号と論理和]{#thm-exists-or}
+$$
+\exists x\, (P(x) \lor Q(x)) \iff \exists x\, P(x) \lor \exists x\, Q(x)
+$$
+:::
+
+:::proof{origin=ai}
+（⇒）$P(x_0) \lor Q(x_0)$ を満たす $x_0$ をとる。$P(x_0)$ なら $\exists x\, P(x)$、そうでなければ $Q(x_0)$ なので $\exists x\, Q(x)$。
+
+（⇐）$\exists x\, P(x)$ なら、$P(x_0)$ を満たす $x_0$ について $P(x_0) \lor Q(x_0)$ なので $\exists x\, (P(x) \lor Q(x))$。$\exists x\, Q(x)$ のときも同様。
+:::
+
+:::proposition[存在記号と論理積]{#prop-exists-and}
+$$
+\exists x\, (P(x) \land Q(x)) \Rightarrow \exists x\, P(x) \land \exists x\, Q(x)
+$$
+
+逆は成り立たない。
+:::
+
+:::proof{origin=ai}
+$P(x_0) \land Q(x_0)$ を満たす $x_0$ をとると、$P(x_0)$ より $\exists x\, P(x)$、$Q(x_0)$ より $\exists x\, Q(x)$。
+:::
+
+:::example[逆が成り立たない例]{#ex-exists-and}
+$X = \{1, 2\}$、$P(x)$ を「$x = 1$」、$Q(x)$ を「$x = 2$」とする。
+
+- $P(1)$ が真なので $\exists x\, P(x)$ は真、$Q(2)$ が真なので $\exists x\, Q(x)$ は真。
+- $P(x) \land Q(x)$ は $x = 1$ でも $x = 2$ でも偽なので、$\exists x\, (P(x) \land Q(x))$ は偽。
+:::
+
+:::remark[存在記号と論理積が分配できない理由（自分の説明）]
+異なる要素 $x_1, x_2$ がそれぞれ $P(x_1)$、$Q(x_2)$ を満たしても、$P$ と $Q$ を同時に満たす共通の要素が存在するとは限らない。
+:::
+
+$\forall$ と $\lor$、$\exists$ と $\land$ の 2 つの一方向の関係は、[量化記号の否定](#thm-quantifier-negation)と[ド・モルガンの法則](#thm-de-morgan)で互いに移り合う。
+たとえば $\forall$ と $\lor$ の関係を $\neg P, \neg Q$ に使い、対偶をとって否定を内側に入れると、$\exists$ と $\land$ の関係になる。
+
+## 10. 確認問題
 
 :::proposition[確認問題]{#q-exercise}
 $x \in A \cup B$ かつ $x \notin A$ ならば、$x \in B$ であることを説明せよ。
