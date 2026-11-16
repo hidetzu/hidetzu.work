@@ -5,7 +5,7 @@ topic: logic
 order: 1
 status: understood
 createdAt: 2026-11-08
-updatedAt: 2026-11-16
+updatedAt: 2026-11-17
 tags:
   - logic
   - munkres
@@ -347,10 +347,27 @@ $P(x_0) \land Q(x_0)$ を満たす $x_0$ をとると、$P(x_0)$ より $\exists
 :::
 
 :::example[逆が成り立たない例]{#ex-exists-and}
-$X = \{1, 2\}$、$P(x)$ を「$x = 1$」、$Q(x)$ を「$x = 2$」とする。
+定義域を $\mathbb{R}$ とし、$P(x)$ を「$x = 1$」、$Q(x)$ を「$x = 2$」とする。
 
-- $P(1)$ が真なので $\exists x\, P(x)$ は真、$Q(2)$ が真なので $\exists x\, Q(x)$ は真。
-- $P(x) \land Q(x)$ は $x = 1$ でも $x = 2$ でも偽なので、$\exists x\, (P(x) \land Q(x))$ は偽。
+$P(1)$ および $Q(2)$ は真であるため、
+
+$$
+(\exists x\, P(x)) \land (\exists x\, Q(x))
+$$
+
+は真である。一方、
+
+$$
+P(x) \land Q(x) \iff (x = 1) \land (x = 2)
+$$
+
+であるが、$1 \ne 2$ なので、これを満たす $x \in \mathbb{R}$ は存在しない。したがって、
+
+$$
+\exists x\, (P(x) \land Q(x))
+$$
+
+は偽である。よって、逆向きの含意は一般には成立しない。
 :::
 
 :::remark[存在記号と論理積が分配できない理由（自分の説明）]
