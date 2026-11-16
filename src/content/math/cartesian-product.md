@@ -1,11 +1,11 @@
 ---
 title: "直積（Cartesian Products）"
-description: "順序対と 2 つの集合の直積、A × B と B × A の違い、m 組・ω 組を関数として定める有限直積と無限直積、同じ集合の直積（実数の m 組全体と実数列全体）。Munkres §5 の演習 1（A × B と B × A の全単射）を含む。"
+description: "順序対と 2 つの集合の直積、A × B と B × A の違い、m 組・ω 組を関数として定める有限直積と無限直積、同じ集合の直積（実数の m 組全体と実数列全体）、直積と共通部分・和集合。Munkres §5 の演習 1（A × B と B × A の全単射）を含む。"
 topic: set-theory
 order: 5
 status: understood
 createdAt: 2026-11-09
-updatedAt: 2026-11-14
+updatedAt: 2026-11-16
 related:
   - sets
   - families-of-sets
@@ -247,5 +247,28 @@ $$
 5. 2 つの直積が全単射で対応することは、集合として等しいことを意味しない。
 
 :::
+
+## 7. 直積と共通部分・和集合
+
+$A_1, \dots, A_m$ と $B_1, \dots, B_m$ を集合とする。直積の元であることは「すべての座標 $i$ について」という全称記号の主張なので、共通部分・和集合との関係は、[全称記号と論理積・論理和の関係](/math/propositional-logic#thm-forall-and)と同じ形になる。
+
+:::proposition[直積と共通部分]{#prop-product-intersection}
+$$
+\prod_{i=1}^{m} (A_i \cap B_i) = \prod_{i=1}^{m} A_i \cap \prod_{i=1}^{m} B_i
+$$
+:::
+
+:::proposition[直積と和集合]{#prop-product-union}
+$$
+\prod_{i=1}^{m} A_i \cup \prod_{i=1}^{m} B_i \subseteq \prod_{i=1}^{m} (A_i \cup B_i)
+$$
+
+等号は一般には成り立たない。
+:::
+
+$m$ 組 $x = (x_1, \dots, x_m)$ について、量化記号で書くと次のようになる。
+
+- 共通部分：$\forall i\, (x_i \in A_i \land x_i \in B_i) \iff \forall i\, (x_i \in A_i) \land \forall i\, (x_i \in B_i)$。[全称記号と論理積](/math/propositional-logic#thm-forall-and)は同値なので、等号になる。
+- 和集合：$\forall i\, (x_i \in A_i) \lor \forall i\, (x_i \in B_i) \Rightarrow \forall i\, (x_i \in A_i \lor x_i \in B_i)$。[全称記号と論理和](/math/propositional-logic#prop-forall-or)は一方向だけなので、包含にとどまる。
 
 §5 の演習 2〜5 は未着手である。
