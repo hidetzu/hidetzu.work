@@ -1,0 +1,67 @@
+---
+// 知識ノートのページの骨格（docs/design/content-platform.md §4.3、docs/adr/0009）。
+// タイトル・概要・本文を先に出し、メタ情報は 1 行に縮める。参考文献やノートの状態の詳細は本文の後（slot="after"）に置く。
+// 目次は、PC（64rem 以上）では右のサイドバーに固定し、それより狭い画面では本文の前に折りたたんで置く（JS なし）。
+// 分野ごとの中身（メタ情報の 1 行、本文、本文の後の節）はスロットで受け取る
+import Base from './Base.astro';
+import NoteToc, { type TocItem } from '../components/NoteToc.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  // 検索の分野のフィルタ（docs/adr/0010）
+  area: string;
+  back: { href: string; label: string };
+  category: { href: string; label: string };
+  toc: TocItem[];
+}
+
+const { title, description, area, back, category, toc } = Astro.props;
+const hasToc = toc.length > 1;
+---
+
+<Base title={title} description={description} ogType="article">
+  <main id="main" data-pagefind-filter={`area:${area}`} class="note">
+    <header class="note-head">
+      <p class="note-crumbs">
+        <a href={back.href}>← {back.label}</a>
+        <span aria-hidden="true">/</span>
+        <a href={category.href}>{category.label}</a>
+      </p>
+      <h1 data-pagefind-body>{title}</h1>
+      <p class="note-description" data-pagefind-body>{description}</p>
+      <p class="note-meta"><slot name="meta" /></p>
+    </header>
+
+    {
+      hasToc && (
+        <details class="note-toc note-toc--inline">
+          <summary>目次</summary>
+          <nav aria-label="目次">
+            <NoteToc items={toc} />
+          </nav>
+        </details>
+      )
+    }
+
+    <div class={hasToc ? 'note-grid' : undefined}>
+      <div class="note-main">
+        <article class="prose" data-pagefind-body>
+          <slot />
+        </article>
+        <slot name="after" />
+        <p class="math-back math-back--end"><a href={back.href}>← {back.label} に戻る</a></p>
+      </div>
+      {
+        hasToc && (
+          <aside class="note-toc note-toc--side">
+            <nav aria-labelledby="note-toc-title">
+              <p class="note-toc-title" id="note-toc-title">目次</p>
+              <NoteToc items={toc} />
+            </nav>
+          </aside>
+        )
+      }
+    </div>
+  </main>
+</Base>

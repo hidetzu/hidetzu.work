@@ -406,8 +406,9 @@ src/
   content/ml/    機械学習の学習ノート（Markdown）
   content.config.ts  数学ノートと機械学習ノートの frontmatter の定義
   lib/           math-markdown.mjs（数式とブロックの Markdown プラグイン）, math-notes.ts, ml.ts
-  components/    LoopDiagram.astro, Motif.astro（インライン SVG）
+  components/    LoopDiagram.astro, Motif.astro（インライン SVG）、NoteToc / MathNoteMeta / MathNoteLinks（ノートのページの部品）
   layouts/       Base.astro（<head> / metadata / header / footer）
+                 NoteLayout.astro（知識ノートのページの骨格。今は論理の基礎だけで試している。docs/design/content-platform.md §4.3）
   pages/         index.astro, 404.astro, math/index.astro, math/[slug].astro, math/search.astro, ml/index.astro, ml/[slug].astro
   styles/        global.css, math.css（数学ノートと /ml のページ）, ml.css（/ml のページだけ）
 tests/           数学ノート用 Markdown プラグインのテスト
