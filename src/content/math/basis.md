@@ -1,5 +1,7 @@
 ---
 title: "位相の基底と生成される位相"
+aliases:
+  - "basis for a topology"
 description: "基底の定義、基底が生成する位相、有理数を端点とする開区間が実数の通常の位相を生成すること（学習途中）。"
 topic: topology
 order: 2

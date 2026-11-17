@@ -1,5 +1,7 @@
 ---
 title: "冪集合"
+aliases:
+  - "power set"
 description: "部分集合全体の集合。所属と包含の対応、有限集合の例、空集合の冪集合、n 個の要素をもつ集合の冪集合が 2^n 個の要素をもつこと。"
 topic: set-theory
 order: 3

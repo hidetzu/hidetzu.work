@@ -1,5 +1,7 @@
 ---
 title: "関係"
+aliases:
+  - "relations"
 description: "集合上の関係、同値関係と分割の一対一対応、全射が定める同値関係、順序関係と順序型、辞書式順序、上界・下界と最小上界性質、最小上界性質から最大下界性質が導かれること。"
 topic: set-theory
 order: 7

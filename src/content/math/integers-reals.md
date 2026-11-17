@@ -1,5 +1,8 @@
 ---
 title: "整数と実数"
+aliases:
+  - "integers"
+  - "real numbers"
 description: "実数の公理（体・順序体・最小上界性質）、帰納的集合による正の整数の定義、数学的帰納法、整列性、強い数学的帰納法、有限集合の最大元、アルキメデス的順序性。"
 topic: real-numbers
 order: 1

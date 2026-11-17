@@ -1,5 +1,9 @@
 ---
 title: "組み合わせ論 — 二項係数とパスカルの公式"
+aliases:
+  - "combinatorics"
+  - "binomial coefficients"
+  - "Pascal's rule"
 description: "二項係数の定義と範囲外を 0 とする約束、パスカルの公式とその場合分けの図、冪集合を要素の個数で分けて数える二重計数、二項係数の和が 2^n になることの数学的帰納法による証明。"
 topic: combinatorics
 order: 1

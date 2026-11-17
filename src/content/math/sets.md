@@ -1,5 +1,8 @@
 ---
 title: "集合の基本と演算"
+aliases:
+  - "sets"
+  - "set operations"
 description: "集合と要素、外延的記法・内包的記法、部分集合と集合の等号、空集合、和集合・共通部分・差集合・補集合、互いに素な集合、集合に対するド・モルガンの法則、対称差。"
 topic: set-theory
 order: 1

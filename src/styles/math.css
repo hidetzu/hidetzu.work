@@ -14,16 +14,6 @@
 
 /* --- 入口 ------------------------------------------------------------------ */
 
-.math-textbook {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.25rem 0.75rem;
-  margin: 0;
-  font-size: 0.875rem;
-  color: var(--body);
-}
-
 .math-roadmap {
   margin: 0 0 0.9rem;
   padding-left: 1.6rem;
@@ -92,6 +82,139 @@
 
 .math-field-link:hover {
   color: var(--accent);
+}
+
+/* /math の補助リンク（検索ボックスの下） */
+.math-index-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.math-index-links a {
+  color: var(--muted);
+}
+
+.math-index-links a:hover {
+  color: var(--accent);
+}
+
+/* 分野のカード（/math）。カードは罫だけで囲み、地色は付けない */
+.math-field-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  align-items: start;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.math-field-card {
+  padding: 0.9rem 1.1rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  scroll-margin-top: 1.5rem;
+}
+
+.math-field-card:target {
+  border-color: var(--accent);
+}
+
+.math-field-card h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 0.75rem;
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.math-field-count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--faint);
+}
+
+.math-field-card .math-field-description {
+  margin: 0.35rem 0 0.6rem;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+}
+
+.math-field-notes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+}
+
+.math-field-notes li {
+  padding: 0.2rem 0;
+  border-top: 1px solid var(--line-soft);
+}
+
+.math-field-notes a {
+  display: inline-block;
+  padding: 0.15rem 0;
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.math-field-notes a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.math-field-status {
+  margin-left: 0.5rem;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: var(--faint);
+}
+
+/* 最近の更新（/math）。日付・タイトル・分野の 1 行 */
+.math-recent {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+}
+
+.math-recent li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 1rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.math-recent time {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--faint);
+}
+
+.math-recent a {
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.math-recent a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.math-recent-field {
+  font-size: 0.8125rem;
+  color: var(--muted);
 }
 
 .math-related {
@@ -334,6 +457,29 @@ nav.math-toc > ul > li {
   color: var(--accent);
 }
 
+/*
+  サイドバーの目次で、いま読んでいる節を強調する。JS は使わず、CSS の scroll-target-group（scroll marker）で行う。
+  対応していないブラウザでは強調されないだけで、目次はそのまま使える（docs/adr/0010 の「JS は検索ページだけ」を守る）
+*/
+.note-toc--side .note-toc-list {
+  scroll-target-group: auto;
+}
+
+.note-toc--side .note-toc-list a:target-current {
+  color: var(--fg);
+  font-weight: 700;
+}
+
+/* モバイルの折りたたみ目次は指で押しやすいように行の高さを取る */
+.note-toc--inline .note-toc-list a {
+  display: block;
+  padding: 0.3rem 0;
+}
+
+.note-toc--inline .note-toc-list li {
+  margin: 0;
+}
+
 .note-toc--inline {
   margin: 0 0 2rem;
   padding: 0.55rem 0.9rem;
@@ -343,6 +489,7 @@ nav.math-toc > ul > li {
 }
 
 .note-toc--inline summary {
+  padding: 0.25rem 0;
   cursor: pointer;
   font-family: var(--font-mono);
   font-size: 0.75rem;
@@ -499,6 +646,20 @@ nav.math-toc > ul > li {
   border: 1px solid var(--line);
   text-align: left;
   vertical-align: top;
+}
+
+/* 表のセルの中の式は途中で折り返さない（「P ∧」と「Q」が別の行に分かれないように）。
+   表が画面より広くなったときは、表だけを横にスクロールさせる */
+.prose th .katex,
+.prose td .katex {
+  white-space: nowrap;
+}
+
+@media (max-width: 40rem) {
+  .prose th,
+  .prose td {
+    padding: 0.35rem 0.55rem;
+  }
 }
 
 /* 脚注（GFM） */

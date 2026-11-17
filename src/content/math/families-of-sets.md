@@ -1,5 +1,8 @@
 ---
 title: "集合族"
+aliases:
+  - "families of sets"
+  - "indexed family"
 description: "集合を要素とする集合と、添字付き集合族（添字付け関数）。要素と部分集合の区別、集合族の和集合・共通部分、縮む開区間の例、空な集合族、集合族に対するド・モルガンの法則。"
 topic: set-theory
 order: 4
