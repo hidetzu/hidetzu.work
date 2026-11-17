@@ -1,0 +1,148 @@
+---
+// 数学ノートの検索（/math/search）。索引はビルドの後に Pagefind が dist/pagefind/ に作る（docs/adr/0010）。
+// サイトで JS を読み込むのは検索ページだけ。JS が動かないときは /math の一覧へ案内する
+import Base from '../../layouts/Base.astro';
+import '../../styles/math.css';
+---
+
+<Base title="数学ノートを検索" description="数学ノート（Math Notes）の本文・タイトル・概要を検索する。">
+  <main id="main" class="math-search">
+    <p class="math-back"><a href="/math">← Math Notes</a></p>
+    <h1 class="math-search-title">数学ノートを検索</h1>
+    <form class="math-search-form" action="/math/search" method="get" role="search">
+      <label for="math-search-q" class="visually-hidden">検索する語</label>
+      <input id="math-search-q" type="search" name="q" autocomplete="off" placeholder="例: 写像、稠密性、XOR" />
+      <button type="submit">検索</button>
+    </form>
+    <p class="math-search-status" id="math-search-status" aria-live="polite"></p>
+    <ol class="others math-list math-search-results" id="math-search-results"></ol>
+    <noscript>
+      <p class="math-search-status">
+        検索には JavaScript が必要です。<a href="/math#fields">分野ごとの一覧</a>からノートを探せます。
+      </p>
+    </noscript>
+    <p class="math-search-note">
+      数式の中の記号では検索できません。言葉（「写像」「排他的論理和」など）で検索してください。
+    </p>
+  </main>
+</Base>
+
+<!--
+  Vite に処理させない（is:inline）。処理させると、Astro がページに埋め込むときに動的 import が書き換えられて動かなくなる
+-->
+<script is:inline type="module">
+  const form = document.querySelector('.math-search-form');
+  const input = document.querySelector('#math-search-q');
+  const status = document.querySelector('#math-search-status');
+  const list = document.querySelector('#math-search-results');
+
+  // build.format: 'file' なので索引の URL は /math/sets.html になる。本番の URL（/math/sets）に直す
+  const cleanUrl = (url) => url.replace(/\.html(?=$|#)/, '');
+
+  let pagefind;
+  const load = async () => {
+    if (!pagefind) {
+      // 索引（/pagefind/）はビルドの後に Pagefind が作る
+      pagefind = await import('/pagefind/pagefind.js');
+      await pagefind.options({ excerptLength: 24 });
+    }
+    return pagefind;
+  };
+
+  const el = (tag, cls) => {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    return e;
+  };
+
+  let latest = 0;
+  const run = async (q) => {
+    const id = ++latest;
+    list.replaceChildren();
+    if (!q.trim()) {
+      status.textContent = '';
+      return;
+    }
+    status.textContent = '検索しています…';
+    let pf;
+    try {
+      pf = await load();
+    } catch {
+      status.textContent = '検索の索引を読み込めませんでした（npm run dev では索引がありません）。';
+      return;
+    }
+    // まず語ごとの完全一致で探す。Pagefind の通常の検索は日本語の語を 1 文字ずつに分けたり、
+    // 英字の語を「T」のような 1 文字に当てたりして、関係のないノートを返すことがある。
+    // 完全一致で 0 件のときだけ、通常の検索の結果を「近い語」として出す
+    const filters = { area: 'math' };
+    const terms = q.trim().split(/\s+/).map((t) => t.replace(/"/g, ''));
+    let search = await pf.search(terms.map((t) => `"${t}"`).join(' '), { filters });
+    const exact = search.results.length > 0;
+    if (!exact) search = await pf.search(q, { filters });
+    let data = await Promise.all(search.results.slice(0, 20).map((r) => r.data()));
+    if (id !== latest) return;
+    // 近い語の結果のうち、1 文字だけの一致（真理値表の「T」など）しかないものは出さない
+    if (!exact) {
+      const longMark = (d) => [...d.excerpt.matchAll(/<mark>(.*?)<\/mark>/g)].some((m) => m[1].trim().length >= 2);
+      data = data.filter(longMark);
+    }
+    // タイトルに検索語を含むノート（「写像」なら写像のノート）を先に出す。それ以外は Pagefind の順のまま
+    const inTitle = (d) => terms.some((t) => (d.meta.title ?? '').toLowerCase().includes(t.toLowerCase()));
+    data = [...data.filter(inTitle), ...data.filter((d) => !inTitle(d))];
+    status.textContent =
+      data.length === 0
+        ? `「${q}」に一致するノートはありません。`
+        : exact
+          ? `「${q}」を含むノート ${data.length} 件`
+          : `「${q}」をそのまま含むノートはありません。近い語を含むノート ${data.length} 件（関係のない結果を含むことがあります）`;
+    for (const d of data) {
+      const li = el('li', 'math-search-result');
+      const title = el('p', 'other-name');
+      const a = el('a');
+      a.href = cleanUrl(d.url);
+      a.textContent = d.meta.title ?? d.url;
+      const strong = el('strong');
+      strong.append(a);
+      title.append(strong);
+      // excerpt は Pagefind が本文から作った文字列で、一致した語だけ <mark> で囲んである
+      const excerpt = el('p', 'other-summary');
+      excerpt.innerHTML = d.excerpt;
+      li.append(title, excerpt);
+      const subs = (d.sub_results ?? []).filter((s) => s.url !== d.url).slice(0, 3);
+      if (subs.length > 0) {
+        const ul = el('ul', 'math-search-subs');
+        for (const s of subs) {
+          const sli = el('li');
+          const sa = el('a');
+          sa.href = cleanUrl(s.url);
+          sa.textContent = s.title;
+          sli.append(sa);
+          ul.append(sli);
+        }
+        li.append(ul);
+      }
+      list.append(li);
+    }
+  };
+
+  const fromUrl = () => new URLSearchParams(location.search).get('q') ?? '';
+  input.value = fromUrl();
+  run(input.value);
+
+  // 送信しても再読み込みせず、URL の ?q= だけ書き換える（結果の URL を共有できるように）
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const q = input.value;
+    history.replaceState(null, '', q ? `?q=${encodeURIComponent(q)}` : location.pathname);
+    run(q);
+  });
+
+  // IME の変換中は検索しない
+  let timer;
+  input.addEventListener('input', (e) => {
+    if (e.isComposing) return;
+    clearTimeout(timer);
+    timer = setTimeout(() => form.requestSubmit(), 250);
+  });
+  input.addEventListener('compositionend', () => form.requestSubmit());
+</script>

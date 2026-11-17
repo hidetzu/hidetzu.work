@@ -100,7 +100,8 @@
 
 /* --- 記事 ------------------------------------------------------------------ */
 
-.math-note {
+.math-note,
+.math-search {
   max-width: 44rem;
   margin: 2rem auto 0;
 }
@@ -901,4 +902,76 @@ nav.math-toc > ul > li {
   font-size: 0.8125rem;
   color: var(--muted);
   text-align: center;
+}
+
+/* --- 検索（/math/search と /math の検索ボックス） ------------------------------ */
+
+.math-search-title {
+  margin: 0.5rem 0 1.25rem;
+  font-size: 1.5rem;
+  line-height: 1.4;
+  color: var(--fg);
+}
+
+.math-search-form {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 32rem;
+  margin: 0 0 1rem;
+}
+
+.math-search-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-size: 1rem;
+}
+
+.math-search-form button {
+  padding: 0.45rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.math-search-form input:focus-visible,
+.math-search-form button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.math-search-form button:hover {
+  border-color: var(--accent);
+}
+
+.math-search-status,
+.math-search-note {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.math-search-note {
+  margin-top: 1.5rem;
+}
+
+.math-search-results mark {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: inherit;
+  border-radius: 2px;
+}
+
+.math-search-subs {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 0.875rem;
 }
