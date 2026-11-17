@@ -12,6 +12,7 @@ import {
   fieldOf,
   getMathGraph,
   getMathNotes,
+  learningHref,
   mathStatusLabel,
   mathStatusNote,
   relatedNotes,
@@ -58,11 +59,10 @@ const statementsHere = (graph.statementsByNote.get(note.id) ?? []).filter((s) =>
 
 // 新しいレイアウト（段階 1 の試作。docs/design/content-platform.md §8）
 const v2 = usesNoteLayout(note.id);
-const learningLog = headings.find((h) => h.depth === 2 && h.text === '学習記録');
 const v2Toc: TocItem[] = [
   ...toc,
   ...(statementsHere.length > 0 ? [{ text: '証明の依存関係', slug: 'math-deps', children: [] }] : []),
-  { text: 'このノートについて', slug: 'note-about', children: [] },
+  { text: '参考文献', slug: 'note-about', children: [] },
 ];
 ---
 
@@ -77,7 +77,7 @@ const v2Toc: TocItem[] = [
       toc={v2Toc}
     >
       <Fragment slot="meta">
-        <a class="status" href="#note-about" title={mathStatusNote[status]}>
+        <a class="status" href={learningHref(note.id)} title={mathStatusNote[status]}>
           {mathStatusLabel[status]}
         </a>
         {draft && <span class="status">draft</span>}
@@ -86,14 +86,14 @@ const v2Toc: TocItem[] = [
           <time datetime={ymd(updatedAt ?? createdAt)}>{ymd(updatedAt ?? createdAt)}</time>
         </span>
         {sources.length > 0 && <a href="#note-about">参考文献 {sources.length}</a>}
-        {learningLog && <a href={`#${learningLog.slug}`}>学習記録</a>}
+        <a href={learningHref(note.id)}>学習記録</a>
       </Fragment>
       <Content />
       <Fragment slot="after">
         <MathNoteLinks note={note} notes={notes} related={related} />
         <section class="note-about" aria-labelledby="note-about">
-          <h2 class="sub-head" id="note-about">このノートについて</h2>
-          <MathNoteMeta note={note} />
+          <h2 class="sub-head" id="note-about">参考文献</h2>
+          <MathNoteMeta note={note} variant="reference" />
         </section>
       </Fragment>
     </NoteLayout>
