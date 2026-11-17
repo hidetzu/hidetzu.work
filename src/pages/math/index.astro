@@ -4,6 +4,7 @@ import '../../styles/math.css';
 import mathData from '../../data/math.json';
 import type { MathIndex } from '../../data/types';
 import {
+  fieldOf,
   getMathGraph,
   getMathNotes,
   groupByReference,
@@ -40,7 +41,8 @@ const description = '数学を基礎から学び直しながら、定義・定�
 const inProgress = notes
   .filter((n) => n.data.status === 'studying' || n.data.status === 'proof-in-progress')
   .sort((a, b) => lastModified(b).getTime() - lastModified(a).getTime());
-const recent = [...notes].sort((a, b) => lastModified(b).getTime() - lastModified(a).getTime()).slice(0, 3);
+// 最近更新したノート（分野の一覧のすぐ後に出す）
+const recent = [...notes].sort((a, b) => lastModified(b).getTime() - lastModified(a).getTime()).slice(0, 5);
 const totals = Object.fromEntries([...proofOriginKeys, 'none'].map((k) => [k, 0])) as Record<string, number>;
 for (const counts of graph.proofCounts.values()) {
   for (const [k, v] of Object.entries(counts)) totals[k] += v;
@@ -91,6 +93,7 @@ const dependencyRows = notes
       <nav class="math-fields math-views" aria-label="このページの内容">
         <ul>
           <li><a href="#fields">数学の分野で見る</a></li>
+          <li><a href="#recent">最近の更新</a></li>
           <li><a href="#now">現在地</a></li>
           <li><a href="#dependencies">ノート間の依存関係</a></li>
           <li><a href="#references">参考文献と学習記録</a></li>
@@ -144,6 +147,26 @@ const dependencyRows = notes
             ))}
           </section>
 
+          <section class="section" aria-labelledby="recent">
+            <h2 class="sub-head" id="recent">Recently Updated</h2>
+            <ul class="others math-list">
+              {recent.map((n) => (
+                <li>
+                  <span class="entry-meta">
+                    <span class="topic">{fieldOf(n).title}</span>
+                    <time datetime={ymd(lastModified(n))}>{ymd(lastModified(n))}</time>
+                  </span>
+                  <p class="other-name">
+                    <a href={`/math/${n.id}`}>
+                      <strong>{n.data.title}</strong>
+                    </a>
+                  </p>
+                  <p class="other-summary">{n.data.description}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+
           <section class="section" aria-labelledby="now">
             <h2 class="sub-head" id="now">Now</h2>
             <dl class="math-now">
@@ -164,21 +187,6 @@ const dependencyRows = notes
                   </dd>
                 </div>
               )}
-              <div>
-                <dt>最近の更新</dt>
-                <dd>
-                  <ul>
-                    {recent.map((n) => (
-                      <li>
-                        <a href={`/math/${n.id}`}>{n.data.title}</a>
-                        <time class="math-row-note" datetime={ymd(lastModified(n))}>
-                          {ymd(lastModified(n))}
-                        </time>
-                      </li>
-                    ))}
-                  </ul>
-                </dd>
-              </div>
               <div>
                 <dt>証明の記録</dt>
                 <dd>

@@ -1,0 +1,102 @@
+---
+// 数学ノートの本文の後に置く節: 証明の依存関係、証明で使うノート（Dependencies）、関連するノート（Related）。
+// 今の見た目と新しいレイアウト（NoteLayout）の両方で使う
+import { richText } from '../lib/tex';
+import { fieldOf, getMathGraph, statementHref, type MathNote } from '../lib/math-notes';
+
+interface Props {
+  note: MathNote;
+  notes: MathNote[];
+  related: MathNote[];
+}
+
+const { note, notes, related } = Astro.props;
+
+// 証明の依存関係（証明の中のリンクから集めたもの）
+const graph = await getMathGraph();
+const titleOf = (slug: string) => notes.find((n) => n.id === slug)?.data.title ?? slug;
+const statementTitle = (key: string) => graph.statements.get(key)?.title ?? key;
+// 参照は「後の証明 → 前提」の一方向だけを出す。この結果を使う後続の証明・ノートは列挙しない（docs/adr/0006）
+const statementsHere = (graph.statementsByNote.get(note.id) ?? []).filter((s) => s.key && s.uses.size > 0);
+const byId = (slugs: Set<string> | undefined) => notes.filter((n) => slugs?.has(n.id));
+const prerequisites = byId(graph.noteUses.get(note.id));
+---
+
+{
+  statementsHere.length > 0 && (
+    <section class="math-deps" aria-labelledby="math-deps">
+      <h2 class="sub-head" id="math-deps">証明の依存関係</h2>
+      <p class="math-deps-lead">
+        各証明の中で参照している定義・定理の一覧。証明の外にある関連リンクは含めない。
+      </p>
+      <dl class="math-deps-list">
+        {statementsHere.map((s) => (
+          <div>
+            <dt>
+              <a href={`#${s.id}`} set:html={richText(s.title)} />
+            </dt>
+            {s.uses.size > 0 && (
+              <dd>
+                <span class="math-deps-kind">証明で使う</span>
+                <ul>
+                  {[...s.uses].map((key) => (
+                    <li>
+                      <a href={statementHref(key, note.id)} set:html={richText(statementTitle(key))} />
+                      {!key.startsWith(`${note.id}#`) && (
+                        <span class="math-deps-note">（{titleOf(key.split('#')[0])}）</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            )}
+          </div>
+        ))}
+      </dl>
+    </section>
+  )
+}
+
+{
+  prerequisites.length > 0 && (
+    <nav class="math-note-links" aria-labelledby="math-note-links">
+      <h2 class="sub-head" id="math-note-links">Dependencies</h2>
+      <dl>
+        <div>
+          <dt>証明で使うノート</dt>
+          <dd>
+            <ul>
+              {prerequisites.map((n) => (
+                <li>
+                  <a href={`/math/${n.id}`}>{n.data.title}</a>
+                </li>
+              ))}
+            </ul>
+          </dd>
+        </div>
+      </dl>
+    </nav>
+  )
+}
+
+{
+  related.length > 0 && (
+    <nav class="math-related" aria-labelledby="math-related">
+      <h2 class="sub-head" id="math-related">Related</h2>
+      <p class="math-deps-lead">内容が関連するノート。証明で使っているとは限らない。</p>
+      <ul class="others math-list">
+        {related.map((n) => (
+          <li>
+            <span class="topic">{fieldOf(n).title}</span>
+            <p class="other-name">
+              <a href={`/math/${n.id}`}>
+                <strong>{n.data.title}</strong>
+              </a>
+            </p>
+            <p class="other-summary">{n.data.description}</p>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}

@@ -1,0 +1,72 @@
+---
+// 数学ノートの状態・学習記録・日付・参考文献・タグの表。
+// 今の見た目ではノートの冒頭に、新しいレイアウト（NoteLayout）では本文の後の「このノートについて」に置く
+import { mathStatusLabel, mathStatusNote, textbookLabel, ymd, type MathNote } from '../lib/math-notes';
+
+interface Props {
+  note: MathNote;
+}
+
+const { note } = Astro.props;
+const { status, createdAt, updatedAt, tags, sources, draft } = note.data;
+const chapter = textbookLabel(note);
+---
+
+<dl class="math-meta">
+  <div>
+    <dt>Status</dt>
+    <dd>
+      <span class="status">{mathStatusLabel[status]}</span>
+      {draft && <span class="status">draft</span>}
+      {mathStatusNote[status]}（ページ全体の自己申告。証明ごとの出どころは各証明に書く）
+    </dd>
+  </div>
+  {
+    chapter && (
+      <div>
+        <dt>Study log</dt>
+        <dd>
+          <a href="/math#references" lang="en">{chapter}</a>
+        </dd>
+      </div>
+    )
+  }
+  <div>
+    <dt>Created</dt>
+    <dd><time datetime={ymd(createdAt)}>{ymd(createdAt)}</time></dd>
+  </div>
+  {
+    updatedAt && (
+      <div>
+        <dt>Updated</dt>
+        <dd><time datetime={ymd(updatedAt)}>{ymd(updatedAt)}</time></dd>
+      </div>
+    )
+  }
+  {
+    sources.length > 0 && (
+      <div>
+        <dt>Sources</dt>
+        <dd>
+          <ul class="math-sources">
+            {sources.map((src) => (
+              <li>
+                <span lang="en">{src.title}</span>
+                {src.location && <span class="release">{src.location}</span>}
+                {src.note && <span class="math-source-note">{src.note}</span>}
+              </li>
+            ))}
+          </ul>
+        </dd>
+      </div>
+    )
+  }
+  {
+    tags.length > 0 && (
+      <div>
+        <dt>Tags</dt>
+        <dd>{tags.join(' / ')}</dd>
+      </div>
+    )
+  }
+</dl>

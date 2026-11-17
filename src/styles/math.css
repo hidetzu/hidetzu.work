@@ -226,6 +226,187 @@ nav.math-toc > ul > li {
   color: var(--muted);
 }
 
+/* --- 新しいレイアウト（NoteLayout。段階 1 の試作で論理の基礎にだけ使う） ---------------- */
+
+/*
+  タイトル・概要・本文を先に出す。メタ情報は 1 行に縮め、詳しい表は本文の後の「このノートについて」へ。
+  目次は 64rem 以上で右のサイドバーに固定し、それより狭い画面では本文の前に折りたたんで置く
+*/
+.note {
+  margin: 2rem 0 0;
+}
+
+.note-head {
+  max-width: 44rem;
+  margin: 0 0 1.75rem;
+}
+
+.note-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+}
+
+.note-crumbs a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.note-crumbs a:hover {
+  color: var(--accent);
+}
+
+.note-head h1 {
+  margin: 0.6rem 0 0;
+  font-size: clamp(1.375rem, 4.5vw, 1.75rem);
+  font-weight: 800;
+  line-height: 1.45;
+  color: var(--fg);
+}
+
+.note-description {
+  margin: 0.6rem 0 0;
+  font-size: 0.9375rem;
+  color: var(--body);
+}
+
+.note-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 1rem;
+  margin: 0.9rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--faint);
+}
+
+.note-meta a {
+  color: var(--muted);
+}
+
+.note-meta a.status {
+  text-decoration: none;
+}
+
+.note-main {
+  min-width: 0;
+  max-width: 44rem;
+}
+
+.note-about {
+  margin-top: 3rem;
+}
+
+.note-about .math-meta {
+  margin-top: 0;
+}
+
+/* 目次 */
+.note-toc-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  line-height: 1.6;
+}
+
+.note-toc-list li {
+  margin: 0.3rem 0 0;
+}
+
+.note-toc-list ul {
+  margin: 0;
+  padding-left: 0.9rem;
+  list-style: none;
+  font-size: 0.95em;
+}
+
+.note-toc-list a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.note-toc-list a:hover {
+  color: var(--accent);
+}
+
+.note-toc--inline {
+  margin: 0 0 2rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+.note-toc--inline summary {
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.note-toc--inline[open] summary {
+  margin-bottom: 0.3rem;
+}
+
+.note-toc--side {
+  display: none;
+}
+
+.note-toc-title {
+  margin: 0 0 0.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+}
+
+@media (min-width: 64rem) {
+  .note-toc--inline {
+    display: none;
+  }
+
+  .note-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 12.5rem;
+    gap: 3rem;
+  }
+
+  .note-toc--side {
+    display: block;
+  }
+
+  /* 長い目次はサイドバーの中だけをスクロールさせる */
+  .note-toc--side nav {
+    position: sticky;
+    top: 1.5rem;
+    max-height: calc(100vh - 3rem);
+    overflow-y: auto;
+    padding-left: 1rem;
+    border-left: 1px solid var(--line);
+    font-size: 0.8125rem;
+  }
+}
+
+/* ブロックの読み分け（新しいレイアウトだけ）。定義は淡い地色、定理・命題などの主張は太い罫 */
+.note .math-definition {
+  padding: 0.6rem 1rem;
+  border-radius: 0 6px 6px 0;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.note .math-theorem,
+.note .math-lemma,
+.note .math-proposition,
+.note .math-corollary {
+  border-left-width: 3px;
+}
+
 /* --- 本文 ------------------------------------------------------------------ */
 
 .prose {

@@ -3,8 +3,11 @@ import { getCollection, render } from 'astro:content';
 // KaTeX の CSS は数学ノートの記事ページにだけ入れる（フォントは数式で使う字形だけが読み込まれる）
 import 'katex/dist/katex.min.css';
 import Base from '../../layouts/Base.astro';
+import NoteLayout from '../../layouts/NoteLayout.astro';
+import MathNoteMeta from '../../components/MathNoteMeta.astro';
+import MathNoteLinks from '../../components/MathNoteLinks.astro';
+import type { TocItem } from '../../components/NoteToc.astro';
 import '../../styles/math.css';
-import { richText } from '../../lib/tex';
 import {
   fieldOf,
   getMathGraph,
@@ -12,8 +15,7 @@ import {
   mathStatusLabel,
   mathStatusNote,
   relatedNotes,
-  statementHref,
-  textbookLabel,
+  usesNoteLayout,
   ymd,
   type MathNote,
 } from '../../lib/math-notes';
@@ -40,207 +42,116 @@ interface Props {
 
 const { note, notes, related } = Astro.props;
 const { Content, headings } = await render(note);
-const { title, description, status, createdAt, updatedAt, tags, sources, draft } = note.data;
+const { title, description, status, createdAt, updatedAt, sources, draft } = note.data;
 const field = fieldOf(note);
-const chapter = textbookLabel(note);
 
 // 目次: 2 段目（###）は 1 段目（##）の下にまとめる
-const toc: { text: string; slug: string; children: { text: string; slug: string }[] }[] = [];
+const toc: TocItem[] = [];
 for (const h of headings) {
   if (h.depth === 2) toc.push({ text: h.text, slug: h.slug, children: [] });
   else if (h.depth === 3 && toc.length > 0) toc[toc.length - 1].children.push({ text: h.text, slug: h.slug });
 }
 
-// 証明の依存関係（証明の中のリンクから集めたもの）
+// 本文の後の「証明の依存関係」があるか（目次に足す）
 const graph = await getMathGraph();
-const titleOf = (slug: string) => notes.find((n) => n.id === slug)?.data.title ?? slug;
-const statementTitle = (key: string) => graph.statements.get(key)?.title ?? key;
-// 参照は「後の証明 → 前提」の一方向だけを出す。この結果を使う後続の証明・ノートは列挙しない（docs/adr/0006）
 const statementsHere = (graph.statementsByNote.get(note.id) ?? []).filter((s) => s.key && s.uses.size > 0);
-const byId = (slugs: Set<string> | undefined) =>
-  notes.filter((n) => slugs?.has(n.id));
-const prerequisites = byId(graph.noteUses.get(note.id));
+
+// 新しいレイアウト（段階 1 の試作。docs/design/content-platform.md §8）
+const v2 = usesNoteLayout(note.id);
+const learningLog = headings.find((h) => h.depth === 2 && h.text === '学習記録');
+const v2Toc: TocItem[] = [
+  ...toc,
+  ...(statementsHere.length > 0 ? [{ text: '証明の依存関係', slug: 'math-deps', children: [] }] : []),
+  { text: 'このノートについて', slug: 'note-about', children: [] },
+];
 ---
 
-<Base title={title} description={description} ogType="article">
-  <main id="main" data-pagefind-filter="area:math" class="math-note">
-    <p class="math-back"><a href="/math">← Math Notes</a></p>
-    <header class="math-head">
-      <a class="topic math-field-link" href={`/math#${field.id}`}>{field.title}</a>
-      <h1 data-pagefind-body>{title}</h1>
-      <p class="math-description" data-pagefind-body>{description}</p>
-      <dl class="math-meta">
-        <div>
-          <dt>Status</dt>
-          <dd>
-            <span class="status">{mathStatusLabel[status]}</span>
-            {draft && <span class="status">draft</span>}
-            {mathStatusNote[status]}（ページ全体の自己申告。証明ごとの出どころは各証明に書く）
-          </dd>
-        </div>
-        {
-          chapter && (
-            <div>
-              <dt>Study log</dt>
-              <dd>
-                <a href="/math#references" lang="en">{chapter}</a>
-              </dd>
-            </div>
-          )
-        }
-        <div>
-          <dt>Created</dt>
-          <dd><time datetime={ymd(createdAt)}>{ymd(createdAt)}</time></dd>
-        </div>
-        {
-          updatedAt && (
-            <div>
-              <dt>Updated</dt>
-              <dd><time datetime={ymd(updatedAt)}>{ymd(updatedAt)}</time></dd>
-            </div>
-          )
-        }
-        {
-          sources.length > 0 && (
-            <div>
-              <dt>Sources</dt>
-              <dd>
-                <ul class="math-sources">
-                  {sources.map((src) => (
-                    <li>
-                      <span lang="en">{src.title}</span>
-                      {src.location && <span class="release">{src.location}</span>}
-                      {src.note && <span class="math-source-note">{src.note}</span>}
-                    </li>
-                  ))}
-                </ul>
-              </dd>
-            </div>
-          )
-        }
-        {
-          tags.length > 0 && (
-            <div>
-              <dt>Tags</dt>
-              <dd>{tags.join(' / ')}</dd>
-            </div>
-          )
-        }
-      </dl>
-    </header>
-
-    {
-      toc.length > 1 && (
-        <nav class="math-toc" aria-labelledby="math-toc-title">
-          <p class="math-toc-title" id="math-toc-title">目次</p>
-          <ul>
-            {toc.map((h) => (
-              <li>
-                <a href={`#${h.slug}`}>{h.text}</a>
-                {h.children.length > 0 && (
-                  <ul>
-                    {h.children.map((c) => (
-                      <li>
-                        <a href={`#${c.slug}`}>{c.text}</a>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            ))}
-            {statementsHere.length > 0 && (
-              <li>
-                <a href="#math-deps">証明の依存関係</a>
-              </li>
-            )}
-          </ul>
-        </nav>
-      )
-    }
-
-    <article class="prose" data-pagefind-body>
+{
+  v2 ? (
+    <NoteLayout
+      title={title}
+      description={description}
+      area="math"
+      back={{ href: '/math', label: 'Math Notes' }}
+      category={{ href: `/math#${field.id}`, label: field.title }}
+      toc={v2Toc}
+    >
+      <Fragment slot="meta">
+        <a class="status" href="#note-about" title={mathStatusNote[status]}>
+          {mathStatusLabel[status]}
+        </a>
+        {draft && <span class="status">draft</span>}
+        <span>
+          {updatedAt ? '更新' : '作成'}{' '}
+          <time datetime={ymd(updatedAt ?? createdAt)}>{ymd(updatedAt ?? createdAt)}</time>
+        </span>
+        {sources.length > 0 && <a href="#note-about">参考文献 {sources.length}</a>}
+        {learningLog && <a href={`#${learningLog.slug}`}>学習記録</a>}
+      </Fragment>
       <Content />
-    </article>
-
-    {
-      statementsHere.length > 0 && (
-        <section class="math-deps" aria-labelledby="math-deps">
-          <h2 class="sub-head" id="math-deps">証明の依存関係</h2>
-          <p class="math-deps-lead">
-            各証明の中で参照している定義・定理の一覧。証明の外にある関連リンクは含めない。
-          </p>
-          <dl class="math-deps-list">
-            {statementsHere.map((s) => (
-              <div>
-                <dt>
-                  <a href={`#${s.id}`} set:html={richText(s.title)} />
-                </dt>
-                {s.uses.size > 0 && (
-                  <dd>
-                    <span class="math-deps-kind">証明で使う</span>
-                    <ul>
-                      {[...s.uses].map((key) => (
-                        <li>
-                          <a href={statementHref(key, note.id)} set:html={richText(statementTitle(key))} />
-                          {!key.startsWith(`${note.id}#`) && (
-                            <span class="math-deps-note">（{titleOf(key.split('#')[0])}）</span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </dd>
-                )}
-              </div>
-            ))}
-          </dl>
+      <Fragment slot="after">
+        <MathNoteLinks note={note} notes={notes} related={related} />
+        <section class="note-about" aria-labelledby="note-about">
+          <h2 class="sub-head" id="note-about">このノートについて</h2>
+          <MathNoteMeta note={note} />
         </section>
-      )
-    }
+      </Fragment>
+    </NoteLayout>
+  ) : (
+    <Base title={title} description={description} ogType="article">
+      <main id="main" data-pagefind-filter="area:math" class="math-note">
+        <p class="math-back">
+          <a href="/math">← Math Notes</a>
+        </p>
+        <header class="math-head">
+          <a class="topic math-field-link" href={`/math#${field.id}`}>
+            {field.title}
+          </a>
+          <h1 data-pagefind-body>{title}</h1>
+          <p class="math-description" data-pagefind-body>
+            {description}
+          </p>
+          <MathNoteMeta note={note} />
+        </header>
+        {
+          toc.length > 1 && (
+            <nav class="math-toc" aria-labelledby="math-toc-title">
+              <p class="math-toc-title" id="math-toc-title">目次</p>
+              <ul>
+                {toc.map((h) => (
+                  <li>
+                    <a href={`#${h.slug}`}>{h.text}</a>
+                    {h.children.length > 0 && (
+                      <ul>
+                        {h.children.map((c) => (
+                          <li>
+                            <a href={`#${c.slug}`}>{c.text}</a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+                {statementsHere.length > 0 && (
+                  <li>
+                    <a href="#math-deps">証明の依存関係</a>
+                  </li>
+                )}
+              </ul>
+            </nav>
+          )
+        }
 
-    {
-      prerequisites.length > 0 && (
-        <nav class="math-note-links" aria-labelledby="math-note-links">
-          <h2 class="sub-head" id="math-note-links">Dependencies</h2>
-          <dl>
-            <div>
-              <dt>証明で使うノート</dt>
-              <dd>
-                <ul>
-                  {prerequisites.map((n) => (
-                    <li>
-                      <a href={`/math/${n.id}`}>{n.data.title}</a>
-                    </li>
-                  ))}
-                </ul>
-              </dd>
-            </div>
-          </dl>
-        </nav>
-      )
-    }
+        <article class="prose" data-pagefind-body>
+          <Content />
+        </article>
 
-    {
-      related.length > 0 && (
-        <nav class="math-related" aria-labelledby="math-related">
-          <h2 class="sub-head" id="math-related">Related</h2>
-          <p class="math-deps-lead">内容が関連するノート。証明で使っているとは限らない。</p>
-          <ul class="others math-list">
-            {related.map((n) => (
-              <li>
-                <span class="topic">{fieldOf(n).title}</span>
-                <p class="other-name">
-                  <a href={`/math/${n.id}`}>
-                    <strong>{n.data.title}</strong>
-                  </a>
-                </p>
-                <p class="other-summary">{n.data.description}</p>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )
-    }
+        <MathNoteLinks note={note} notes={notes} related={related} />
 
-    <p class="math-back math-back--end"><a href="/math">← Math Notes に戻る</a></p>
-  </main>
-</Base>
+        <p class="math-back math-back--end">
+          <a href="/math">← Math Notes に戻る</a>
+        </p>
+      </main>
+    </Base>
+  )
+}
