@@ -533,6 +533,10 @@ ML のノートは 1 つしかないので、`/ml/search` は ML のノートが
 3. `ml/[slug].astro` も `NoteLayout.astro` を使うようにする。ML のノートの本文は変えない。
 4. 必要になったら `/ml/search`。
 
+> 実施（2026-11-17）: 1〜3 を実施した。全 13 の数学ノートと ML のノートが `NoteLayout.astro` を使い、試作用の切り替え（`usesNoteLayout`）は消した。
+> 変更の前後で、すべてのノートの `<article>` の中身が同一であることを確かめた。共通の属性は `src/content.config.ts` の `baseNote` にまとめ、`aliases` を足した（値を書いたノートはまだない）。ML に `related` を足した。
+> ML の `references` は数学の `sources` と形が違うので、まとめていない。`/ml/search` は ML のノートが 1 つなので作っていない。
+
 ### 段階 5: サイト全体検索（将来）
 
 - `/search` を作り、ヘッダーに入口を足す。分野をまたぐ結果で分野のラベルを出す。

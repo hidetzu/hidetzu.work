@@ -9,6 +9,8 @@ import NoteToc, { type TocItem } from '../components/NoteToc.astro';
 interface Props {
   title: string;
   description: string;
+  // 別名・英語名・略称（frontmatter の aliases）。見える形で出し、検索の索引にも入れる（docs/adr/0010）
+  aliases?: string[];
   // 検索の分野のフィルタ（docs/adr/0010）
   area: string;
   back: { href: string; label: string };
@@ -16,7 +18,7 @@ interface Props {
   toc: TocItem[];
 }
 
-const { title, description, area, back, category, toc } = Astro.props;
+const { title, description, aliases = [], area, back, category, toc } = Astro.props;
 const hasToc = toc.length > 1;
 ---
 
@@ -30,6 +32,13 @@ const hasToc = toc.length > 1;
       </p>
       <h1 data-pagefind-body>{title}</h1>
       <p class="note-description" data-pagefind-body>{description}</p>
+      {
+        aliases.length > 0 && (
+          <p class="note-aliases" data-pagefind-body>
+            別名：<span lang="en">{aliases.join(', ')}</span>
+          </p>
+        )
+      }
       <p class="note-meta"><slot name="meta" /></p>
     </header>
 

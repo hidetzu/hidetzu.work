@@ -180,13 +180,6 @@ export const statementHref = (key: string, from: string) => {
   return slug === from ? `#${id}` : `/math/${slug}#${id}`;
 };
 
-// --- 新しいレイアウトの試作 -------------------------------------------------------
-
-// NoteLayout（目次のサイドバー、1 行のメタ情報）で出すノート。段階 1 では論理の基礎だけで試し、
-// 段階 4 で全ノートに広げたらこの一覧ごと消す（docs/design/content-platform.md §8）
-const noteLayoutPreview = new Set(['propositional-logic']);
-export const usesNoteLayout = (slug: string) => noteLayoutPreview.has(slug);
-
 // --- 学習記録（/math/learning） ----------------------------------------------------
 
 export type MathLog = CollectionEntry<'mathLog'>;

@@ -8,6 +8,8 @@ status: unassessed # unassessed（未評価）/ studying（学習中）/ concept
 createdAt: 2026-01-01
 # updatedAt: 2026-01-02
 tags: []
+related: [] # 関連する ML ノートの slug。相手のノートにも逆向きのリンクが自動で出る
+aliases: [] # 別名・英語名・略称で、本文に出てこないもの。冒頭に出て、検索でも探せる
 references:
   # 一次資料（原論文など）。year と url は資料を見て確かめたものだけを書く
   - title: "F. Rosenblatt, The perceptron: a probabilistic model for information storage and organization in the brain"

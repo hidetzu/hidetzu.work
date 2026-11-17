@@ -1,43 +1,17 @@
 ---
-// 数学ノートの状態・学習記録・日付・参考文献・タグの表。
-// - full: 今の見た目のノートの冒頭に置く。状態の説明と参考文献の範囲（Study log）を含む
-// - reference: 新しいレイアウト（NoteLayout）の本文の後の「参考文献」に置く。状態の説明と Study log は学習記録（/math/learning）に任せる
-import { learningHref, mathStatusLabel, mathStatusNote, textbookLabel, ymd, type MathNote } from '../lib/math-notes';
+// 数学ノートの本文の後の「参考文献」に置く表（日付・参考文献・タグ・学習記録へのリンク）。
+// 状態の説明と参考文献の範囲（Study log）は学習記録（/math/learning）に出す（docs/adr/0009）
+import { learningHref, ymd, type MathNote } from '../lib/math-notes';
 
 interface Props {
   note: MathNote;
-  variant?: 'full' | 'reference';
 }
 
-const { note, variant = 'full' } = Astro.props;
-const full = variant === 'full';
-const { status, createdAt, updatedAt, tags, sources, draft } = note.data;
-const chapter = textbookLabel(note);
+const { note } = Astro.props;
+const { createdAt, updatedAt, tags, sources } = note.data;
 ---
 
 <dl class="math-meta">
-  {
-    full && (
-      <div>
-        <dt>Status</dt>
-        <dd>
-          <span class="status">{mathStatusLabel[status]}</span>
-          {draft && <span class="status">draft</span>}
-          {mathStatusNote[status]}（ページ全体の自己申告。証明ごとの出どころは各証明に書く）
-        </dd>
-      </div>
-    )
-  }
-  {
-    full && chapter && (
-      <div>
-        <dt>Study log</dt>
-        <dd>
-          <a href={learningHref(note.id)} lang="en">{chapter}</a>
-        </dd>
-      </div>
-    )
-  }
   <div>
     <dt>Created</dt>
     <dd><time datetime={ymd(createdAt)}>{ymd(createdAt)}</time></dd>

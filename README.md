@@ -128,9 +128,10 @@ Math Notes は、特定の教科書の翻訳・要約ではなく、書籍や資
 | `createdAt` | ○ | 作成日 `YYYY-MM-DD` |
 | `updatedAt` | | 更新日。一覧の日付に出す（なければ作成日） |
 | `tags` | | タグの配列 |
+| `aliases` | | 別名・英語名・略称の配列（例: `["exclusive or"]`）。ノートの冒頭に「別名」として出し、検索の索引にも入る。本文に出てこない言い方だけを書く |
 | `related` | | 関連するノートの slug の配列。ノートの末尾に出し、相手のノートにも逆向きに出る。存在しない slug はビルドエラー |
 | `sources` | | 参照した資料（複数可）。`title` と、資料を見て確かめた章・節・ページだけを `location` に書く。資料との対応の補足（「8 節はこの資料の範囲外」など）は `note` に書く |
-| `textbook` | | 学習記録: 参考文献のどの章・節を学んで書いたか（`chapter: 1` と `section: 3`、資料は `ref` に `references` の id。省略すると先頭の資料）。`/math` の学習記録とノートの Study log に使う。資料を見て確かめた節だけを書き、節が分からなければ `chapter` だけにする。章・節は `references` の `chapters` にあるものだけ（ないとビルドエラー） |
+| `textbook` | | 学習記録: 参考文献のどの章・節を学んで書いたか（`chapter: 1` と `section: 3`、資料は `ref` に `references` の id。省略すると先頭の資料）。`/math/learning` の学習記録に使う。資料を見て確かめた節だけを書き、節が分からなければ `chapter` だけにする。章・節は `references` の `chapters` にあるものだけ（ないとビルドエラー） |
 | `draft` | | `true` の間はビルドに含めない |
 
 `status` は自己申告で、本人だけが変える。
@@ -326,6 +327,10 @@ note: functions
 
 領域全体をまとめて学んだ記録（例: [src/content/ml/foundations.md](src/content/ml/foundations.md)）は、テーマごとの節と「学習の記録」「理解の状況」「理解の整理」「未解決の疑問」で書く。再学習したら「学習の記録」に行を足し、本文と `status`・`progress`・`updatedAt` を更新する。
 
+ページの骨格（パンくず、1 行のメタ情報、目次、本文の後の参考文献）は数学ノートと同じ `src/layouts/NoteLayout.astro`。
+frontmatter の `title`・`description`・`order`・`createdAt`・`updatedAt`・`tags`・`aliases`・`related`・`draft` は数学ノートと共通（`src/content.config.ts` の `baseNote`）。
+`related` には ML のノートの slug だけを書ける。ML の学習の記録は、数学と違ってノートの本文に書く。
+
 数式とブロック（`:::definition`、`:::question` など）は数学ノートと同じ書き方が使える。図はインライン SVG で本文に書く（`<figure class="math-figure ml-figure">`。グラフ用のクラスは `src/styles/ml.css`）。
 
 ## デプロイ
@@ -434,7 +439,7 @@ src/
   lib/           math-markdown.mjs（数式とブロックの Markdown プラグイン）, math-notes.ts, ml.ts
   components/    LoopDiagram.astro, Motif.astro（インライン SVG）、NoteToc / MathNoteMeta / MathNoteLinks（ノートのページの部品）
   layouts/       Base.astro（<head> / metadata / header / footer）
-                 NoteLayout.astro（知識ノートのページの骨格。今は論理の基礎だけで試している。docs/design/content-platform.md §4.3）
+                 NoteLayout.astro（数学ノートと ML ノートのページの骨格。docs/design/content-platform.md §4.3）
   pages/         index.astro, 404.astro, math/index.astro, math/[slug].astro, math/learning.astro, math/search.astro, ml/index.astro, ml/[slug].astro
   styles/        global.css, math.css（数学ノートと /ml のページ）, ml.css（/ml のページだけ）
 tests/           数学ノート用 Markdown プラグインのテスト
