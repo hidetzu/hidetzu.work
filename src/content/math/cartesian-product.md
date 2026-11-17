@@ -1,6 +1,6 @@
 ---
 title: "直積（Cartesian Products）"
-description: "順序対と 2 つの集合の直積、A × B と B × A の違い、m 組・ω 組を関数として定める有限直積と無限直積、同じ集合の直積（実数の m 組全体と実数列全体）、直積と共通部分・和集合、有限集合の直積の有限性。Munkres §5 の演習 1（A × B と B × A の全単射）を含む。"
+description: "順序対と 2 つの集合の直積、A × B と B × A の違いと両者の全単射、m 組・ω 組を関数として定める有限直積と無限直積、同じ集合の直積（実数の m 組全体と実数列全体）、直積と共通部分・和集合、有限集合の直積の有限性。"
 topic: set-theory
 order: 5
 status: understood
@@ -79,7 +79,7 @@ $$
 
 このように、$A \times B$ と $B \times A$ は一般には等しくない。$A = B$ のときや、$A$ か $B$ が空集合のとき（$A \times B = B \times A = \varnothing$）は等しい。
 
-等しくない場合でも、$A \times B$ と $B \times A$ のあいだには常に全単射が存在する（[6 節の演習 1](#prop-product-swap)）。集合として等しいことと、全単射で対応することは別のことである。
+等しくない場合でも、$A \times B$ と $B \times A$ のあいだには常に全単射が存在する（[6 節](#prop-product-swap)）。集合として等しいことと、全単射で対応することは別のことである。
 
 ### 要素の個数
 
@@ -182,9 +182,9 @@ $$
 
 :::
 
-## 6. 演習 1：直積の交換
+## 6. 直積の交換
 
-:::proposition[$A \times B$ と $B \times A$ の全単射]{#prop-product-swap}
+:::proposition[$A \times B$ と $B \times A$ の全単射]{#prop-product-swap source="Munkres, §5 演習 1"}
 集合 $A, B$ に対して、$A \times B$ と $B \times A$ のあいだには全単射が存在する。
 :::
 
@@ -276,7 +276,7 @@ $m$ 組 $x = (x_1, \dots, x_m)$ について、量化記号で書くと次のよ
 
 ## 8. 有限集合の直積の有限性
 
-有限集合の定義は[有限集合のノート](/math/finite-sets#def-finite)を使う。以下の 2 つの命題は、Munkres の [Corollary 6.8](/math/finite-sets#cor-6-8) のうち直積の部分にあたる。
+有限集合の定義は[有限集合のノート](/math/finite-sets#def-finite)を使う。以下の 2 つの命題は、[有限集合の和集合と直積](/math/finite-sets#cor-6-8)のうち直積の部分にあたる（Munkres, Corollary 6.8）。
 
 ### 2 つの有限集合の直積
 
@@ -353,4 +353,6 @@ $$
 この節で示したのは $A \times B$ が有限であることだけで、要素の個数がこの積になることは証明していない。
 :::
 
-§5 の演習 2〜5 は未着手である。
+## 学習記録
+
+参考文献の Munkres §5 の演習 2〜5 は未着手である。

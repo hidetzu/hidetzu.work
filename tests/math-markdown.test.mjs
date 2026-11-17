@@ -84,3 +84,9 @@ test('証明の出どころを見出しの直後に出す', () => {
 test('日本語の直後の改行は空白にしない', () => {
   assert.match(md('である。\n対偶をとる。\nfoo\nbar\n'), /<p>である。対偶をとる。foo\nbar<\/p>/);
 });
+
+test('主張の source は参考文献の行として見出しの横に出す', () => {
+  const html = md(':::lemma[要素を 1 つ取り除く]{#lem-a source="Munkres, Lemma 6.1"}\n本文\n:::\n');
+  assert.match(html, /<strong>補題<\/strong>（要素を 1 つ取り除く）<\/p><p class="math-block-origin">参考文献：Munkres, Lemma 6.1<\/p>/);
+  assert.throws(() => md(':::proof{source="x"}\n本文\n:::\n'));
+});
