@@ -1185,3 +1185,14 @@ nav.math-toc > ul > li {
 .math-log-body > :last-child {
   margin-bottom: 0;
 }
+
+.note-aliases {
+  margin: 0.4rem 0 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.note-about .math-sources {
+  margin: 0 0 0.75rem;
+  font-size: 0.9375rem;
+}

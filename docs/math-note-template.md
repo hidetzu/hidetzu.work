@@ -7,6 +7,7 @@ status: unread # unread / studying / understood / proof-in-progress / verified�
 createdAt: 2026-01-01
 # updatedAt: 2026-01-02
 related: [] # 関連するノートの slug。相手のノートにも逆向きのリンクが自動で出る
+aliases: [] # 別名・英語名・略称で、本文に出てこないもの（例: ["exclusive or"]）。冒頭に出て、検索でも探せる
 tags: []
 sources:
   - title: "James R. Munkres, Topology, 2nd ed."

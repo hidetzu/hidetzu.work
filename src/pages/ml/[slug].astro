@@ -1,45 +1,99 @@
 ---
 // 機械学習の学習ノート（/ml/<slug>）。src/content/ml/<slug>.md から作る。
-// 書き方は docs/ml-note-template.md。数式・ブロックは数学ノートと同じ Markdown の仕組みを使う
-import { render } from 'astro:content';
+// 書き方は docs/ml-note-template.md。数式・ブロックは数学ノートと同じ Markdown の仕組みを使い、
+// ページの骨格は数学ノートと同じ NoteLayout を使う（docs/adr/0009）。ML の学習の記録はノートの本文に書く
+import { getCollection, render } from 'astro:content';
 import 'katex/dist/katex.min.css';
-import Base from '../../layouts/Base.astro';
+import NoteLayout from '../../layouts/NoteLayout.astro';
+import type { TocItem } from '../../components/NoteToc.astro';
 import '../../styles/math.css';
 import '../../styles/ml.css';
-import { areaOf, getMlNotes, mlStatusLabel, mlStatusNote, ymd, type MlNote } from '../../lib/ml';
+import { areaOf, getMlNotes, mlStatusLabel, mlStatusNote, relatedMlNotes, ymd, type MlNote } from '../../lib/ml';
 
 export async function getStaticPaths() {
   const notes = await getMlNotes();
-  return notes.map((note) => ({ params: { slug: note.id }, props: { note } }));
+  const all = await getCollection('ml');
+  return notes.map((note) => ({ params: { slug: note.id }, props: { note, related: relatedMlNotes(note, notes, all) } }));
 }
 
 interface Props {
   note: MlNote;
+  related: MlNote[];
 }
 
-const { note } = Astro.props;
+const { note, related } = Astro.props;
 const { Content, headings } = await render(note);
-const { title, description, status, progress, createdAt, updatedAt, tags, references, draft } = note.data;
+const { title, description, aliases, status, progress, createdAt, updatedAt, tags, references, draft } = note.data;
 const area = areaOf(note);
-const toc = headings.filter((h) => h.depth === 2);
+// 目次は 1 段目（##）だけ
+const toc: TocItem[] = [
+  ...headings.filter((h) => h.depth === 2).map((h) => ({ text: h.text, slug: h.slug, children: [] })),
+  ...(related.length > 0 ? [{ text: '関連するノート', slug: 'ml-related', children: [] }] : []),
+  { text: references.length > 0 ? '参考文献・原論文' : 'このノートについて', slug: 'ml-references', children: [] },
+];
 ---
 
-<Base title={title} description={description} ogType="article">
-  <main id="main" data-pagefind-filter="area:ml" class="math-note ml-note">
-    <p class="math-back"><a href="/ml">← Machine Learning</a></p>
-    <header class="math-head">
-      <a class="topic math-field-link" href={`/ml#area-${area.id}`}>{area.number} {area.title}</a>
-      <h1 data-pagefind-body>{title}</h1>
-      <p class="math-description" data-pagefind-body>{description}</p>
+<NoteLayout
+  title={title}
+  description={description}
+  aliases={aliases}
+  area="ml"
+  back={{ href: '/ml', label: 'Machine Learning' }}
+  category={{ href: `/ml#area-${area.id}`, label: `${area.number} ${area.title}` }}
+  toc={toc}
+>
+  <Fragment slot="meta">
+    <span class={`status ml-status ml-status--${status}`} title={mlStatusNote[status]}>{mlStatusLabel[status]}</span>
+    {draft && <span class="status">draft</span>}
+    <span>{progress ? `${progress}（自己申告）` : `${mlStatusNote[status]}（自己申告）`}</span>
+    <span>
+      {updatedAt ? '更新' : '作成'}{' '}
+      <time datetime={ymd(updatedAt ?? createdAt)}>{ymd(updatedAt ?? createdAt)}</time>
+    </span>
+    {references.length > 0 && <a href="#ml-references">参考文献 {references.length}</a>}
+  </Fragment>
+  <Content />
+  <Fragment slot="after">
+    {
+      related.length > 0 && (
+        <nav class="math-related" aria-labelledby="ml-related">
+          <h2 class="sub-head" id="ml-related">Related</h2>
+          <ul class="others math-list">
+            {related.map((n) => (
+              <li>
+                <p class="other-name">
+                  <a href={`/ml/${n.id}`}>
+                    <strong>{n.data.title}</strong>
+                  </a>
+                </p>
+                <p class="other-summary">{n.data.description}</p>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+    <section class="note-about" aria-labelledby="ml-references">
+      <h2 class="sub-head" id="ml-references">{references.length > 0 ? '参考文献・原論文' : 'このノートについて'}</h2>
+      {
+        references.length > 0 && (
+          <ul class="math-sources">
+            {references.map((r) => (
+              <li>
+                {r.url ? (
+                  <a href={r.url} rel="noopener" lang="en">
+                    {r.title}
+                  </a>
+                ) : (
+                  <span lang="en">{r.title}</span>
+                )}
+                {r.year && <span class="release">{r.year}</span>}
+              </li>
+            ))}
+          </ul>
+        )
+      }
       <dl class="math-meta">
-        <div>
-          <dt>Status</dt>
-          <dd>
-            <span class={`status ml-status ml-status--${status}`}>{mlStatusLabel[status]}</span>
-            {draft && <span class="status">draft</span>}
-            {progress ? `${progress}（自己申告）` : `${mlStatusNote[status]}（自己申告）`}
-          </dd>
-        </div>
         <div>
           <dt>Created</dt>
           <dd><time datetime={ymd(createdAt)}>{ymd(createdAt)}</time></dd>
@@ -61,54 +115,6 @@ const toc = headings.filter((h) => h.depth === 2);
           )
         }
       </dl>
-    </header>
-
-    {
-      toc.length > 1 && (
-        <nav class="math-toc" aria-labelledby="math-toc-title">
-          <p class="math-toc-title" id="math-toc-title">目次</p>
-          <ul>
-            {toc.map((h) => (
-              <li>
-                <a href={`#${h.slug}`}>{h.text}</a>
-              </li>
-            ))}
-            {references.length > 0 && (
-              <li>
-                <a href="#ml-references">参考文献・原論文</a>
-              </li>
-            )}
-          </ul>
-        </nav>
-      )
-    }
-
-    <article class="prose" data-pagefind-body>
-      <Content />
-    </article>
-
-    {
-      references.length > 0 && (
-        <section class="math-related" aria-labelledby="ml-references">
-          <h2 class="sub-head" id="ml-references">参考文献・原論文</h2>
-          <ul class="math-sources">
-            {references.map((r) => (
-              <li>
-                {r.url ? (
-                  <a href={r.url} rel="noopener" lang="en">
-                    {r.title}
-                  </a>
-                ) : (
-                  <span lang="en">{r.title}</span>
-                )}
-                {r.year && <span class="release">{r.year}</span>}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )
-    }
-
-    <p class="math-back math-back--end"><a href="/ml">← Machine Learning に戻る</a></p>
-  </main>
-</Base>
+    </section>
+  </Fragment>
+</NoteLayout>

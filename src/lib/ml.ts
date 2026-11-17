@@ -65,3 +65,15 @@ export const validateMlData = (data: MlIndex) => {
   for (const k of solid) if (!prereq.has(k)) throw new Error(`ml.json: solid edge ${k} is not a prerequisite`);
   for (const k of prereq) if (!solid.has(k)) throw new Error(`ml.json: prerequisite ${k} has no solid edge`);
 };
+
+// 関連するノート: 自分の related に書いたものと、related に自分を書いているもの。
+// related の slug が存在しなければビルドで落とす（draft のノートは存在するが、本番では出さない）
+export const relatedMlNotes = (note: MlNote, visible: MlNote[], all: MlNote[]) => {
+  const ids = new Set(all.map((n) => n.id));
+  for (const id of note.data.related) {
+    if (!ids.has(id)) throw new Error(`ml: unknown related note "${id}" in ${note.id}`);
+  }
+  return visible
+    .filter((n) => n.id !== note.id && (note.data.related.includes(n.id) || n.data.related.includes(note.id)))
+    .sort(byOrder);
+};
