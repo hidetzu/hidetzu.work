@@ -88,7 +88,7 @@ export type MathField = {
   description: string;
 };
 
-// 教科書（Munkres）の章と節。ノートの frontmatter の textbook から参照する。
+// 参考文献の章と節。ノートの frontmatter の textbook から参照する。
 // 題は本か、本を見て確かめた資料で確認したものだけを書き、まだ学んでいない節は書かなくてよい
 export type MathChapter = {
   number: number;
@@ -96,10 +96,19 @@ export type MathChapter = {
   sections: { number: number; title: string }[];
 };
 
+// 参考文献。/math の「参考文献と学習記録」に出す。実際に参照した資料だけを足す。
+// chapters は、章・節ごとの学習記録を出したい資料にだけ書く
+export type MathReference = {
+  id: string;
+  title: string;
+  // 短い名前（ノートの Study log に出す）
+  short: string;
+  chapters?: MathChapter[];
+};
+
 export type MathIndex = {
   lead: string[];
-  textbook: string;
-  chapters: MathChapter[];
+  references: MathReference[];
   // ノートのない分野は /math に出さない。分野を増やすときはここに足す
   fields: MathField[];
   // 学習の目安。note に src/content/math のファイル名（slug）を書くと、そのノートへリンクする

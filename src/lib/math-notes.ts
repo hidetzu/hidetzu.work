@@ -1,6 +1,6 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import mathData from '../data/math.json';
-import type { MathChapter, MathField, MathIndex } from '../data/types';
+import type { MathField, MathIndex, MathReference } from '../data/types';
 import { buildGraph } from './math-graph.mjs';
 import { PROOF_ORIGINS } from './math-markdown.mjs';
 
@@ -70,52 +70,66 @@ export const relatedNotes = (note: MathNote, visible: MathNote[], all: MathNote[
     .sort(byFieldThenOrder);
 };
 
-// --- 教科書の章立て ------------------------------------------------------------
+// --- 参考文献と学習記録 ----------------------------------------------------------
 
-export const mathChapters: MathChapter[] = (mathData as MathIndex).chapters;
+export const mathReferences: MathReference[] = (mathData as MathIndex).references;
 
-// frontmatter の textbook が math.json の chapters にない章・節を指していたらビルドで落とす
+// frontmatter の textbook が指す参考文献。ref を省略したら先頭の参考文献
+const referenceOf = (note: MathNote) => {
+  const tb = note.data.textbook;
+  if (!tb) return undefined;
+  const ref = tb.ref ? mathReferences.find((r) => r.id === tb.ref) : mathReferences[0];
+  if (!ref) throw new Error(`math: unknown reference "${tb.ref}" in ${note.id}`);
+  return ref;
+};
+
+// frontmatter の textbook が math.json の references にない資料・章・節を指していたらビルドで落とす
 const checkTextbook = (note: MathNote) => {
   const tb = note.data.textbook;
-  if (!tb) return;
-  const chapter = mathChapters.find((c) => c.number === tb.chapter);
-  if (!chapter) throw new Error(`math: unknown chapter ${tb.chapter} in ${note.id}`);
+  const ref = referenceOf(note);
+  if (!tb || !ref) return;
+  const chapter = ref.chapters?.find((c) => c.number === tb.chapter);
+  if (!chapter) throw new Error(`math: unknown chapter ${tb.chapter} of "${ref.id}" in ${note.id}`);
   if (tb.section !== undefined && !chapter.sections.some((s) => s.number === tb.section)) {
-    throw new Error(`math: unknown section §${tb.section} (chapter ${tb.chapter}) in ${note.id}`);
+    throw new Error(`math: unknown section §${tb.section} (chapter ${tb.chapter} of "${ref.id}") in ${note.id}`);
   }
 };
 
-/** 「Chapter 1, §3 Relations」の形。教科書と対応しないノートは undefined */
+/** 「Munkres, Topology — Chapter 1, §3 Relations」の形。学習記録のないノートは undefined */
 export const textbookLabel = (note: MathNote) => {
   const tb = note.data.textbook;
-  if (!tb) return undefined;
-  const chapter = mathChapters.find((c) => c.number === tb.chapter);
+  const ref = referenceOf(note);
+  if (!tb || !ref) return undefined;
+  const chapter = ref.chapters?.find((c) => c.number === tb.chapter);
   const section = chapter?.sections.find((s) => s.number === tb.section);
-  return section ? `Chapter ${tb.chapter}, §${section.number} ${section.title}` : `Chapter ${tb.chapter}`;
+  const place = section ? `Chapter ${tb.chapter}, §${section.number} ${section.title}` : `Chapter ${tb.chapter}`;
+  return `${ref.short} — ${place}`;
 };
 
-// 章 → 節 → ノート。節を記録していないノートは章ごとの unsectioned に、教科書と対応しないノートは others に入る。
-// 節は math.json の順、ノートは分野の順 → 分野の中の順
-export const groupByChapter = (notes: MathNote[]) => {
+// 参考文献 → 章 → 節 → ノート。節を記録していないノートは章ごとの unsectioned に、
+// どの参考文献の章立てにも対応しないノートは others に入る。節は math.json の順、ノートは分野の順 → 分野の中の順
+export const groupByReference = (notes: MathNote[]) => {
   notes.forEach(checkTextbook);
   const sorted = [...notes].sort(byFieldThenOrder);
-  const chapters = mathChapters
-    .map((chapter) => ({
-      chapter,
-      sections: chapter.sections
-        .map((section) => ({
-          section,
-          notes: sorted.filter(
-            (n) => n.data.textbook?.chapter === chapter.number && n.data.textbook.section === section.number,
-          ),
-        }))
-        .filter((s) => s.notes.length > 0),
-      unsectioned: sorted.filter(
-        (n) => n.data.textbook?.chapter === chapter.number && n.data.textbook.section === undefined,
-      ),
-    }))
-    .filter((c) => c.sections.length > 0 || c.unsectioned.length > 0);
-  return { chapters, others: sorted.filter((n) => !n.data.textbook) };
+  const references = mathReferences.map((reference) => {
+    const mine = sorted.filter((n) => referenceOf(n) === reference);
+    const chapters = (reference.chapters ?? [])
+      .map((chapter) => ({
+        chapter,
+        sections: chapter.sections
+          .map((section) => ({
+            section,
+            notes: mine.filter((n) => n.data.textbook?.chapter === chapter.number && n.data.textbook.section === section.number),
+          }))
+          .filter((s) => s.notes.length > 0),
+        unsectioned: mine.filter(
+          (n) => n.data.textbook?.chapter === chapter.number && n.data.textbook.section === undefined,
+        ),
+      }))
+      .filter((c) => c.sections.length > 0 || c.unsectioned.length > 0);
+    return { reference, chapters };
+  });
+  return { references, others: sorted.filter((n) => !n.data.textbook) };
 };
 
 // --- 証明の依存関係と出どころ ------------------------------------------------------

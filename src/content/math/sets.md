@@ -5,7 +5,7 @@ topic: set-theory
 order: 1
 status: understood
 createdAt: 2026-11-09
-updatedAt: 2026-11-14
+updatedAt: 2026-11-17
 related:
   - propositional-logic
 tags:
@@ -14,13 +14,14 @@ tags:
 sources:
   - title: "James R. Munkres, Topology, 2nd ed."
     location: "Chapter 1"
+    note: "7 節の差集合による書き方と 8 節の対称差は、この参考文献の範囲外"
 textbook:
   chapter: 1
 ---
 
 :::remark[このノートの書き方]
-Munkres の Chapter 1 で学んだ集合の基本と集合演算を、定義、例、証明の順に整理したものである。
-教科書の範囲外の事項には **（補足）** と付ける。
+このノートでは、集合と要素、部分集合、集合演算とド・モルガンの法則を、定義、例、証明の順に整理する。
+理解を助けるための追加の説明や例には **（補足）** と付ける。
 :::
 
 ## 1. 集合と要素

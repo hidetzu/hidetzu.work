@@ -183,6 +183,12 @@
   margin-left: 0.6rem;
 }
 
+.math-source-note {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
 .math-toc {
   margin: 0 0 2.25rem;
   font-size: 0.875rem;
@@ -772,7 +778,7 @@ nav.math-toc > ul > li {
   margin-top: 1.6rem;
 }
 
-.math-chapter h3 {
+.math-chapter h4 {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -826,6 +832,11 @@ nav.math-toc > ul > li {
   margin-right: 0.5rem;
 }
 
+.math-reference {
+  margin-top: 1.2rem;
+}
+
+.math-reference-title,
 .math-legend-title {
   margin: 1.2rem 0 0.4rem;
   font-size: 0.9375rem;

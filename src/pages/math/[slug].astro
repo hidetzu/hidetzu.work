@@ -76,9 +76,9 @@ const prerequisites = byId(graph.noteUses.get(note.id));
         {
           chapter && (
             <div>
-              <dt>Textbook</dt>
+              <dt>Study log</dt>
               <dd>
-                <a href="/math#textbook" lang="en">{chapter}</a>
+                <a href="/math#references" lang="en">{chapter}</a>
               </dd>
             </div>
           )
@@ -105,6 +105,7 @@ const prerequisites = byId(graph.noteUses.get(note.id));
                     <li>
                       <span lang="en">{src.title}</span>
                       {src.location && <span class="release">{src.location}</span>}
+                      {src.note && <span class="math-source-note">{src.note}</span>}
                     </li>
                   ))}
                 </ul>

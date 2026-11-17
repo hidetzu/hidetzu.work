@@ -10,8 +10,10 @@ related: [] # 関連するノートの slug。相手のノートにも逆向き�
 tags: []
 sources:
   - title: "James R. Munkres, Topology, 2nd ed."
-    # location: "§xx, pp. xx–xx"   # 本を見て確かめた章・節・ページだけを書く
-# textbook:            # 教科書の章・節（src/data/math.json の chapters にあるもの）。本を見て確かめたものだけ
+    # location: "§xx, pp. xx–xx"   # 資料を見て確かめた章・節・ページだけを書く
+    # note: "4 節はこの資料の範囲外"  # 資料との対応の補足（任意）
+# textbook:            # 学習記録。参考文献の章・節（src/data/math.json の references の chapters にあるもの）。確かめたものだけ
+#   ref: munkres-topology  # references の id。省略すると先頭の資料
 #   chapter: 2
 #   section: 12
 draft: true # 公開するときに false にする（または行を消す）
