@@ -107,7 +107,10 @@ export type MathReference = {
 };
 
 export type MathIndex = {
+  // /math の冒頭（短く）
   lead: string[];
+  // Math Notes の書き方と方針（/math/learning#about）
+  about: string[];
   references: MathReference[];
   // ノートのない分野は /math に出さない。分野を増やすときはここに足す
   fields: MathField[];

@@ -74,6 +74,11 @@ const proofSummary = (note: MathNote) => {
     .join(' · ');
 };
 
+// ノート間の依存関係（証明の中のリンクから集めたもの。以前は /math にあった）
+const dependencyRows = notes
+  .map((n) => ({ note: n, uses: notes.filter((m) => graph.noteUses.get(n.id)?.has(m.id)) }))
+  .filter((r) => r.uses.length > 0);
+
 // 未解決の問いと途中の証明（分野の順 → 分野の中の順）
 const open = groups.flatMap(({ notes }) => notes.flatMap((n) => openItems(n).map((item) => ({ note: n, ...item }))));
 
@@ -84,7 +89,7 @@ const logContents = new Map(
   ),
 );
 
-const description = '数学ノートの学習記録。ノートの状態、参考文献ごとの学習範囲、証明の出どころ、未解決の問い、ノートごとの学習の経過。';
+const description = '数学ノートの学習記録。ノートの状態、参考文献ごとの学習範囲、証明の出どころ、ノート間の依存関係、未解決の問い、ノートごとの学習の経過。';
 ---
 
 <Base title="学習記録 | Math Notes" description={description}>
@@ -103,7 +108,9 @@ const description = '数学ノートの学習記録。ノートの状態、参�
           <li><a href="#now">現在地</a></li>
           <li><a href="#notes">ノートごとの記録</a></li>
           <li><a href="#references">参考文献と学習範囲</a></li>
+          <li><a href="#dependencies">ノート間の依存関係</a></li>
           <li><a href="#questions">未解決の問い</a></li>
+          <li><a href="#about">このノートについて</a></li>
           <li><a href="#legend">表示の意味</a></li>
           <li><a href="#roadmap">これから</a></li>
         </ul>
@@ -280,6 +287,36 @@ const description = '数学ノートの学習記録。ノートの状態、参�
       )}
     </section>
 
+    <section class="section" aria-labelledby="dependencies">
+      <h2 class="sub-head" id="dependencies">Dependencies</h2>
+      <p class="math-section-lead">
+        証明の中で、ほかのノートの定義・定理を参照しているもの。ノートの末尾には、定理ごとの依存関係を載せている。
+      </p>
+      {dependencyRows.length > 0 ? (
+        <dl class="math-now math-dependencies">
+          {dependencyRows.map(({ note, uses }) => (
+            <div>
+              <dt>
+                <a href={`/math/${note.id}#math-deps`}>{note.data.title}</a>
+              </dt>
+              <dd>
+                <span class="math-deps-kind">証明で使う</span>
+                <ul>
+                  {uses.map((m) => (
+                    <li>
+                      <a href={`/math/${m.id}`}>{m.data.title}</a>
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      ) : (
+        <p class="math-empty">まだありません。</p>
+      )}
+    </section>
+
     <section class="section" aria-labelledby="questions">
       <h2 class="sub-head" id="questions">Open Questions</h2>
       <p class="math-section-lead">
@@ -300,6 +337,11 @@ const description = '数学ノートの学習記録。ノートの状態、参�
           <p class="math-empty">いまはありません。</p>
         )
       }
+    </section>
+
+    <section class="section" aria-labelledby="about">
+      <h2 class="sub-head" id="about">About</h2>
+      {data.about.map((p) => <p class="math-section-lead">{p}</p>)}
     </section>
 
     <section class="section" aria-labelledby="legend">

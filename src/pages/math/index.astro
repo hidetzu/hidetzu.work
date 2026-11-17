@@ -3,32 +3,20 @@ import Base from '../../layouts/Base.astro';
 import '../../styles/math.css';
 import mathData from '../../data/math.json';
 import type { MathIndex } from '../../data/types';
-import {
-  fieldOf,
-  getMathGraph,
-  getMathNotes,
-  groupByField,
-  lastModified,
-  mathStatusLabel,
-  ymd,
-} from '../../lib/math-notes';
+import { fieldOf, getMathNotes, groupByField, lastModified, mathStatusLabel, ymd } from '../../lib/math-notes';
 
 const data = mathData as MathIndex;
 const notes = await getMathNotes();
 // 分野ごとに、分野の中の順（order）で並べる。ノートのない分野は出さない
 const groups = groupByField(notes);
-const graph = await getMathGraph();
 
 const description = '数学を基礎から学び直しながら、定義・定理・証明・具体例・反例を自分の言葉で整理していく個人の数学ノート。';
 
-// 最近更新したノート（分野の一覧のすぐ後に出す）
+// このページの役割は「ノートを探す入口」（docs/design/content-platform.md §4.1）。
+// 順に、説明と検索、分野（カード）、最近の更新、学習記録への導線。
+// ノート間の依存関係の一覧は /math/learning#dependencies に、詳しい方針は /math/learning#about にある
+// 最近更新したノート（タイトル・分野・日付だけ。説明は分野のカードとノートで読む）
 const recent = [...notes].sort((a, b) => lastModified(b).getTime() - lastModified(a).getTime()).slice(0, 5);
-
-// ノート間の依存関係（証明の中のリンクから集めたもの）
-// 状態・参考文献の範囲・証明の出どころ・これからの予定は /math/learning にある（docs/adr/0009）
-const dependencyRows = notes
-  .map((n) => ({ note: n, uses: notes.filter((m) => graph.noteUses.get(n.id)?.has(m.id)) }))
-  .filter((r) => r.uses.length > 0);
 ---
 
 <Base title="Math Notes" description={description}>
@@ -45,18 +33,11 @@ const dependencyRows = notes
         <input id="math-index-q" type="search" name="q" placeholder="数学ノートを検索" />
         <button type="submit">検索</button>
       </form>
-      <p class="math-textbook">
-        <span class="topic">Reference</span> <a href="/math/notation">数学の記号と文字</a>
-        <span>（ギリシャ文字、書体、記号、数学英語）</span>
+      <p class="math-index-links">
+        <a href="/math/learning#about">このノートについて</a>
+        <a href="/math/notation">数学の記号と文字</a>
+        <a href="/math/learning">学習記録</a>
       </p>
-      <nav class="math-fields math-views" aria-label="このページの内容">
-        <ul>
-          <li><a href="#fields">数学の分野で見る</a></li>
-          <li><a href="#recent">最近の更新</a></li>
-          <li><a href="#dependencies">ノート間の依存関係</a></li>
-          <li><a href="/math/learning">学習記録</a></li>
-        </ul>
-      </nav>
     </section>
 
     {
@@ -68,101 +49,57 @@ const dependencyRows = notes
         <>
           <section class="section" aria-labelledby="fields">
             <h2 class="sub-head" id="fields">Fields</h2>
-            <p class="math-section-lead">ノートは数学の分野と概念ごとにまとめている。分野の中は、おおむね前提となる概念から順に並べている。</p>
-            <nav class="math-fields" aria-label="分野">
-              <ul>
-                {groups.map(({ field }) => (
-                  <li>
-                    <a href={`#${field.id}`}>{field.title}</a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-            {groups.map(({ field, notes }) => (
-              <section class="math-field" id={field.id} aria-labelledby={`${field.id}-title`}>
-                <h3 id={`${field.id}-title`}>{field.title}</h3>
-                <p class="math-field-description">{field.description}</p>
-                <ul class="others math-list">
-                  {notes.map((note) => (
-                    <li>
-                      <span class="entry-meta">
-                        <span class="status">{mathStatusLabel[note.data.status]}</span>
-                        {note.data.draft && <span class="status">draft</span>}
-                        <time datetime={ymd(lastModified(note))}>{ymd(lastModified(note))}</time>
-                      </span>
-                      <p class="other-name">
-                        <a href={`/math/${note.id}`}>
-                          <strong>{note.data.title}</strong>
+            {/* 分野ごとのカード。分野の中は、おおむね前提となる概念から順に並べている（order） */}
+            <ul class="math-field-cards">
+              {groups.map(({ field, notes }) => (
+                <li class="math-field-card" id={field.id}>
+                  <h3>
+                    {field.title}
+                    <span class="math-field-count">{notes.length} ノート</span>
+                  </h3>
+                  <p class="math-field-description">{field.description}</p>
+                  <ul class="math-field-notes">
+                    {notes.map((note) => (
+                      <li>
+                        <a href={`/math/${note.id}`} title={note.data.description}>
+                          {note.data.title}
                         </a>
-                      </p>
-                      <p class="other-summary">{note.data.description}</p>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))}
-          </section>
-
-          <section class="section" aria-labelledby="recent">
-            <h2 class="sub-head" id="recent">Recently Updated</h2>
-            <ul class="others math-list">
-              {recent.map((n) => (
-                <li>
-                  <span class="entry-meta">
-                    <span class="topic">{fieldOf(n).title}</span>
-                    <time datetime={ymd(lastModified(n))}>{ymd(lastModified(n))}</time>
-                  </span>
-                  <p class="other-name">
-                    <a href={`/math/${n.id}`}>
-                      <strong>{n.data.title}</strong>
-                    </a>
-                  </p>
-                  <p class="other-summary">{n.data.description}</p>
+                        {note.data.status !== 'understood' && (
+                          <span class="math-field-status">{mathStatusLabel[note.data.status]}</span>
+                        )}
+                        {note.data.draft && <span class="math-field-status">draft</span>}
+                      </li>
+                    ))}
+                  </ul>
                 </li>
               ))}
             </ul>
           </section>
 
-          <section class="section" aria-labelledby="dependencies">
-            <h2 class="sub-head" id="dependencies">Dependencies</h2>
-            <p class="math-section-lead">
-              証明の中で、ほかのノートの定義・定理を参照しているもの。ノートの末尾には、定理ごとの依存関係を載せている。
-            </p>
-            {dependencyRows.length > 0 ? (
-              <dl class="math-now math-dependencies">
-                {dependencyRows.map(({ note, uses }) => (
-                  <div>
-                    <dt>
-                      <a href={`/math/${note.id}#math-deps`}>{note.data.title}</a>
-                    </dt>
-                    <dd>
-                      <span class="math-deps-kind">証明で使う</span>
-                      <ul>
-                        {uses.map((m) => (
-                          <li>
-                            <a href={`/math/${m.id}`}>{m.data.title}</a>
-                          </li>
-                        ))}
-                      </ul>
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            ) : (
-              <p class="math-empty">まだありません。</p>
-            )}
+          <section class="section" aria-labelledby="recent">
+            <h2 class="sub-head" id="recent">Recently Updated</h2>
+            <ul class="math-recent">
+              {recent.map((n) => (
+                <li>
+                  <time datetime={ymd(lastModified(n))}>{ymd(lastModified(n))}</time>
+                  <a href={`/math/${n.id}`}>{n.data.title}</a>
+                  <span class="math-recent-field">{fieldOf(n).title}</span>
+                </li>
+              ))}
+            </ul>
           </section>
 
           <section class="section" aria-labelledby="learning">
             <h2 class="sub-head" id="learning">Learning Log</h2>
-            {/* 旧アンカー（学習記録を /math/learning に移す前の節）。外からのリンクが切れないように残す */}
+            {/* 旧アンカー（学習記録・依存関係を /math/learning に移す前の節）。外からのリンクが切れないように残す */}
             <span id="now"></span>
             <span id="references"></span>
             <span id="textbook"></span>
             <span id="legend"></span>
             <span id="roadmap"></span>
+            <span id="dependencies"></span>
             <p class="math-section-lead">
-              ノートの状態、参考文献ごとの学習範囲、証明の出どころ、未解決の問い、ノートごとの学習の経過、これから学ぶ予定は、
+              ノートの状態、参考文献ごとの学習範囲、証明の出どころ、ノート間の依存関係、これから学ぶ予定は
               <a href="/math/learning">学習記録</a>にまとめている。
             </p>
           </section>

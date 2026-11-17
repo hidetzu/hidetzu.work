@@ -1,5 +1,8 @@
 ---
 title: "位相空間の定義と位相の強弱"
+aliases:
+  - "topological spaces"
+  - "topology"
 description: "位相の定義と代表例、位相の強弱、位相の共通部分と和集合、集合族を含む最も弱い位相の存在。"
 topic: topology
 order: 1

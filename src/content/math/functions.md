@@ -1,5 +1,8 @@
 ---
 title: "写像"
+aliases:
+  - "functions"
+  - "maps"
 description: "写像の定義（値の存在と一意性）、単射・全射・全単射、左右の逆写像と全単射、像と逆像、像・逆像と集合演算（任意個の集合族を含む）、合成写像と単射・全射、左逆写像・右逆写像。"
 topic: set-theory
 order: 6

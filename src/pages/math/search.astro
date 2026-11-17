@@ -75,8 +75,16 @@ import '../../styles/math.css';
     // 英字の語を「T」のような 1 文字に当てたりして、関係のないノートを返すことがある。
     // 完全一致で 0 件のときだけ、通常の検索の結果を「近い語」として出す
     const filters = { area: 'math' };
-    const terms = q.trim().split(/\s+/).map((t) => t.replace(/"/g, ''));
-    let search = await pf.search(terms.map((t) => `"${t}"`).join(' '), { filters });
+    // 「ド・モルガン」の中黒は Pagefind が語の区切りにするので、中黒でも分ける
+    const terms = q
+      .trim()
+      .split(/[\s・･]+/)
+      .map((t) => t.replace(/"/g, ''))
+      .filter(Boolean);
+    // 「ド」のような 1 文字の語は、完全一致の検索では見つからない。2 文字以上の語があれば、それだけで探す
+    const long = terms.filter((t) => t.length >= 2);
+    const exactTerms = long.length > 0 ? long : terms;
+    let search = await pf.search(exactTerms.map((t) => `"${t}"`).join(' '), { filters });
     const exact = search.results.length > 0;
     if (!exact) search = await pf.search(q, { filters });
     let data = await Promise.all(search.results.slice(0, 20).map((r) => r.data()));
