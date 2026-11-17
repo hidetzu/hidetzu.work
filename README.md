@@ -84,6 +84,7 @@ Project を 1 件追加する例（Selected Work）:
    `<slug>` は英小文字とハイフン（例: `topological-spaces`）。URL は `/math/<slug>` になり、後から変えない
 2. frontmatter を埋める。書いている間は `draft: true` のままにする（`npm run dev` でだけ表示される）
 3. 公開するときは `draft: false` にして（または行を消して）、`npm run check && npm test && npm run build` を通す
+4. 学習の経過（どこまで学んだか、証明の経緯、未着手の演習）は、ノートの本文ではなく `src/content/math-log/<slug>.md` に書く（下の「学習記録」）
 
 Markdown ファイルを足すだけで一覧（`/math`）と記事ページに出る。ほかのファイルを触る必要はない。
 1 つの概念（または密接な概念のまとまり）を 1 ノートにし、長くなったら分ける。
@@ -111,7 +112,8 @@ Math Notes は、特定の教科書の翻訳・要約ではなく、書籍や資
   章立ての学習記録を出したい資料には `chapters` を書き（本か、本を確かめた資料で確認したものだけ。学んだ節だけでよい）、
   ノートの frontmatter の `textbook` で、資料の章 → 節 → ノートの順に並べる
 
-ほかに、学習中のノート・最近の更新・証明の出どころの合計（現在地）、ノート間の依存関係、凡例、これからの予定（`roadmap`）を出す。
+`/math` には、分野ごとの一覧、最近の更新、ノート間の依存関係を出す。
+学習中のノート・証明の出どころの合計（現在地）、参考文献ごとの章立て、凡例、これからの予定（`roadmap`）は `/math/learning` に出す（下の「学習記録」）。
 学習の目安（`src/data/math.json` の `roadmap`）の項目にノートをつなぐときは `"note": "<slug>"` を書く。
 
 ### frontmatter
@@ -211,7 +213,7 @@ $$
   参考文献の範囲内か範囲外かの区別には使わず、それは frontmatter の `sources` の `note` に書く。証明を誰が書いたかは `origin` / `text` で表す
 - 分からないものは書かない（「記録なし」として数える）。推測で `self` にしない
 - 未完成の証明は `:::attempt` に書く。`/math` の証明の数には入らない
-- ノートの冒頭の「学習状況」の文章は、これまでどおり残す。属性はそれを証明ごとに書き写したもの
+- 学習の経過の文章は `src/content/math-log/<slug>.md` に書く。属性はそれを証明ごとに書き写したもの
 
 ### 証明の依存関係
 
@@ -238,7 +240,30 @@ $$
 
 - アンカー（`#lem-6-1` など）は、番号を外しても変えない。ほかのノートからのリンクを壊さないため
 - 本文のリンクの文字も、番号ではなく内容で書く（`[濃度の一意性](#cor-6-5)`）
-- 学習状況・証明の経緯・未着手の演習などの学習記録は、ノートの末尾の `## 学習記録` にまとめ、冒頭は扱う数学の説明から始める
+- 学習状況・証明の経緯・未着手の演習などの学習記録は、ノートの本文に書かず、学習記録（`src/content/math-log/<slug>.md`）に書く。本文は扱う数学の説明から始める
+
+### 学習記録（/math/learning）
+
+知識ノートと学習記録は分ける（[ADR 0009](docs/adr/0009-separate-knowledge-and-learning-records.md)）。`/math/learning` に次のものをまとめて出す。
+
+- 現在地: 学習中のノートと、証明の出どころの合計
+- ノートごとの記録（`#note-<slug>`）: 状態（`status`）、参考文献の範囲（`textbook`）、証明の数（出どころ別）、更新日、学習の経過
+- 参考文献と学習範囲（`math.json` の `references` の章立て）
+- 未解決の問い: 本文の `:::question` と `:::attempt` の一覧（中身はノートにある）
+- 表示の意味（状態と証明の出どころの凡例）、これから（`roadmap`）
+
+ノートごとの学習の経過は `src/content/math-log/<slug>.md` に書く。ファイル名はノートの slug と同じにし、frontmatter の `note` にも slug を書く
+（存在しないノートを指すとビルドで落ちる）。本文は Markdown で、数式も使える。学習の経過がないノートはファイルを作らなくてよい。
+
+```markdown
+---
+note: functions
+---
+
+- 参考文献の Munkres §2 の演習 1〜5：学習済み
+```
+
+ノートのページには、学習記録へのリンクだけを出す。`/math` の旧アンカー（`#now`、`#references`、`#textbook`、`#legend`、`#roadmap`）は、学習記録への案内の節に残してある。
 
 ### 記号・文字リファレンス（/math/notation）
 
@@ -403,13 +428,14 @@ npm run deploy     # astro build && wrangler deploy
 src/
   data/          コンテンツ（JSON）と型。math.json は /math の入口の文言と学習の目安、ml.json は /ml の学習マップ
   content/math/  数学ノート（Markdown）
+  content/math-log/  数学ノートごとの学習の経過（Markdown。/math/learning に出す）
   content/ml/    機械学習の学習ノート（Markdown）
   content.config.ts  数学ノートと機械学習ノートの frontmatter の定義
   lib/           math-markdown.mjs（数式とブロックの Markdown プラグイン）, math-notes.ts, ml.ts
   components/    LoopDiagram.astro, Motif.astro（インライン SVG）、NoteToc / MathNoteMeta / MathNoteLinks（ノートのページの部品）
   layouts/       Base.astro（<head> / metadata / header / footer）
                  NoteLayout.astro（知識ノートのページの骨格。今は論理の基礎だけで試している。docs/design/content-platform.md §4.3）
-  pages/         index.astro, 404.astro, math/index.astro, math/[slug].astro, math/search.astro, ml/index.astro, ml/[slug].astro
+  pages/         index.astro, 404.astro, math/index.astro, math/[slug].astro, math/learning.astro, math/search.astro, ml/index.astro, ml/[slug].astro
   styles/        global.css, math.css（数学ノートと /ml のページ）, ml.css（/ml のページだけ）
 tests/           数学ノート用 Markdown プラグインのテスト
 public/          favicon.svg, ogp.png, robots.txt, _redirects

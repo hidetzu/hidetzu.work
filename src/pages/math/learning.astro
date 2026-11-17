@@ -1,0 +1,347 @@
+---
+// 数学ノートの学習記録（/math/learning）。知識ノートの本文とは分けて、学習の経過をまとめる（docs/adr/0009）。
+// - ノートの状態（frontmatter の status）、参考文献の範囲（textbook）、証明の出どころの集計（証明のブロックの origin）
+// - 未解決の問い（:::question）と途中の証明（:::attempt）
+// - ノートごとの学習の経過（src/content/math-log/<slug>.md）
+// - これから学ぶ予定（src/data/math.json の roadmap）
+import { render } from 'astro:content';
+import 'katex/dist/katex.min.css';
+import Base from '../../layouts/Base.astro';
+import '../../styles/math.css';
+import mathData from '../../data/math.json';
+import type { MathIndex } from '../../data/types';
+import { richText } from '../../lib/tex';
+import {
+  getMathGraph,
+  getMathLogs,
+  getMathNotes,
+  groupByField,
+  groupByReference,
+  lastModified,
+  learningHref,
+  mathStatusLabel,
+  mathStatusNote,
+  openItems,
+  proofOriginKeys,
+  proofOriginLabel,
+  proofOriginNote,
+  textbookLabel,
+  ymd,
+  type MathNote,
+  type MathStatus,
+} from '../../lib/math-notes';
+
+const data = mathData as MathIndex;
+const notes = await getMathNotes();
+const groups = groupByField(notes);
+// 参考文献 → 章 → 節 → ノート。参考文献の章立てと対応しないノートは others
+const studyLog = groupByReference(notes);
+const graph = await getMathGraph();
+const logs = await getMathLogs();
+
+// roadmap から存在しないノートを参照したらビルドで落とす
+const ids = new Set(notes.map((n) => n.id));
+for (const item of data.roadmap) {
+  if (item.note && !ids.has(item.note)) throw new Error(`math.json: unknown note "${item.note}"`);
+}
+
+const statuses = Object.keys(mathStatusLabel) as MathStatus[];
+
+// 学習中のノートと、証明の出どころの合計
+const inProgress = notes
+  .filter((n) => n.data.status === 'studying' || n.data.status === 'proof-in-progress')
+  .sort((a, b) => lastModified(b).getTime() - lastModified(a).getTime());
+const totals = Object.fromEntries([...proofOriginKeys, 'none'].map((k) => [k, 0])) as Record<string, number>;
+for (const counts of graph.proofCounts.values()) {
+  for (const [k, v] of Object.entries(counts)) totals[k] += v;
+}
+const originNames: Record<string, string> = { ...proofOriginLabel, none: '出どころの記録なし' };
+const originShort: Record<string, string> = {
+  self: '自力',
+  'self-reviewed': '自力・レビュー済み',
+  textbook: '教科書',
+  ai: 'Claude',
+  none: '記録なし',
+};
+
+// ノートの証明の数（出どころ別）。0 の項目は出さない
+const proofSummary = (note: MathNote) => {
+  const counts = graph.proofCounts.get(note.id);
+  if (!counts) return '';
+  return Object.entries(counts)
+    .filter(([, v]) => v > 0)
+    .map(([k, v]) => `${originShort[k]} ${v}`)
+    .join(' · ');
+};
+
+// 未解決の問いと途中の証明（分野の順 → 分野の中の順）
+const open = groups.flatMap(({ notes }) => notes.flatMap((n) => openItems(n).map((item) => ({ note: n, ...item }))));
+
+// ノートごとの学習の経過（math-log）を Markdown から HTML にする
+const logContents = new Map(
+  await Promise.all(
+    [...logs.entries()].map(async ([slug, log]) => [slug, (await render(log)).Content] as const),
+  ),
+);
+
+const description = '数学ノートの学習記録。ノートの状態、参考文献ごとの学習範囲、証明の出どころ、未解決の問い、ノートごとの学習の経過。';
+---
+
+<Base title="学習記録 | Math Notes" description={description}>
+  <main id="main" class="math-index math-learning">
+    <section class="section" aria-labelledby="math-learning">
+      <p class="math-back"><a href="/math">← Math Notes</a></p>
+      <div class="section-head">
+        <span class="num">∑</span>
+        <h1 id="math-learning">Learning Log</h1>
+      </div>
+      <p class="lede">
+        数学ノートの学習の経過の記録。数学の内容（定義・定理・証明・例）はノートに書き、このページには、どこまで学んだか、証明を誰が書いたか、何が未解決かをまとめる。
+      </p>
+      <nav class="math-fields math-views" aria-label="このページの内容">
+        <ul>
+          <li><a href="#now">現在地</a></li>
+          <li><a href="#notes">ノートごとの記録</a></li>
+          <li><a href="#references">参考文献と学習範囲</a></li>
+          <li><a href="#questions">未解決の問い</a></li>
+          <li><a href="#legend">表示の意味</a></li>
+          <li><a href="#roadmap">これから</a></li>
+        </ul>
+      </nav>
+    </section>
+
+    <section class="section" aria-labelledby="now">
+      <h2 class="sub-head" id="now">Now</h2>
+      <p class="math-section-lead">学習中のノートと、全ノートの証明の数（出どころ別）。</p>
+      <dl class="math-now">
+        {inProgress.length > 0 && (
+          <div>
+            <dt>学習中</dt>
+            <dd>
+              <ul>
+                {inProgress.map((n) => (
+                  <li>
+                    <a href={`/math/${n.id}`}>{n.data.title}</a>
+                    {n.data.status === 'proof-in-progress' && (
+                      <span class="math-row-note">{mathStatusLabel[n.data.status]}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        )}
+        <div>
+          <dt>証明の記録</dt>
+          <dd>
+            <ul class="math-origin-totals">
+              {Object.entries(totals)
+                .filter(([, v]) => v > 0)
+                .map(([k, v]) => (
+                  <li>
+                    {originNames[k]} <strong>{v}</strong>
+                  </li>
+                ))}
+            </ul>
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="section" aria-labelledby="notes">
+      <h2 class="sub-head" id="notes">Notes</h2>
+      <p class="math-section-lead">
+        ノートごとの状態（自己申告）、参考文献の範囲、証明の数（出どころ別）、学習の経過。
+      </p>
+      {
+        groups.map(({ field, notes }) => (
+          <section class="math-field" aria-labelledby={`log-field-${field.id}`}>
+            <h3 id={`log-field-${field.id}`}>{field.title}</h3>
+            {notes.map((n) => {
+              const Log = logContents.get(n.id);
+              const chapter = textbookLabel(n);
+              const proofs = proofSummary(n);
+              return (
+                <article class="math-log" id={`note-${n.id}`} aria-labelledby={`note-${n.id}-title`}>
+                  <h4 id={`note-${n.id}-title`} class="math-log-title">
+                    <a href={`/math/${n.id}`}>{n.data.title}</a>
+                  </h4>
+                  <dl class="math-meta">
+                    <div>
+                      <dt>Status</dt>
+                      <dd>
+                        <span class="status">{mathStatusLabel[n.data.status]}</span>
+                        {n.data.draft && <span class="status">draft</span>}
+                        {mathStatusNote[n.data.status]}
+                      </dd>
+                    </div>
+                    {chapter && (
+                      <div>
+                        <dt>Study log</dt>
+                        <dd lang="en">{chapter}</dd>
+                      </div>
+                    )}
+                    {proofs && (
+                      <div>
+                        <dt>Proofs</dt>
+                        <dd>{proofs}</dd>
+                      </div>
+                    )}
+                    <div>
+                      <dt>Updated</dt>
+                      <dd>
+                        <time datetime={ymd(lastModified(n))}>{ymd(lastModified(n))}</time>
+                      </dd>
+                    </div>
+                  </dl>
+                  {Log && (
+                    <div class="prose math-log-body">
+                      <Log />
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </section>
+        ))
+      }
+    </section>
+
+    <section class="section" aria-labelledby="references">
+      <h2 class="sub-head" id="references">References</h2>
+      <span id="textbook"></span>
+      <p class="math-section-lead">
+        ノートを書くときに参照した資料と、資料ごとの学習記録。ノートは数学の分野と概念で組み立てていて、資料の章立てには合わせていない。
+        各ノートで参照した箇所は、ノートの Sources に書いている。
+      </p>
+      {studyLog.references.map(({ reference, chapters }) => (
+        <section class="math-reference" aria-labelledby={`ref-${reference.id}`}>
+          <h3 id={`ref-${reference.id}`} class="math-reference-title" lang="en">
+            {reference.title}
+          </h3>
+          {chapters.length > 0 && (
+            <p class="math-section-lead">
+              学んだ章と節に対応するノート。右の数字は、ノートにある証明の数を出どころ別に数えたもの。
+            </p>
+          )}
+          {chapters.map(({ chapter, sections, unsectioned }) => (
+            <section class="math-chapter" aria-labelledby={`chapter-${chapter.number}`}>
+              <h4 id={`chapter-${chapter.number}`}>
+                <span class="math-chapter-num">Chapter {chapter.number}</span>
+                <span lang="en">{chapter.title}</span>
+              </h4>
+              {sections.map(({ section, notes }) => (
+                <div class="math-section-row">
+                  <p class="math-section-title" lang="en">
+                    §{section.number} {section.title}
+                  </p>
+                  <ul class="math-compact">
+                    {notes.map((n) => (
+                      <li>
+                        <span class="status">{mathStatusLabel[n.data.status]}</span>
+                        <a href={learningHref(n.id)}>{n.data.title}</a>
+                        {proofSummary(n) && <span class="math-row-note">証明 {proofSummary(n)}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+              {unsectioned.length > 0 && (
+                <div class="math-section-row">
+                  <p class="math-section-title">節を記録していないノート</p>
+                  <ul class="math-compact">
+                    {unsectioned.map((n) => (
+                      <li>
+                        <span class="status">{mathStatusLabel[n.data.status]}</span>
+                        <a href={learningHref(n.id)}>{n.data.title}</a>
+                        {proofSummary(n) && <span class="math-row-note">証明 {proofSummary(n)}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </section>
+          ))}
+        </section>
+      ))}
+      {studyLog.others.length > 0 && (
+        <section class="math-chapter" aria-labelledby="chapter-others">
+          <h4 id="chapter-others">参考文献の章立てと対応しないノート</h4>
+          <ul class="math-compact">
+            {studyLog.others.map((n) => (
+              <li>
+                <span class="status">{mathStatusLabel[n.data.status]}</span>
+                <a href={learningHref(n.id)}>{n.data.title}</a>
+                {proofSummary(n) && <span class="math-row-note">証明 {proofSummary(n)}</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </section>
+
+    <section class="section" aria-labelledby="questions">
+      <h2 class="sub-head" id="questions">Open Questions</h2>
+      <p class="math-section-lead">
+        ノートに書いた未解決の問い（疑問）と、完成していない証明（証明の試み）。中身はノートの該当箇所にある。
+      </p>
+      {
+        open.length > 0 ? (
+          <ul class="math-compact">
+            {open.map((item) => (
+              <li>
+                <span class="status">{item.kind === 'question' ? '疑問' : '証明の試み'}</span>
+                <a href={item.id ? `/math/${item.note.id}#${item.id}` : `/math/${item.note.id}`} set:html={richText(item.title)} />
+                <span class="math-row-note">（{item.note.data.title}）</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="math-empty">いまはありません。</p>
+        )
+      }
+    </section>
+
+    <section class="section" aria-labelledby="legend">
+      <h2 class="sub-head" id="legend">Legend</h2>
+      <p class="math-section-lead">
+        ノートの状態（ページ全体の自己申告）と、証明ごとの出どころは別に記録している。
+      </p>
+      <h3 class="math-legend-title">ノートの状態</h3>
+      <dl class="legend">
+        {statuses.map((s) => (
+          <div>
+            <dt>{mathStatusLabel[s]}</dt>
+            <dd>{mathStatusNote[s]}</dd>
+          </div>
+        ))}
+      </dl>
+      <h3 class="math-legend-title">証明の出どころ</h3>
+      <dl class="legend">
+        {proofOriginKeys.map((k) => (
+          <div>
+            <dt>{proofOriginLabel[k]}</dt>
+            <dd>{proofOriginNote[k]}</dd>
+          </div>
+        ))}
+        <div>
+          <dt>文章は Claude が整理</dt>
+          <dd>証明の中身は上のとおりで、文章を Claude が整えた</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="section" aria-labelledby="roadmap">
+      <h2 class="sub-head" id="roadmap">Roadmap</h2>
+      <p class="math-section-lead">これから学ぶ予定の目安。ここまでの学習の記録とは別のもの。</p>
+      <ol class="math-roadmap">
+        {
+          data.roadmap.map((item) => (
+            <li>{item.note ? <a href={`/math/${item.note}`}>{item.title}</a> : item.title}</li>
+          ))
+        }
+      </ol>
+      <p class="math-goals">{data.goals}</p>
+    </section>
+  </main>
+</Base>

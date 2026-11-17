@@ -1,6 +1,6 @@
 # ADR 0009: 知識ノートと学習記録を分け、ノートのページを分野で共通にする
 
-- Status: Proposed
+- Status: Accepted（2026-11-17。段階 3 として実装）
 - Date: 2026-11-17
 - 関連: [ADR 0005](0005-math-notes-structure-and-proof-records.md)、[ADR 0007](0007-add-ml-learning-map.md)、[ADR 0008](0008-math-notes-as-independent-notebook.md)、[設計書](../design/content-platform.md)
 
@@ -22,6 +22,15 @@ PR #32 で学習の経過を各ノート末尾の `## 学習記録` に集めた
 6. Content Collections は分野ごとのまま維持し、共通の属性（title、description、tags、aliases、related、sources、createdAt、updatedAt、draft）を 1 つのスキーマ部品にまとめる。既存の属性名は変えない。
 7. 学習記録の形は分野ごとに持つ。数学の証明の出どころを ML に強制しない。ML の学習記録は今のまま（`/ml` の学習マップとノート冒頭の表）にする。
 8. ノートの slug に `search`、`learning`、`notation` を使えないようにする。
+
+## 実装（2026-11-17）
+
+- `src/content/math-log/<slug>.md`（コレクション `mathLog`）に、8 ノートの `## 学習記録` の文章を変えずに移した。移す前後で、ノートの本文の HTML（学習記録の節を除く）と、学習記録の HTML が一致することを確かめた
+- `/math/learning` を作り、`/math` の Now・References・Legend・Roadmap を移した。ノートごとの記録は `#note-<slug>`。`/math` の旧アンカー（`#now`、`#references`、`#textbook`、`#legend`、`#roadmap`）は、学習記録への案内の節に残した
+- ノートのページは学習記録へリンクする。新しいレイアウト（NoteLayout）のノートでは、本文の後の節を「参考文献」にし、状態の説明と Study log は学習記録に任せた
+- 未解決の問い（`:::question`）と途中の証明（`:::attempt`）は本文に残し、学習記録には一覧だけを出す
+- 決定 8（slug の予約: `search`、`learning`、`notation`）は段階 1 で実装済み
+- 決定 6（共通スキーマ部品）と、決定 5 のうち ML での `NoteLayout` の利用は、段階 4 で行う
 
 ## 採用しなかった案
 

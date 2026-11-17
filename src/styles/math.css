@@ -1156,3 +1156,32 @@ nav.math-toc > ul > li {
   padding-left: 1.2rem;
   font-size: 0.875rem;
 }
+
+/* --- 学習記録（/math/learning） ---------------------------------------------- */
+
+.math-log {
+  margin: 0 0 2rem;
+  scroll-margin-top: 1.5rem;
+}
+
+.math-log-title {
+  margin: 1.4rem 0 0.4rem;
+  font-size: 1rem;
+  color: var(--fg);
+}
+
+.math-log .math-meta {
+  margin-top: 0;
+}
+
+.math-log-body {
+  margin-top: 0.75rem;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--line);
+  font-size: 0.9375rem;
+  line-height: 1.85;
+}
+
+.math-log-body > :last-child {
+  margin-bottom: 0;
+}

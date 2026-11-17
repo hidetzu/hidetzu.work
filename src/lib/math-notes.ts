@@ -2,7 +2,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import mathData from '../data/math.json';
 import type { MathField, MathIndex, MathReference } from '../data/types';
 import { buildGraph } from './math-graph.mjs';
-import { PROOF_ORIGINS } from './math-markdown.mjs';
+import { PROOF_ORIGINS, blockTitle } from './math-markdown.mjs';
 
 export type MathNote = CollectionEntry<'math'>;
 export type MathStatus = MathNote['data']['status'];
@@ -186,3 +186,36 @@ export const statementHref = (key: string, from: string) => {
 // 段階 4 で全ノートに広げたらこの一覧ごと消す（docs/design/content-platform.md §8）
 const noteLayoutPreview = new Set(['propositional-logic']);
 export const usesNoteLayout = (slug: string) => noteLayoutPreview.has(slug);
+
+// --- 学習記録（/math/learning） ----------------------------------------------------
+
+export type MathLog = CollectionEntry<'mathLog'>;
+
+// ノートの slug → 学習記録。存在しないノートを指す記録、ファイル名と note が違う記録はビルドで落とす
+export const getMathLogs = async () => {
+  const [logs, all] = await Promise.all([getCollection('mathLog'), getCollection('math')]);
+  const ids = new Set(all.map((n) => n.id));
+  const bySlug = new Map<string, MathLog>();
+  for (const log of logs) {
+    if (!ids.has(log.data.note)) throw new Error(`math-log: unknown note "${log.data.note}" in ${log.id}`);
+    if (log.id !== log.data.note) throw new Error(`math-log: file name "${log.id}" must match note "${log.data.note}"`);
+    bySlug.set(log.data.note, log);
+  }
+  return bySlug;
+};
+
+// ノートの学習記録へのリンク（/math/learning のノートごとの記録）
+export const learningHref = (slug: string) => `/math/learning#note-${slug}`;
+
+// 未解決の問い（:::question）と、途中の証明（:::attempt）。本文の順に返す
+export const openItems = (note: MathNote) => {
+  const items: { kind: 'question' | 'attempt'; title: string; id: string | null }[] = [];
+  const OPEN = /^\s*:::(question|attempt)(?:\[(.*)\])?(?:\{([^}]*)\})?\s*$/;
+  for (const line of (note.body ?? '').split('\n')) {
+    const m = line.match(OPEN);
+    if (!m) continue;
+    const id = m[3]?.match(/#([\w-]+)/)?.[1] ?? null;
+    items.push({ kind: m[1] as 'question' | 'attempt', title: blockTitle(m[1], m[2] ?? ''), id });
+  }
+  return items;
+};

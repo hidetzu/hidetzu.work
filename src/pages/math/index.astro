@@ -7,66 +7,25 @@ import {
   fieldOf,
   getMathGraph,
   getMathNotes,
-  groupByReference,
   groupByField,
   lastModified,
   mathStatusLabel,
-  mathStatusNote,
-  proofOriginKeys,
-  proofOriginLabel,
-  proofOriginNote,
   ymd,
-  type MathNote,
-  type MathStatus,
 } from '../../lib/math-notes';
 
 const data = mathData as MathIndex;
 const notes = await getMathNotes();
 // 分野ごとに、分野の中の順（order）で並べる。ノートのない分野は出さない
 const groups = groupByField(notes);
-// 参考文献 → 章 → 節 → ノート（学習記録）。参考文献の章立てと対応しないノートは others
-const studyLog = groupByReference(notes);
 const graph = await getMathGraph();
 
-// roadmap から存在しないノートを参照したらビルドで落とす
-const ids = new Set(notes.map((n) => n.id));
-for (const item of data.roadmap) {
-  if (item.note && !ids.has(item.note)) throw new Error(`math.json: unknown note "${item.note}"`);
-}
-
-const statuses = Object.keys(mathStatusLabel) as MathStatus[];
 const description = '数学を基礎から学び直しながら、定義・定理・証明・具体例・反例を自分の言葉で整理していく個人の数学ノート。';
 
-// 現在地: 学習中のノートと、証明の出どころの合計
-const inProgress = notes
-  .filter((n) => n.data.status === 'studying' || n.data.status === 'proof-in-progress')
-  .sort((a, b) => lastModified(b).getTime() - lastModified(a).getTime());
 // 最近更新したノート（分野の一覧のすぐ後に出す）
 const recent = [...notes].sort((a, b) => lastModified(b).getTime() - lastModified(a).getTime()).slice(0, 5);
-const totals = Object.fromEntries([...proofOriginKeys, 'none'].map((k) => [k, 0])) as Record<string, number>;
-for (const counts of graph.proofCounts.values()) {
-  for (const [k, v] of Object.entries(counts)) totals[k] += v;
-}
-const originNames: Record<string, string> = { ...proofOriginLabel, none: '出どころの記録なし' };
-const originShort: Record<string, string> = {
-  self: '自力',
-  'self-reviewed': '自力・レビュー済み',
-  textbook: '教科書',
-  ai: 'Claude',
-  none: '記録なし',
-};
-
-// ノートの証明の数（出どころ別）。0 の項目は出さない
-const proofSummary = (note: MathNote) => {
-  const counts = graph.proofCounts.get(note.id);
-  if (!counts) return '';
-  return Object.entries(counts)
-    .filter(([, v]) => v > 0)
-    .map(([k, v]) => `${originShort[k]} ${v}`)
-    .join(' · ');
-};
 
 // ノート間の依存関係（証明の中のリンクから集めたもの）
+// 状態・参考文献の範囲・証明の出どころ・これからの予定は /math/learning にある（docs/adr/0009）
 const dependencyRows = notes
   .map((n) => ({ note: n, uses: notes.filter((m) => graph.noteUses.get(n.id)?.has(m.id)) }))
   .filter((r) => r.uses.length > 0);
@@ -94,11 +53,8 @@ const dependencyRows = notes
         <ul>
           <li><a href="#fields">数学の分野で見る</a></li>
           <li><a href="#recent">最近の更新</a></li>
-          <li><a href="#now">現在地</a></li>
           <li><a href="#dependencies">ノート間の依存関係</a></li>
-          <li><a href="#references">参考文献と学習記録</a></li>
-          <li><a href="#legend">表示の意味</a></li>
-          <li><a href="#roadmap">これから</a></li>
+          <li><a href="/math/learning">学習記録</a></li>
         </ul>
       </nav>
     </section>
@@ -167,43 +123,6 @@ const dependencyRows = notes
             </ul>
           </section>
 
-          <section class="section" aria-labelledby="now">
-            <h2 class="sub-head" id="now">Now</h2>
-            <dl class="math-now">
-              {inProgress.length > 0 && (
-                <div>
-                  <dt>学習中</dt>
-                  <dd>
-                    <ul>
-                      {inProgress.map((n) => (
-                        <li>
-                          <a href={`/math/${n.id}`}>{n.data.title}</a>
-                          {n.data.status === 'proof-in-progress' && (
-                            <span class="math-row-note">{mathStatusLabel[n.data.status]}</span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </dd>
-                </div>
-              )}
-              <div>
-                <dt>証明の記録</dt>
-                <dd>
-                  <ul class="math-origin-totals">
-                    {Object.entries(totals)
-                      .filter(([, v]) => v > 0)
-                      .map(([k, v]) => (
-                        <li>
-                          {originNames[k]} <strong>{v}</strong>
-                        </li>
-                      ))}
-                  </ul>
-                </dd>
-              </div>
-            </dl>
-          </section>
-
           <section class="section" aria-labelledby="dependencies">
             <h2 class="sub-head" id="dependencies">Dependencies</h2>
             <p class="math-section-lead">
@@ -234,122 +153,21 @@ const dependencyRows = notes
             )}
           </section>
 
-          <section class="section" aria-labelledby="references">
-            <h2 class="sub-head" id="references">References</h2>
+          <section class="section" aria-labelledby="learning">
+            <h2 class="sub-head" id="learning">Learning Log</h2>
+            {/* 旧アンカー（学習記録を /math/learning に移す前の節）。外からのリンクが切れないように残す */}
+            <span id="now"></span>
+            <span id="references"></span>
             <span id="textbook"></span>
+            <span id="legend"></span>
+            <span id="roadmap"></span>
             <p class="math-section-lead">
-              ノートを書くときに参照した資料と、資料ごとの学習記録。ノートは数学の分野と概念で組み立てていて、資料の章立てには合わせていない。
-              各ノートで参照した箇所は、ノートの Sources に書いている。
+              ノートの状態、参考文献ごとの学習範囲、証明の出どころ、未解決の問い、ノートごとの学習の経過、これから学ぶ予定は、
+              <a href="/math/learning">学習記録</a>にまとめている。
             </p>
-            {studyLog.references.map(({ reference, chapters }) => (
-              <section class="math-reference" aria-labelledby={`ref-${reference.id}`}>
-                <h3 id={`ref-${reference.id}`} class="math-reference-title" lang="en">
-                  {reference.title}
-                </h3>
-                {chapters.length > 0 && (
-                  <p class="math-section-lead">
-                    学んだ章と節に対応するノート。右の数字は、ノートにある証明の数を出どころ別に数えたもの。
-                  </p>
-                )}
-                {chapters.map(({ chapter, sections, unsectioned }) => (
-                  <section class="math-chapter" aria-labelledby={`chapter-${chapter.number}`}>
-                    <h4 id={`chapter-${chapter.number}`}>
-                      <span class="math-chapter-num">Chapter {chapter.number}</span>
-                      <span lang="en">{chapter.title}</span>
-                    </h4>
-                    {sections.map(({ section, notes }) => (
-                      <div class="math-section-row">
-                        <p class="math-section-title" lang="en">
-                          §{section.number} {section.title}
-                        </p>
-                        <ul class="math-compact">
-                          {notes.map((n) => (
-                            <li>
-                              <span class="status">{mathStatusLabel[n.data.status]}</span>
-                              <a href={`/math/${n.id}`}>{n.data.title}</a>
-                              {proofSummary(n) && <span class="math-row-note">証明 {proofSummary(n)}</span>}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                    {unsectioned.length > 0 && (
-                      <div class="math-section-row">
-                        <p class="math-section-title">節を記録していないノート</p>
-                        <ul class="math-compact">
-                          {unsectioned.map((n) => (
-                            <li>
-                              <span class="status">{mathStatusLabel[n.data.status]}</span>
-                              <a href={`/math/${n.id}`}>{n.data.title}</a>
-                              {proofSummary(n) && <span class="math-row-note">証明 {proofSummary(n)}</span>}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </section>
-                ))}
-              </section>
-            ))}
-            {studyLog.others.length > 0 && (
-              <section class="math-chapter" aria-labelledby="chapter-others">
-                <h4 id="chapter-others">参考文献の章立てと対応しないノート</h4>
-                <ul class="math-compact">
-                  {studyLog.others.map((n) => (
-                    <li>
-                      <span class="status">{mathStatusLabel[n.data.status]}</span>
-                      <a href={`/math/${n.id}`}>{n.data.title}</a>
-                      {proofSummary(n) && <span class="math-row-note">証明 {proofSummary(n)}</span>}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-          </section>
-
-          <section class="section" aria-labelledby="legend">
-            <h2 class="sub-head" id="legend">Legend</h2>
-            <p class="math-section-lead">
-              ノートの状態（ページ全体の自己申告）と、証明ごとの出どころは別に記録している。
-            </p>
-            <h3 class="math-legend-title">ノートの状態</h3>
-            <dl class="legend">
-              {statuses.map((s) => (
-                <div>
-                  <dt>{mathStatusLabel[s]}</dt>
-                  <dd>{mathStatusNote[s]}</dd>
-                </div>
-              ))}
-            </dl>
-            <h3 class="math-legend-title">証明の出どころ</h3>
-            <dl class="legend">
-              {proofOriginKeys.map((k) => (
-                <div>
-                  <dt>{proofOriginLabel[k]}</dt>
-                  <dd>{proofOriginNote[k]}</dd>
-                </div>
-              ))}
-              <div>
-                <dt>文章は Claude が整理</dt>
-                <dd>証明の中身は上のとおりで、文章を Claude が整えた</dd>
-              </div>
-            </dl>
           </section>
         </>
       )
     }
-
-    <section class="section" aria-labelledby="roadmap">
-      <h2 class="sub-head" id="roadmap">Roadmap</h2>
-      <p class="math-section-lead">これから学ぶ予定の目安。上の学習の記録とは別のもの。</p>
-      <ol class="math-roadmap">
-        {
-          data.roadmap.map((item) => (
-            <li>{item.note ? <a href={`/math/${item.note}`}>{item.title}</a> : item.title}</li>
-          ))
-        }
-      </ol>
-      <p class="math-goals">{data.goals}</p>
-    </section>
   </main>
 </Base>

@@ -52,7 +52,10 @@ origin は self / self-reviewed / textbook / ai。文章を Claude が整えた�
 相互参照: /math/<ファイル名>#def-xxx
 -->
 
-## 読んだ範囲
+<!--
+どこまで学んだか、証明の経緯、未着手の演習は、ここ（本文）には書かない。
+src/content/math-log/<ファイル名>.md に書く（frontmatter は note: <ファイル名>）。/math/learning に出る（docs/adr/0009）
+-->
 
 ## 定義
 

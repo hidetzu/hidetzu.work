@@ -42,6 +42,16 @@ const math = defineCollection({
   }),
 });
 
+// 数学ノートの学習記録。src/content/math-log/<slug>.md に、ノートごとの学習の経過・証明の経緯・未着手の演習を書く。
+// /math/learning にノートごとにまとめて出す。知識ノートの本文には書かない（docs/adr/0009）
+const mathLog = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/math-log' }),
+  schema: z.object({
+    // 記録の対象の数学ノートの slug（ファイル名と同じにする）。ノートがなければビルドで落とす
+    note: z.string(),
+  }),
+});
+
 // 機械学習の学習ノート。src/content/ml/<slug>.md を置くと /ml/<slug> として公開される。
 // /math とは独立したセクション（docs/adr/0007）。書き方は README の「機械学習の学習マップ」と docs/ml-note-template.md
 const areaIds = mlData.areas.map((a) => a.id) as [string, ...string[]];
@@ -69,4 +79,4 @@ const ml = defineCollection({
   }),
 });
 
-export const collections = { math, ml };
+export const collections = { math, mathLog, ml };
