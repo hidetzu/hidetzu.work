@@ -1,6 +1,6 @@
 ---
 title: "写像"
-description: "写像の定義（値の存在と一意性）、単射・全射・全単射、Lemma 2.1、像と逆像。§2 の演習 1〜5 で、像・逆像と集合演算、合成写像、左逆写像・右逆写像を扱う。"
+description: "写像の定義（値の存在と一意性）、単射・全射・全単射、左右の逆写像と全単射、像と逆像、像・逆像と集合演算（任意個の集合族を含む）、合成写像と単射・全射、左逆写像・右逆写像。"
 topic: set-theory
 order: 6
 status: understood
@@ -21,16 +21,8 @@ textbook:
   section: 2
 ---
 
-:::remark[このノートの書き方]
-このノートでは、写像の定義、単射・全射・全単射、像と逆像を、定義・命題・証明・反例の順に整理する。
-参考文献の Munkres §2 の Lemma 2.1 と演習 1〜5（取り組んだ部分）を含み、番号は Munkres に従う。扱う項目は自分の学習内容に沿って選んだ。証明の文章は、その内容をもとに Claude が整理して書いたもので、手書きの答案をそのまま写したものではない。
-理解を助けるために Claude が足した例や注意には、**（補足）** と付けた。
-:::
-
-学習状況：
-
-- 写像の定義、単射・全射・全単射、像と逆像：学習済み
-- Lemma 2.1、演習 1〜5（今回取り組んだ範囲）：学習済み
+このノートでは、写像の定義から始めて、単射・全射・全単射、像と逆像、合成写像を扱う。
+像と逆像が和集合・共通部分・差集合とどう関係するか、合成写像の単射性・全射性がもとの写像とどう関係するかを、証明と反例で確かめる。
 
 以下、$f \colon A \to B$ を写像とする。差集合は [集合の基本と演算のノート](/math/sets#def-set-operations) と同じく $\setminus$ で書く。
 
@@ -117,11 +109,11 @@ $$
 
 が定まる。これを $f$ の**逆写像**という。表の最後の行では $f^{-1}(y) = \sqrt{y}$。
 
-## 3. Lemma 2.1
+## 3. 左右の逆写像と全単射
 
 $A$ 上の恒等写像を $i_A \colon A \to A$、$i_A(a) = a$ と書く。
 
-:::lemma[2.1]{#lem-2-1}
+:::lemma[左右の逆写像と全単射]{#lem-2-1 source="Munkres, Lemma 2.1"}
 $f \colon A \to B$ とする。写像 $g, h \colon B \to A$ が存在して
 
 $$
@@ -187,9 +179,9 @@ a \in f^{-1}(B_0) &\iff f(a) \in B_0 \quad (a \in A)
 \end{aligned}
 $$
 
-## 5. 演習 1：像と逆像の基本関係
+## 5. 像と逆像の基本関係
 
-:::proposition[像と逆像の基本関係]{#prop-image-preimage}
+:::proposition[像と逆像の基本関係]{#prop-image-preimage source="Munkres, §2 演習 1"}
 $A_0 \subseteq A$、$B_0 \subseteq B$ とする。
 
 1. $A_0 \subseteq f^{-1}(f(A_0))$。$f$ が単射なら等号が成り立つ。
@@ -213,11 +205,11 @@ $f \colon \mathbb{R} \to \mathbb{R}$、$f(x) = x^2$（単射でも全射でも�
 - $B_0 = [-1, 1]$ なら $f^{-1}(B_0) = [-1, 1]$、$f([-1, 1]) = [0, 1] \ne B_0$。
 :::
 
-## 6. 演習 2：集合演算と像・逆像
+## 6. 集合演算と像・逆像
 
 ### 逆像の性質
 
-:::proposition[逆像と集合演算]{#prop-preimage-operations}
+:::proposition[逆像と集合演算]{#prop-preimage-operations source="Munkres, §2 演習 2"}
 $B_0, B_1 \subseteq B$ とする。
 
 1. $B_0 \subseteq B_1 \implies f^{-1}(B_0) \subseteq f^{-1}(B_1)$
@@ -262,7 +254,7 @@ $$
 
 ### 像の性質
 
-:::proposition[像と集合演算]{#prop-image-operations}
+:::proposition[像と集合演算]{#prop-image-operations source="Munkres, §2 演習 2"}
 $A_0, A_1 \subseteq A$ とする。
 
 1. $A_0 \subseteq A_1 \implies f(A_0) \subseteq f(A_1)$
@@ -350,12 +342,12 @@ $$
 
 $f(-1) = f(1)$ のように、$A_0$ の元と $A_1$ の元が同じ値をとるのが原因。単射ならこれが起こらない。
 
-## 7. 演習 3：任意個の集合族への一般化
+## 7. 任意個の集合族への一般化
 
 $\{B_\lambda\}_{\lambda \in \Lambda}$ を $B$ の部分集合の族、$\{A_\lambda\}_{\lambda \in \Lambda}$ を $A$ の部分集合の族とする（[添字付けられた集合族](/math/families-of-sets#ex-indexed-family)）。
 共通部分は、[集合族のノートの定義](/math/families-of-sets#def-family-union)どおり $\Lambda \ne \varnothing$ のときに考える。
 
-:::proposition[任意個の和集合・共通部分]{#prop-arbitrary-families}
+:::proposition[任意個の和集合・共通部分]{#prop-arbitrary-families source="Munkres, §2 演習 3"}
 1. $f^{-1}\left( \bigcup_{\lambda \in \Lambda} B_\lambda \right) = \bigcup_{\lambda \in \Lambda} f^{-1}(B_\lambda)$
 2. $f^{-1}\left( \bigcap_{\lambda \in \Lambda} B_\lambda \right) = \bigcap_{\lambda \in \Lambda} f^{-1}(B_\lambda)$
 3. $f\left( \bigcup_{\lambda \in \Lambda} A_\lambda \right) = \bigcup_{\lambda \in \Lambda} f(A_\lambda)$
@@ -402,11 +394,11 @@ $$
 
 （補足）[空な集合族](/math/families-of-sets)の共通部分を全体集合と約束する流儀では、$\Lambda = \varnothing$ のとき 2 は $f^{-1}(B) = A$ で成り立つ。4 の等号は $f(A) = B$ となり、単射だけでは成り立たない（全射性が要る）。
 
-## 8. 演習 4：合成写像
+## 8. 合成写像
 
 以下、$f \colon A \to B$、$g \colon B \to C$ とする。
 
-:::proposition[合成写像の逆像]{#prop-composition-preimage}
+:::proposition[合成写像の逆像]{#prop-composition-preimage source="Munkres, §2 演習 4"}
 $C_0 \subseteq C$ に対して
 
 $$
@@ -429,7 +421,7 @@ $$
 
 ここでの $f^{-1}, g^{-1}, (g \circ f)^{-1}$ はすべて 4 節の逆像で、逆写像が存在する必要はない。
 
-:::theorem[合成と単射・全射]{#thm-composition}
+:::theorem[合成と単射・全射]{#thm-composition source="Munkres, §2 演習 4"}
 1. $f, g$ が単射なら、$g \circ f$ は単射。
 2. $g \circ f$ が単射なら、$f$ は単射。
 3. $f, g$ が全射なら、$g \circ f$ は全射。
@@ -464,7 +456,7 @@ $$
 - $c \notin f(A) = \{a, b\}$ なので、$f$ は全射でない。合成が全射でも、$f$ が全射とは限らない。
 :::
 
-## 9. 演習 5：左逆写像と右逆写像
+## 9. 左逆写像と右逆写像
 
 :::definition[左逆写像・右逆写像]{#def-left-right-inverse}
 $f \colon A \to B$ とする。
@@ -473,7 +465,7 @@ $f \colon A \to B$ とする。
 - $h \colon B \to A$ が $f \circ h = i_B$ を満たすとき、$h$ を $f$ の**右逆写像**という。
 :::
 
-:::proposition[左逆写像と単射、右逆写像と全射]{#prop-left-right-inverse}
+:::proposition[左逆写像と単射、右逆写像と全射]{#prop-left-right-inverse source="Munkres, §2 演習 5"}
 1. $f$ に左逆写像があれば、$f$ は単射。
 2. $f$ に右逆写像があれば、$f$ は全射。
 :::
@@ -485,7 +477,7 @@ $f \colon A \to B$ とする。
 :::
 
 8 節の定理で見ると、$g \circ f = i_A$ は単射なので 2 から $f$ は単射、$f \circ h = i_B$ は全射なので 4 から $f$ は全射、と読むこともできる。
-[Lemma 2.1](#lem-2-1) は、この 2 つを合わせて、さらに $g = h = f^{-1}$ を示したもの。
+[3 節の補題](#lem-2-1)は、この 2 つを合わせて、さらに $g = h = f^{-1}$ を示したもの。
 
 :::example[左逆写像はあるが右逆写像はない]{#ex-left-inverse-only}
 8 節の例の $f \colon \{1, 2\} \to \{a, b, c\}$、$f(1) = a$、$f(2) = b$ をもう一度使う。
@@ -508,3 +500,10 @@ $f \colon A \to B$ とする。
 - 単射性を仮定すると、像と共通部分・差集合についても等号が成り立つ。
 - 合成写像が単射なら最初の写像が単射、全射なら最後の写像が全射。
 - 左逆写像は単射性に、右逆写像は全射性に対応する。
+
+## 学習記録
+
+- 写像の定義、単射・全射・全単射、像と逆像：学習済み
+- 参考文献の Munkres §2 の Lemma 2.1 と演習 1〜5（取り組んだ範囲）：学習済み。各主張の横に Munkres での番号を示した
+- 扱う項目は自分の学習内容に沿って選んだ。証明の文章は、その内容をもとに Claude が整理して書いたもので、手書きの答案をそのまま写したものではない
+- 理解を助けるために Claude が足した例や注意には、**（補足）** と付けた

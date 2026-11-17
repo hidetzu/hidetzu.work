@@ -57,6 +57,9 @@ export const originLine = ({ origin, text, note } = {}) => {
   return `出どころ：${parts.join('・') || '記録なし'}${note ? `（${note}）` : ''}`;
 };
 
+/** 参考文献での番号の一行（`:::lemma[名前]{source="Munkres, Lemma 6.1"}`）。なければ undefined */
+export const sourceLine = (source) => (source ? `参考文献：${source}` : undefined);
+
 // ラベルの先頭の番号。「3.1：名前」「1. 名前」「4.1」を、見出しでは「補題 3.1（名前）」にする
 const LABEL_NUMBER = /^(\d+(?:\.\d+)*)(?:\s*[.．：:]\s*|$)/;
 
@@ -111,11 +114,16 @@ export const mathBlocks = defineMdastPlugin({
       ],
     };
 
-    const { id, origin, text, note } = node.attributes ?? {};
-    const line = originLine({ origin, text, note });
-    if (line && node.name !== 'proof' && node.name !== 'attempt') {
+    const { id, origin, text, note, source } = node.attributes ?? {};
+    const isProof = node.name === 'proof' || node.name === 'attempt';
+    if (originLine({ origin, text, note }) && !isProof) {
       throw new Error(`origin / text / note can only be used on :::proof or :::attempt (found on :::${node.name})`);
     }
+    if (source && isProof) {
+      throw new Error(`source can only be used on statement blocks (found on :::${node.name})`);
+    }
+    // 証明なら出どころ、主張なら参考文献での番号（`source="Munkres, Lemma 6.1"`）を見出しの横に出す
+    const line = isProof ? originLine({ origin, text, note }) : sourceLine(source);
 
     ctx.setProperty(node, 'data', {
       hName: 'div',

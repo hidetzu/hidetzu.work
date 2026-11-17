@@ -27,7 +27,7 @@ draft: true # 公開するときに false にする（または行を消す）
 :::
 
 :::theorem[名前]{#thm-xxx}      （proposition / lemma / corollary も同じ書き方）
-前提と結論を分けて書く。ラベルを「4.1：名前」とすると見出しは「定理 4.1（名前）」になる。
+前提と結論を分けて書く。ラベルには内容を表す名前を書き、参考文献での番号は {#thm-xxx source="Munkres, Theorem 4.1"} のように source に書く。
 :::
 
 :::attempt[命題 xxx]
