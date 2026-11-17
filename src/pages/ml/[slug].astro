@@ -25,12 +25,12 @@ const toc = headings.filter((h) => h.depth === 2);
 ---
 
 <Base title={title} description={description} ogType="article">
-  <main id="main" class="math-note ml-note">
+  <main id="main" data-pagefind-filter="area:ml" class="math-note ml-note">
     <p class="math-back"><a href="/ml">← Machine Learning</a></p>
     <header class="math-head">
       <a class="topic math-field-link" href={`/ml#area-${area.id}`}>{area.number} {area.title}</a>
-      <h1>{title}</h1>
-      <p class="math-description">{description}</p>
+      <h1 data-pagefind-body>{title}</h1>
+      <p class="math-description" data-pagefind-body>{description}</p>
       <dl class="math-meta">
         <div>
           <dt>Status</dt>
@@ -83,7 +83,7 @@ const toc = headings.filter((h) => h.depth === 2);
       )
     }
 
-    <article class="prose">
+    <article class="prose" data-pagefind-body>
       <Content />
     </article>
 

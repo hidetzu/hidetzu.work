@@ -2,7 +2,7 @@
 
 - 作成日: 2026-11-17
 - 状態: 設計案（実装は次のフェーズで判断する）
-- 関連 ADR: [0009](../adr/0009-separate-knowledge-and-learning-records.md)（Proposed）、[0010](../adr/0010-static-search-with-pagefind.md)（Proposed）
+- 関連 ADR: [0009](../adr/0009-separate-knowledge-and-learning-records.md)（Proposed）、[0010](../adr/0010-static-search-with-pagefind.md)（Accepted。段階 2 を実装済み）
 - 前提とした ADR: 0001〜0008
 
 この設計書は、`/math`・`/ml` と、今後足す分野で共通に使える「知識ノート」の基盤を決めるためのもの。
@@ -543,6 +543,8 @@ ML のノートは 1 つしかないので、`/ml/search` は ML のノートが
 
 次の検索ケースで、期待するページが結果に出て、`/math/search` に ML のページが出ないこと。
 期待するページは、2026-11-17 時点の `dist` で、数式と HTML タグを除いた本文に語が含まれるもの（`/math` などの一覧ページを除く）。
+
+> 追記（2026-11-17）: この表は、ノートのページの関連ノート・依存関係の欄まで数えていた。索引に入るのは本文だけなので、実際に出るべきノートはこれより少ない。試作の結果は [ADR 0010](../adr/0010-static-search-with-pagefind.md) に書いた。
 
 | 検索語 | `/math/search` で出るべきノート | 出てはいけないもの | 確かめること |
 | --- | --- | --- | --- |

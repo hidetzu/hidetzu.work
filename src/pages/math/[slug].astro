@@ -21,6 +21,11 @@ import {
 export async function getStaticPaths() {
   const notes = await getMathNotes();
   const all = await getCollection('math');
+  // /math の下で別のページに使っている名前は、ノートの slug にできない
+  const reserved = ['search', 'learning', 'notation'];
+  for (const n of all) {
+    if (reserved.includes(n.id)) throw new Error(`math: slug "${n.id}" is reserved for another page`);
+  }
   return notes.map((note) => ({
     params: { slug: note.id },
     props: { note, notes, related: relatedNotes(note, notes, all) },
@@ -58,12 +63,12 @@ const prerequisites = byId(graph.noteUses.get(note.id));
 ---
 
 <Base title={title} description={description} ogType="article">
-  <main id="main" class="math-note">
+  <main id="main" data-pagefind-filter="area:math" class="math-note">
     <p class="math-back"><a href="/math">← Math Notes</a></p>
     <header class="math-head">
       <a class="topic math-field-link" href={`/math#${field.id}`}>{field.title}</a>
-      <h1>{title}</h1>
-      <p class="math-description">{description}</p>
+      <h1 data-pagefind-body>{title}</h1>
+      <p class="math-description" data-pagefind-body>{description}</p>
       <dl class="math-meta">
         <div>
           <dt>Status</dt>
@@ -153,7 +158,7 @@ const prerequisites = byId(graph.noteUses.get(note.id));
       )
     }
 
-    <article class="prose">
+    <article class="prose" data-pagefind-body>
       <Content />
     </article>
 

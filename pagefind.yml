@@ -1,0 +1,4 @@
+# Pagefind の設定（npm run build で astro build のあとに索引を作る。docs/adr/0010）
+# 数式（KaTeX）は索引に入れない。見た目用の HTML と MathML（TeX のソース）が重複して抜粋に出るため
+exclude_selectors:
+  - ".katex"

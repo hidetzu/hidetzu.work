@@ -78,6 +78,12 @@ const dependencyRows = notes
         <h1 id="math-notes">Math Notes</h1>
       </div>
       {data.lead.map((p) => <p class="lede">{p}</p>)}
+      {/* JS を使わず /math/search へ送るだけのフォーム（検索そのものは検索ページで行う。docs/adr/0010） */}
+      <form class="math-search-form" action="/math/search" method="get" role="search">
+        <label for="math-index-q" class="visually-hidden">数学ノートを検索</label>
+        <input id="math-index-q" type="search" name="q" placeholder="数学ノートを検索" />
+        <button type="submit">検索</button>
+      </form>
       <p class="math-textbook">
         <span class="topic">Reference</span> <a href="/math/notation">数学の記号と文字</a>
         <span>（ギリシャ文字、書体、記号、数学英語）</span>

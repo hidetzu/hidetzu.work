@@ -4,7 +4,7 @@
 
 GitHub（プロフィール README）は「何を作ったか・どう実装したか」、このサイトは「なぜその問題に取り組むのか・何を確かめられたか」を受け持つ（[ADR 0001](docs/adr/0001-split-roles-between-github-profile-and-site.md)）。
 
-- Astro + TypeScript（静的生成、クライアント JS なし）
+- Astro + TypeScript（静的生成。クライアント JS は検索ページだけ）
 - Cloudflare Workers Static Assets で配信
 - DB / API / CMS / ログインなし
 
@@ -27,9 +27,11 @@ npm run dev        # http://localhost:4321
 ```bash
 npm run check      # astro check（型 + テンプレートの診断）
 npm test           # 数学ノート用 Markdown プラグインのテスト（node --test）
-npm run build      # dist/ に静的ファイルを出力
+npm run build      # dist/ に静的ファイルを出力し、Pagefind で検索の索引（dist/pagefind/）を作る
 npm run preview    # dist/ の内容をローカル配信して確認
 ```
+
+検索の索引は `npm run build` でだけ作られる。`npm run dev` では `/math/search` は動かないので、検索を確かめるときは `npm run build && npm run preview` を使う。
 
 ## 内容の更新
 
@@ -251,6 +253,18 @@ $$
 - まだ学んでいない分野は、記号と一般的な意味だけにする
 - クライアント JS は使わない。探すのはブラウザのページ内検索、LaTeX は `user-select: all` でコピーする
 
+### 検索（/math/search）
+
+[ADR 0010](docs/adr/0010-static-search-with-pagefind.md)。`npm run build` の最後に Pagefind（`package.json` で版を固定）が `dist/pagefind/` に索引を作る。
+
+- 索引に入るのは、ノートのタイトル・概要・本文（`data-pagefind-body` を付けた要素）だけ。目次、証明の依存関係、関連ノート、ヘッダー・フッターは入らない。`/math`、`/math/notation`、`/ml` も入らない
+- ノートのページには分野のフィルタ（`data-pagefind-filter="area:math"` / `"area:ml"`）を付けてある。`/math/search` は `area: math` で絞るので、ML のノートは出ない
+- 数式（`.katex`）は `pagefind.yml` の `exclude_selectors` で外している。数式の中の記号では探せない
+- 検索ページは、まず語ごとの完全一致（`"写像"`）で探し、0 件のときだけ Pagefind の通常の検索を「近い語」として出す。
+  通常の検索は日本語の語を 1 文字ずつに分けたり、英字の語を真理値表の「T」に当てたりして、関係のないノートを返すことがあるため
+- タイトルに検索語を含むノートを先に出す。それ以外は Pagefind の順
+- スクリプトは `is:inline` にしている。Vite に処理させると、動的 import が書き換えられて本番で索引を読み込めない
+
 ### 書くときの約束
 
 - 本の証明や本文を書き写さない。定理の主張と、自分の理解・自分で考えた証明を中心に書く
@@ -372,7 +386,8 @@ npm run deploy     # astro build && wrangler deploy
 ## 実装の方針
 
 - React などのフレームワークは、必要になるまで入れない
-- クライアント JS は 0 のまま維持する。動きは CSS アニメーションだけで付ける（CSS は `inlineStylesheets: 'always'` で HTML に埋め込む）
+- クライアント JS は 0 のまま維持する。例外は検索ページ（`/math/search`）だけで、Pagefind の索引を読む小さなスクリプトを置く（[ADR 0010](docs/adr/0010-static-search-with-pagefind.md)）。
+  ほかのページに JS を足さない。動きは CSS アニメーションだけで付ける（CSS は `inlineStylesheets: 'always'` で HTML に埋め込む）
 - 画像・フォントを増やさない。Web フォントは読み込まない（例外は数学ノートと /ml のページの KaTeX フォント。ADR 0002、0007）
 - コンポーネントを細かく割らない。デザインシステムを作らない
 - 情報構成は Header / Hero / Current Questions / Selected Work（+ Other projects）/ Experiments / Writing / About
@@ -393,7 +408,7 @@ src/
   lib/           math-markdown.mjs（数式とブロックの Markdown プラグイン）, math-notes.ts, ml.ts
   components/    LoopDiagram.astro, Motif.astro（インライン SVG）
   layouts/       Base.astro（<head> / metadata / header / footer）
-  pages/         index.astro, 404.astro, math/index.astro, math/[slug].astro, ml/index.astro, ml/[slug].astro
+  pages/         index.astro, 404.astro, math/index.astro, math/[slug].astro, math/search.astro, ml/index.astro, ml/[slug].astro
   styles/        global.css, math.css（数学ノートと /ml のページ）, ml.css（/ml のページだけ）
 tests/           数学ノート用 Markdown プラグインのテスト
 public/          favicon.svg, ogp.png, robots.txt, _redirects
