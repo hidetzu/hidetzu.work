@@ -1,51 +1,58 @@
 {
   "lead": [
-    "位相幾何学を基礎から学び直すための個人的なノートです。James R. Munkres の Topology を中心に、定義・定理の主張、自分で考えた証明、分からないことを記録しています。",
-    "完成した解説ではありません。各ノートの状態は自己申告で、「理解した」と「証明を検証済み」は区別しています。"
+    "数学を基礎から学び直しながら、理解した定義・定理・証明を自分の言葉で整理している個人の数学ノートです。具体例や反例、自分で考えた証明、まだ分からないことも記録しています。",
+    "書籍や資料から学んだ内容を、自分の理解にもとづいて分野と概念ごとに組み立て直しています。いまの主な参考文献は Munkres の Topology で、ほかの資料を参照したときは、その資料も参考文献に加えます。",
+    "完成した教科書ではなく、理解が進むたびに書き直していくノートです。各ノートの状態は自己申告で、「理解した」と「証明を検証済み」は区別しています。"
   ],
-  "textbook": "James R. Munkres, Topology, 2nd ed.",
-  "chapters": [
+  "references": [
     {
-      "number": 1,
-      "title": "Set Theory and Logic",
-      "sections": [
+      "id": "munkres-topology",
+      "title": "James R. Munkres, Topology, 2nd ed.",
+      "short": "Munkres, Topology",
+      "chapters": [
         {
           "number": 1,
-          "title": "Fundamental Concepts"
+          "title": "Set Theory and Logic",
+          "sections": [
+            {
+              "number": 1,
+              "title": "Fundamental Concepts"
+            },
+            {
+              "number": 2,
+              "title": "Functions"
+            },
+            {
+              "number": 3,
+              "title": "Relations"
+            },
+            {
+              "number": 4,
+              "title": "The Integers and the Real Numbers"
+            },
+            {
+              "number": 5,
+              "title": "Cartesian Products"
+            },
+            {
+              "number": 6,
+              "title": "Finite Sets"
+            }
+          ]
         },
         {
           "number": 2,
-          "title": "Functions"
-        },
-        {
-          "number": 3,
-          "title": "Relations"
-        },
-        {
-          "number": 4,
-          "title": "The Integers and the Real Numbers"
-        },
-        {
-          "number": 5,
-          "title": "Cartesian Products"
-        },
-        {
-          "number": 6,
-          "title": "Finite Sets"
-        }
-      ]
-    },
-    {
-      "number": 2,
-      "title": "Topological Spaces and Continuous Functions",
-      "sections": [
-        {
-          "number": 12,
-          "title": "Topological Spaces"
-        },
-        {
-          "number": 13,
-          "title": "Basis for a Topology"
+          "title": "Topological Spaces and Continuous Functions",
+          "sections": [
+            {
+              "number": 12,
+              "title": "Topological Spaces"
+            },
+            {
+              "number": 13,
+              "title": "Basis for a Topology"
+            }
+          ]
         }
       ]
     }

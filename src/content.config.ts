@@ -26,11 +26,17 @@ const math = defineCollection({
     tags: z.array(z.string()).default([]),
     // 関連するノートの slug。相手のノートにも自動で逆向きのリンクが出るので、片方に書けばよい
     related: z.array(z.string()).default([]),
-    // 読んだ箇所。location は本を見て確かめた章・節・ページだけを書く（例: "§12, pp. 75–78"）
-    sources: z.array(z.object({ title: z.string(), location: z.string().optional() })).default([]),
-    // 教科書（src/data/math.json の textbook / chapters）のどの章・節に当たるか。/math の章立ての一覧に使う。
-    // 本を見て確かめた節だけを書く。節が分からなければ chapter だけにする。教科書と対応しないノートは省略する
-    textbook: z.object({ chapter: z.number().int(), section: z.number().int().optional() }).optional(),
+    // 参照した資料。複数書ける。location は資料を見て確かめた章・節・ページだけを書く（例: "§12, pp. 75–78"）。
+    // note には、その資料との対応の補足を書く（例: 「4 節は参考文献の範囲外」）
+    sources: z
+      .array(z.object({ title: z.string(), location: z.string().optional(), note: z.string().optional() }))
+      .default([]),
+    // 学習記録: 参考文献（src/data/math.json の references）のどの章・節を学んで書いたか。/math の学習記録の一覧に使う。
+    // ref は references の id で、省略すると先頭の参考文献。資料を見て確かめた節だけを書き、分からなければ chapter だけにする。
+    // 参考文献の章立てと対応しないノートは省略する
+    textbook: z
+      .object({ ref: z.string().optional(), chapter: z.number().int(), section: z.number().int().optional() })
+      .optional(),
     // true の間は `npm run dev` でだけ表示し、ビルドには含めない
     draft: z.boolean().default(false),
   }),

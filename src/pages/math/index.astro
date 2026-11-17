@@ -6,7 +6,7 @@ import type { MathIndex } from '../../data/types';
 import {
   getMathGraph,
   getMathNotes,
-  groupByChapter,
+  groupByReference,
   groupByField,
   lastModified,
   mathStatusLabel,
@@ -23,8 +23,8 @@ const data = mathData as MathIndex;
 const notes = await getMathNotes();
 // 分野ごとに、分野の中の順（order）で並べる。ノートのない分野は出さない
 const groups = groupByField(notes);
-// 教科書の章 → 節 → ノート。教科書と対応しないノートは others
-const textbook = groupByChapter(notes);
+// 参考文献 → 章 → 節 → ノート（学習記録）。参考文献の章立てと対応しないノートは others
+const studyLog = groupByReference(notes);
 const graph = await getMathGraph();
 
 // roadmap から存在しないノートを参照したらビルドで落とす
@@ -34,7 +34,7 @@ for (const item of data.roadmap) {
 }
 
 const statuses = Object.keys(mathStatusLabel) as MathStatus[];
-const description = '位相幾何学を基礎から学び直すための数学ノート。定義・定理・自分で考えた証明・疑問を記録する。';
+const description = '数学を基礎から学び直しながら、定義・定理・証明・具体例・反例を自分の言葉で整理していく個人の数学ノート。';
 
 // 現在地: 学習中のノートと、証明の出どころの合計
 const inProgress = notes
@@ -78,17 +78,16 @@ const dependencyRows = notes
         <h1 id="math-notes">Math Notes</h1>
       </div>
       {data.lead.map((p) => <p class="lede">{p}</p>)}
-      <p class="math-textbook"><span class="topic">Textbook</span> <span lang="en">{data.textbook}</span></p>
       <p class="math-textbook">
         <span class="topic">Reference</span> <a href="/math/notation">数学の記号と文字</a>
         <span>（ギリシャ文字、書体、記号、数学英語）</span>
       </p>
       <nav class="math-fields math-views" aria-label="このページの内容">
         <ul>
+          <li><a href="#fields">数学の分野で見る</a></li>
           <li><a href="#now">現在地</a></li>
-          <li><a href="#textbook">教科書の章立てで見る</a></li>
-          <li><a href="#fields">分野で見る</a></li>
           <li><a href="#dependencies">ノート間の依存関係</a></li>
+          <li><a href="#references">参考文献と学習記録</a></li>
           <li><a href="#legend">表示の意味</a></li>
           <li><a href="#roadmap">これから</a></li>
         </ul>
@@ -102,6 +101,43 @@ const dependencyRows = notes
         </section>
       ) : (
         <>
+          <section class="section" aria-labelledby="fields">
+            <h2 class="sub-head" id="fields">Fields</h2>
+            <p class="math-section-lead">ノートは数学の分野と概念ごとにまとめている。分野の中は、おおむね前提となる概念から順に並べている。</p>
+            <nav class="math-fields" aria-label="分野">
+              <ul>
+                {groups.map(({ field }) => (
+                  <li>
+                    <a href={`#${field.id}`}>{field.title}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            {groups.map(({ field, notes }) => (
+              <section class="math-field" id={field.id} aria-labelledby={`${field.id}-title`}>
+                <h3 id={`${field.id}-title`}>{field.title}</h3>
+                <p class="math-field-description">{field.description}</p>
+                <ul class="others math-list">
+                  {notes.map((note) => (
+                    <li>
+                      <span class="entry-meta">
+                        <span class="status">{mathStatusLabel[note.data.status]}</span>
+                        {note.data.draft && <span class="status">draft</span>}
+                        <time datetime={ymd(lastModified(note))}>{ymd(lastModified(note))}</time>
+                      </span>
+                      <p class="other-name">
+                        <a href={`/math/${note.id}`}>
+                          <strong>{note.data.title}</strong>
+                        </a>
+                      </p>
+                      <p class="other-summary">{note.data.description}</p>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </section>
+
           <section class="section" aria-labelledby="now">
             <h2 class="sub-head" id="now">Now</h2>
             <dl class="math-now">
@@ -154,101 +190,6 @@ const dependencyRows = notes
             </dl>
           </section>
 
-          <section class="section" aria-labelledby="textbook">
-            <h2 class="sub-head" id="textbook">Textbook</h2>
-            <p class="math-section-lead">
-              <span lang="en">{data.textbook}</span> の章と節に対応させた一覧。学んだ節だけを載せる。右の数字は、ノートにある証明の数を出どころ別に数えたもの。
-            </p>
-            {textbook.chapters.map(({ chapter, sections, unsectioned }) => (
-              <section class="math-chapter" aria-labelledby={`chapter-${chapter.number}`}>
-                <h3 id={`chapter-${chapter.number}`}>
-                  <span class="math-chapter-num">Chapter {chapter.number}</span>
-                  <span lang="en">{chapter.title}</span>
-                </h3>
-                {sections.map(({ section, notes }) => (
-                  <div class="math-section-row">
-                    <p class="math-section-title" lang="en">
-                      §{section.number} {section.title}
-                    </p>
-                    <ul class="math-compact">
-                      {notes.map((n) => (
-                        <li>
-                          <span class="status">{mathStatusLabel[n.data.status]}</span>
-                          <a href={`/math/${n.id}`}>{n.data.title}</a>
-                          {proofSummary(n) && <span class="math-row-note">証明 {proofSummary(n)}</span>}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-                {unsectioned.length > 0 && (
-                  <div class="math-section-row">
-                    <p class="math-section-title">節を記録していないノート</p>
-                    <ul class="math-compact">
-                      {unsectioned.map((n) => (
-                        <li>
-                          <span class="status">{mathStatusLabel[n.data.status]}</span>
-                          <a href={`/math/${n.id}`}>{n.data.title}</a>
-                          {proofSummary(n) && <span class="math-row-note">証明 {proofSummary(n)}</span>}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </section>
-            ))}
-            {textbook.others.length > 0 && (
-              <section class="math-chapter" aria-labelledby="chapter-others">
-                <h3 id="chapter-others">教科書の節に対応しないノート</h3>
-                <ul class="math-compact">
-                  {textbook.others.map((n) => (
-                    <li>
-                      <span class="status">{mathStatusLabel[n.data.status]}</span>
-                      <a href={`/math/${n.id}`}>{n.data.title}</a>
-                      {proofSummary(n) && <span class="math-row-note">証明 {proofSummary(n)}</span>}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-          </section>
-
-          <section class="section" aria-labelledby="fields">
-            <h2 class="sub-head" id="fields">Fields</h2>
-            <nav class="math-fields" aria-label="分野">
-              <ul>
-                {groups.map(({ field }) => (
-                  <li>
-                    <a href={`#${field.id}`}>{field.title}</a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-            {groups.map(({ field, notes }) => (
-              <section class="math-field" id={field.id} aria-labelledby={`${field.id}-title`}>
-                <h3 id={`${field.id}-title`}>{field.title}</h3>
-                <p class="math-field-description">{field.description}</p>
-                <ul class="others math-list">
-                  {notes.map((note) => (
-                    <li>
-                      <span class="entry-meta">
-                        <span class="status">{mathStatusLabel[note.data.status]}</span>
-                        {note.data.draft && <span class="status">draft</span>}
-                        <time datetime={ymd(lastModified(note))}>{ymd(lastModified(note))}</time>
-                      </span>
-                      <p class="other-name">
-                        <a href={`/math/${note.id}`}>
-                          <strong>{note.data.title}</strong>
-                        </a>
-                      </p>
-                      <p class="other-summary">{note.data.description}</p>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))}
-          </section>
-
           <section class="section" aria-labelledby="dependencies">
             <h2 class="sub-head" id="dependencies">Dependencies</h2>
             <p class="math-section-lead">
@@ -276,6 +217,79 @@ const dependencyRows = notes
               </dl>
             ) : (
               <p class="math-empty">まだありません。</p>
+            )}
+          </section>
+
+          <section class="section" aria-labelledby="references">
+            <h2 class="sub-head" id="references">References</h2>
+            <span id="textbook"></span>
+            <p class="math-section-lead">
+              ノートを書くときに参照した資料と、資料ごとの学習記録。ノートは数学の分野と概念で組み立てていて、資料の章立てには合わせていない。
+              各ノートで参照した箇所は、ノートの Sources に書いている。
+            </p>
+            {studyLog.references.map(({ reference, chapters }) => (
+              <section class="math-reference" aria-labelledby={`ref-${reference.id}`}>
+                <h3 id={`ref-${reference.id}`} class="math-reference-title" lang="en">
+                  {reference.title}
+                </h3>
+                {chapters.length > 0 && (
+                  <p class="math-section-lead">
+                    学んだ章と節に対応するノート。右の数字は、ノートにある証明の数を出どころ別に数えたもの。
+                  </p>
+                )}
+                {chapters.map(({ chapter, sections, unsectioned }) => (
+                  <section class="math-chapter" aria-labelledby={`chapter-${chapter.number}`}>
+                    <h4 id={`chapter-${chapter.number}`}>
+                      <span class="math-chapter-num">Chapter {chapter.number}</span>
+                      <span lang="en">{chapter.title}</span>
+                    </h4>
+                    {sections.map(({ section, notes }) => (
+                      <div class="math-section-row">
+                        <p class="math-section-title" lang="en">
+                          §{section.number} {section.title}
+                        </p>
+                        <ul class="math-compact">
+                          {notes.map((n) => (
+                            <li>
+                              <span class="status">{mathStatusLabel[n.data.status]}</span>
+                              <a href={`/math/${n.id}`}>{n.data.title}</a>
+                              {proofSummary(n) && <span class="math-row-note">証明 {proofSummary(n)}</span>}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                    {unsectioned.length > 0 && (
+                      <div class="math-section-row">
+                        <p class="math-section-title">節を記録していないノート</p>
+                        <ul class="math-compact">
+                          {unsectioned.map((n) => (
+                            <li>
+                              <span class="status">{mathStatusLabel[n.data.status]}</span>
+                              <a href={`/math/${n.id}`}>{n.data.title}</a>
+                              {proofSummary(n) && <span class="math-row-note">証明 {proofSummary(n)}</span>}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </section>
+                ))}
+              </section>
+            ))}
+            {studyLog.others.length > 0 && (
+              <section class="math-chapter" aria-labelledby="chapter-others">
+                <h4 id="chapter-others">参考文献の章立てと対応しないノート</h4>
+                <ul class="math-compact">
+                  {studyLog.others.map((n) => (
+                    <li>
+                      <span class="status">{mathStatusLabel[n.data.status]}</span>
+                      <a href={`/math/${n.id}`}>{n.data.title}</a>
+                      {proofSummary(n) && <span class="math-row-note">証明 {proofSummary(n)}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </section>
             )}
           </section>
 
