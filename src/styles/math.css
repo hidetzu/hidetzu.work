@@ -364,14 +364,27 @@ nav.math-toc > ul > li {
   margin: 0 0 1.75rem;
 }
 
-.note-crumbs {
+.note-crumbs ol {
   display: flex;
   flex-wrap: wrap;
   gap: 0 0.5rem;
   margin: 0;
+  padding: 0;
+  list-style: none;
   font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 0.06em;
+  color: var(--faint);
+}
+
+.note-crumbs li {
+  margin: 0;
+}
+
+/* 区切りの「/」は見た目だけ。読み上げはリストの項目として区切られる */
+.note-crumbs li + li::before {
+  content: "/";
+  margin-right: 0.5rem;
   color: var(--faint);
 }
 
@@ -458,14 +471,20 @@ nav.math-toc > ul > li {
 }
 
 /*
-  サイドバーの目次で、いま読んでいる節を強調する。JS は使わず、CSS の scroll-target-group（scroll marker）で行う。
-  対応していないブラウザでは強調されないだけで、目次はそのまま使える（docs/adr/0010 の「JS は検索ページだけ」を守る）
+  サイドバーの目次で、いま読んでいる節を強調する。CSS の scroll-target-group（scroll marker）で行い、
+  対応していないブラウザでは NoteLayout の小さなスクリプトが aria-current="location" を付ける（docs/adr/0010 の追記）。
+  :target-current を知らないブラウザではセレクタのリストごと無視されるので、2 つのルールに分けて書く
 */
 .note-toc--side .note-toc-list {
   scroll-target-group: auto;
 }
 
 .note-toc--side .note-toc-list a:target-current {
+  color: var(--fg);
+  font-weight: 700;
+}
+
+.note-toc--side .note-toc-list a[aria-current="location"] {
   color: var(--fg);
   font-weight: 700;
 }
@@ -698,7 +717,7 @@ nav.math-toc > ul > li {
   数学書の組版に寄せる。カードや背景色は使わず、
   - 主張（定義・定理・補題・命題・系）: 左に細い罫。見出しは「定理 4.1（整列性）」
   - 証明: 罫なし。主張のすぐ下に続け、最後の行の右端に ∎
-  - 例・注意・読書メモ・証明の試み: 淡い罫で本文と区別する
+  - 例・反例・注意・読書メモ・証明の試み: 淡い罫で本文と区別する
 */
 .math-block {
   margin: 1.75rem 0 1.25rem;
@@ -737,6 +756,7 @@ nav.math-toc > ul > li {
 }
 
 .math-example,
+.math-counterexample,
 .math-remark,
 .math-reading,
 .math-attempt {
@@ -763,6 +783,7 @@ nav.math-toc > ul > li {
 .math-attempt .math-block-title strong,
 .math-remark .math-block-title strong,
 .math-example .math-block-title strong,
+.math-counterexample .math-block-title strong,
 .math-reading .math-block-title strong {
   font-weight: 700;
   color: var(--muted);

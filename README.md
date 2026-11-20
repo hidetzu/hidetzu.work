@@ -4,7 +4,7 @@
 
 GitHub（プロフィール README）は「何を作ったか・どう実装したか」、このサイトは「なぜその問題に取り組むのか・何を確かめられたか」を受け持つ（[ADR 0001](docs/adr/0001-split-roles-between-github-profile-and-site.md)）。
 
-- Astro + TypeScript（静的生成。クライアント JS は検索ページだけ）
+- Astro + TypeScript（静的生成。クライアント JS は検索ページと、ノートの目次の補助だけ）
 - Cloudflare Workers Static Assets で配信
 - DB / API / CMS / ログインなし
 
@@ -28,6 +28,7 @@ npm run dev        # http://localhost:4321
 npm run check      # astro check（型 + テンプレートの診断）
 npm test           # 数学ノート用 Markdown プラグインのテスト（node --test）
 npm run build      # dist/ に静的ファイルを出力し、Pagefind で検索の索引（dist/pagefind/）を作る
+npm run check:links # ビルド結果（dist/）の内部リンクとアンカーの確認（build の後に実行）
 npm run preview    # dist/ の内容をローカル配信して確認
 ```
 
@@ -177,7 +178,8 @@ $$
 | `:::proof` | 証明 | 検証を終えた完成した証明だけ。∎ が付く |
 | `:::question` | 疑問 | 分からないこと、次に考えたいこと |
 | `:::reading` | 読書メモ | 本のどこを読み、何を理解したか |
-| `:::remark` / `:::example` | 注意 / 例 | 補足 |
+| `:::example` / `:::counterexample` | 例 / 反例 | 具体例。反例は主張が成り立たないことを示す例。証明を付けられる |
+| `:::remark` | 注意 | 補足 |
 
 - `[...]` のラベルは省略できる。`{#id}` を付けると `/math/<slug>#id` で参照できる（`def-` / `thm-` / `q-` などの接頭辞を推奨）
 - 上の表にない名前はビルドエラーになる
@@ -224,7 +226,7 @@ $$
 
 - 参照は「後の証明 → 前提となる定義・定理」の一方向だけを出す。前提の側のノートに、その結果を使う後続の証明は列挙しない
   （本文にも「§13 の証明で使った」のような後続への言及は書かない）
-- 証明は直前の主張（定義・定理・補題・命題・系・例）に付く。離れた位置の証明は `:::proof{for=thm-a}` で主張の id を指定する
+- 証明は直前の主張（定義・定理・補題・命題・系・例・反例）に付く。離れた位置の証明は `:::proof{for=thm-a}` で主張の id を指定する
 - 証明の外のリンクと frontmatter の `related` は依存関係に入れない（「Related」は関連知識として別に出す）
 - 証明で使った結果は、証明の中でリンクにする。リンクのない参照は依存関係に出ない
 - ほかのノートで証明した結果を引用して置いた主張には `{#thm-a ref=<slug>#<id>}` を付ける。
@@ -416,7 +418,9 @@ npm run deploy     # astro build && wrangler deploy
 ## 実装の方針
 
 - React などのフレームワークは、必要になるまで入れない
-- クライアント JS は 0 のまま維持する。例外は検索ページ（`/math/search`）だけで、Pagefind の索引を読む小さなスクリプトを置く（[ADR 0010](docs/adr/0010-static-search-with-pagefind.md)）。
+- クライアント JS は 0 のまま維持する。例外は次の 2 つだけ（[ADR 0010](docs/adr/0010-static-search-with-pagefind.md)）。
+  - 検索ページ（`/math/search`）。Pagefind の索引を読む小さなスクリプトを置く
+  - ノートのサイドバーの目次。CSS の `:target-current` に対応していないブラウザでだけ、いま読んでいる節に `aria-current` を付けるインラインスクリプト（`src/layouts/NoteLayout.astro`）
   ほかのページに JS を足さない。動きは CSS アニメーションだけで付ける（CSS は `inlineStylesheets: 'always'` で HTML に埋め込む）
 - 画像・フォントを増やさない。Web フォントは読み込まない（例外は数学ノートと /ml のページの KaTeX フォント。ADR 0002、0007）
 - コンポーネントを細かく割らない。デザインシステムを作らない

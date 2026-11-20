@@ -23,13 +23,15 @@ export const MATH_BLOCK_KINDS = {
   attempt: '証明の試み',
   remark: '注意',
   example: '例',
+  // 主張が成り立たないことを示す具体例。例（example）と同じく、証明を付けられる
+  counterexample: '反例',
   question: '疑問',
   // 本のどこを読み、何を理解したか
   reading: '読書メモ',
 };
 
 /** 主張のブロック。証明はこれらのどれかに付く */
-export const STATEMENT_KINDS = ['definition', 'theorem', 'lemma', 'proposition', 'corollary', 'example'];
+export const STATEMENT_KINDS = ['definition', 'theorem', 'lemma', 'proposition', 'corollary', 'example', 'counterexample'];
 
 /** 証明の出どころ（`:::proof{origin=self}`）。ページ全体の status とは別に、証明ごとに記録する */
 export const PROOF_ORIGINS = {
