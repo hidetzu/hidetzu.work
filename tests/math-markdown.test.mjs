@@ -40,6 +40,12 @@ test(':::theorem をラベルと id つきのブロックにする', () => {
   assert.match(html, /<p class="math-block-title"><strong>定理<\/strong>（名前 <span class="katex">/);
 });
 
+test(':::counterexample は「反例」の見出しのブロックにする', () => {
+  const html = md(':::counterexample[単射でない写像]{#cex-a}\n本文\n:::\n');
+  assert.match(html, /<div class="math-block math-counterexample" id="cex-a">/);
+  assert.match(html, /<p class="math-block-title"><strong>反例<\/strong>（単射でない写像）<\/p>/);
+});
+
 test('ラベルがなければ種類名だけを見出しにする', () => {
   const html = md(':::attempt\n途中\n:::\n');
   assert.match(html, /<div class="math-block math-attempt"><p class="math-block-title"><strong>証明の試み<\/strong><\/p>/);

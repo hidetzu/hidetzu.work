@@ -2,6 +2,7 @@
 // 知識ノートのページの骨格（docs/design/content-platform.md §4.3、docs/adr/0009）。
 // タイトル・概要・本文を先に出し、メタ情報は 1 行に縮める。参考文献やノートの状態の詳細は本文の後（slot="after"）に置く。
 // 目次は、PC（64rem 以上）では右のサイドバーに固定し、それより狭い画面では本文の前に折りたたんで置く（JS なし）。
+// サイドバーの目次の現在位置の強調だけ、:target-current に対応していないブラウザで小さな JS で補う（docs/adr/0010）。
 // 分野ごとの中身（メタ情報の 1 行、本文、本文の後の節）はスロットで受け取る
 import Base from './Base.astro';
 import NoteToc, { type TocItem } from '../components/NoteToc.astro';
@@ -25,11 +26,12 @@ const hasToc = toc.length > 1;
 <Base title={title} description={description} ogType="article">
   <main id="main" data-pagefind-filter={`area:${area}`} class="note">
     <header class="note-head">
-      <p class="note-crumbs">
-        <a href={back.href}>← {back.label}</a>
-        <span aria-hidden="true">/</span>
-        <a href={category.href}>{category.label}</a>
-      </p>
+      <nav class="note-crumbs" aria-label="パンくずリスト">
+        <ol>
+          <li><a href={back.href}><span aria-hidden="true">← </span>{back.label}</a></li>
+          <li><a href={category.href}>{category.label}</a></li>
+        </ol>
+      </nav>
       <h1 data-pagefind-body>{title}</h1>
       <p class="note-description" data-pagefind-body>{description}</p>
       {
@@ -73,4 +75,49 @@ const hasToc = toc.length > 1;
       }
     </div>
   </main>
+  {
+    hasToc && (
+      /*
+        サイドバーの目次で、いま読んでいる節を強調する。CSS の :target-current（math.css）に対応しているブラウザでは何もしない。
+        対応していないブラウザ（Firefox・Safari など）でだけ、スクロール位置から節を求めて aria-current="location" を付ける。
+        JS が動かなくても目次はそのまま使える（docs/adr/0010 の追記）
+      */
+      <script is:inline>
+        (() => {
+          if (CSS.supports('selector(:target-current)')) return;
+          const links = [...document.querySelectorAll('.note-toc--side .note-toc-list a[href^="#"]')];
+          const pairs = links
+            .map((a) => [a, document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)))])
+            .filter(([, el]) => el);
+          if (pairs.length === 0) return;
+          let current;
+          let queued = false;
+          const update = () => {
+            queued = false;
+            // 画面の上から 1/4 の線を越えた最後の見出しを「いま読んでいる節」とする
+            const line = window.innerHeight / 4;
+            let next;
+            for (const [a, el] of pairs) {
+              if (el.getBoundingClientRect().top <= line) next = a;
+              else break;
+            }
+            // 最後の節が短くて線まで上がらないときは、ページの末尾に着いたら最後の節にする
+            if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2) next = pairs[pairs.length - 1][0];
+            if (next === current) return;
+            current?.removeAttribute('aria-current');
+            next?.setAttribute('aria-current', 'location');
+            current = next;
+          };
+          const schedule = () => {
+            if (queued) return;
+            queued = true;
+            requestAnimationFrame(update);
+          };
+          addEventListener('scroll', schedule, { passive: true });
+          addEventListener('resize', schedule);
+          update();
+        })();
+      </script>
+    )
+  }
 </Base>

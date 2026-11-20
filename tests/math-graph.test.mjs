@@ -116,3 +116,17 @@ test('引用した主張（ref）を使う証明は、引用元の結果も使�
     /unknown ref/,
   );
 });
+
+test('反例は主張として扱い、証明を付けられる', () => {
+  const { statements, proofs } = parseNote('c', `
+:::counterexample[反例 D]{#cex-d}
+主張
+:::
+
+:::proof{origin=self}
+確かめる
+:::
+`);
+  assert.deepEqual(statements.map((s) => s.key), ['c#cex-d']);
+  assert.equal(proofs[0].statement.id, 'cex-d');
+});
