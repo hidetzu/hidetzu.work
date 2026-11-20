@@ -162,3 +162,33 @@ export const buildGraph = (notes) => {
 
   return { statements, statementsByNote, proofCounts, noteUses, noteUsedBy };
 };
+
+/**
+ * 分野の中の並び順と、証明の依存関係のずれを探す（README の「並び順」）。
+ * 分野の中では、証明で使うノートを前に置く。後ろのノートを使っているものを返す。
+ * frontmatter の usesLater に「この順のままにする」と判断を書いたものは accepted を付けて返す。
+ * usesLater に書いたのに、もう後ろのノートを使っていないもの（判断が古くなったもの）は stale に入れる。
+ * @param {{ slug: string, topic: string, usesLater: { note: string, reason: string }[] }[]} notes 表示の順（分野の順 → 分野の中の順）
+ * @param {Map<string, Set<string>>} noteUses buildGraph の noteUses
+ */
+export const orderViolations = (notes, noteUses) => {
+  const position = new Map(notes.map((n, i) => [n.slug, i]));
+  const violations = [];
+  const stale = [];
+  for (const n of notes) {
+    const later = [...(noteUses.get(n.slug) ?? [])]
+      .filter((other) => {
+        const o = notes[position.get(other)];
+        return o && o.topic === n.topic && position.get(other) > position.get(n.slug);
+      })
+      .sort((a, b) => position.get(a) - position.get(b));
+    for (const other of later) {
+      const decision = n.usesLater.find((u) => u.note === other);
+      violations.push({ slug: n.slug, uses: other, accepted: decision?.reason ?? null });
+    }
+    for (const u of n.usesLater) {
+      if (!later.includes(u.note)) stale.push({ slug: n.slug, uses: u.note });
+    }
+  }
+  return { violations, stale };
+};

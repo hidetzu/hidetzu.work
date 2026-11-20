@@ -46,6 +46,9 @@ const math = defineCollection({
     textbook: z
       .object({ ref: z.string().optional(), chapter: z.number().int(), section: z.number().int().optional() })
       .optional(),
+    // 分野の中の並び順（order）の例外。分野の中では証明で使うノートを前に置くが、後ろのノートを使う順のままにすると
+    // 判断したとき、その相手（note）と理由（reason）を書く。書かずに後ろのノートを使うと、ビルドで警告が出る（README の「並び順」）
+    usesLater: z.array(z.object({ note: z.string(), reason: z.string().min(1) })).default([]),
   }),
 });
 

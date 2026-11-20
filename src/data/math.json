@@ -72,11 +72,6 @@
       "description": "集合の表記と包含関係、集合演算、冪集合、集合族、直積、写像、関係。"
     },
     {
-      "id": "combinatorics",
-      "title": "組み合わせ論",
-      "description": "数え上げ、順列と組み合わせ、二項定理。"
-    },
-    {
       "id": "real-numbers",
       "title": "実数",
       "description": "実数の公理、正の整数と数学的帰納法、アルキメデス的順序性、有理数の稠密性。"
@@ -85,6 +80,11 @@
       "id": "topology",
       "title": "位相空間論",
       "description": "位相の定義、開集合、位相の基底と生成される位相。"
+    },
+    {
+      "id": "combinatorics",
+      "title": "組み合わせ論",
+      "description": "数え上げ、順列と組み合わせ、二項定理。"
     }
   ],
   "roadmap": [

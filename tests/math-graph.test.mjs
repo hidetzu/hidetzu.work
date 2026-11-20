@@ -1,7 +1,7 @@
 // 証明の依存関係の集計（src/lib/math-graph.mjs）の確認。`npm test` で実行する。
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { buildGraph, parseAttributes, parseNote, resolveLink } from '../src/lib/math-graph.mjs';
+import { buildGraph, orderViolations, parseAttributes, parseNote, resolveLink } from '../src/lib/math-graph.mjs';
 import { blockTitle, originLine, splitLabel } from '../src/lib/math-markdown.mjs';
 
 test('ラベル先頭の番号を種類名の側に出す', () => {
@@ -129,4 +129,27 @@ test('反例は主張として扱い、証明を付けられる', () => {
 `);
   assert.deepEqual(statements.map((s) => s.key), ['c#cex-d']);
   assert.equal(proofs[0].statement.id, 'cex-d');
+});
+
+test('分野の中で後ろのノートを使っていたら並び順の違反にする', () => {
+  const notes = [
+    { slug: 'a', topic: 'set', usesLater: [] },
+    { slug: 'b', topic: 'set', usesLater: [{ note: 'c', reason: '本の順に合わせる' }] },
+    { slug: 'c', topic: 'set', usesLater: [] },
+    { slug: 'd', topic: 'set', usesLater: [{ note: 'a', reason: '古い判断' }] },
+    { slug: 'x', topic: 'real', usesLater: [] },
+  ];
+  const uses = new Map([
+    ['a', new Set(['c', 'x'])], // c は同じ分野の後ろ（違反）。x は別の分野なので数えない
+    ['b', new Set(['c'])], // 判断を書いてある
+    ['c', new Set(['a'])], // 前のノートを使うのはよい
+    ['d', new Set()], // usesLater に書いたが、もう使っていない
+    ['x', new Set(['a'])],
+  ]);
+  const { violations, stale } = orderViolations(notes, uses);
+  assert.deepEqual(violations, [
+    { slug: 'a', uses: 'c', accepted: null },
+    { slug: 'b', uses: 'c', accepted: '本の順に合わせる' },
+  ]);
+  assert.deepEqual(stale, [{ slug: 'd', uses: 'a' }]);
 });

@@ -1,7 +1,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import mathData from '../data/math.json';
 import type { MathField, MathIndex, MathReference } from '../data/types';
-import { buildGraph } from './math-graph.mjs';
+import { buildGraph, orderViolations } from './math-graph.mjs';
 import { PROOF_ORIGINS, blockTitle } from './math-markdown.mjs';
 
 export type MathNote = CollectionEntry<'math'>;
@@ -170,9 +170,47 @@ export const proofOriginNote: Record<string, string> = {
 // 公開するノートだけから組む。ビルド中は一度だけ作って使い回す
 let graph: Promise<MathGraph> | undefined;
 export const getMathGraph = () =>
-  (graph ??= getMathNotes().then(
-    (notes) => buildGraph(notes.map((n) => ({ slug: n.id, body: n.body ?? '' }))) as MathGraph,
-  ));
+  (graph ??= getMathNotes().then((notes) => {
+    const built = buildGraph(notes.map((n) => ({ slug: n.id, body: n.body ?? '' }))) as MathGraph;
+    warnOrder(notes, built);
+    return built;
+  }));
+
+/**
+ * 分野の中で、証明が後ろのノートを使っていたら警告する（ビルドは止めない）。
+ * 直すか今の順のままにするかは本人が判断し、そのままにするなら frontmatter の usesLater に理由を書く（README の「並び順」）
+ */
+const warnOrder = (notes: MathNote[], built: MathGraph) => {
+  const byId = new Map(notes.map((n) => [n.id, n]));
+  for (const n of notes) {
+    for (const u of n.data.usesLater) {
+      if (!byId.has(u.note)) throw new Error(`math: unknown note "${u.note}" in usesLater of ${n.id}`);
+    }
+  }
+  const sorted = [...notes].sort(byFieldThenOrder);
+  const { violations, stale } = orderViolations(
+    sorted.map((n) => ({ slug: n.id, topic: n.data.topic, usesLater: n.data.usesLater })),
+    built.noteUses,
+  );
+  const name = (slug: string) => {
+    const n = byId.get(slug)!;
+    return `${n.data.title}（${slug}, order ${n.data.order ?? 'なし'}）`;
+  };
+  for (const v of violations.filter((v) => !v.accepted)) {
+    console.warn(
+      `\n[math] 並び順の警告: ${name(v.slug)} の証明が、同じ分野で後ろにある ${name(v.uses)} を使っています。\n` +
+        `  どちらかを判断してください:\n` +
+        `  1. order を直して、${v.uses} を ${v.slug} より前に置く\n` +
+        `  2. 今の順のままにする。src/content/math/${v.slug}.md の frontmatter に\n` +
+        `     usesLater: [{ note: ${v.uses}, reason: "<この順にする理由>" }] を書く`,
+    );
+  }
+  for (const s of stale) {
+    console.warn(
+      `[math] 並び順の警告: ${s.slug} の usesLater に ${s.uses} がありますが、今は後ろのノートを使っていません。usesLater から消してください。`,
+    );
+  }
+};
 
 /** 主張へのリンク先。同じノートならページ内リンク */
 export const statementHref = (key: string, from: string) => {
