@@ -94,7 +94,7 @@ $$
 共通部分の側では、補集合が「有限集合の和集合」になるので、個数が有限であることが必要になる。
 ここで使ったド・モルガンの法則と、論理との対応は [集合族に対するド・モルガンの法則](/math/families-of-sets#thm-de-morgan-families) にまとめた。
 
-:::example[無限個の共通部分は開とは限らない（補足）]
+:::counterexample[無限個の共通部分は開とは限らない（補足）]
 $X = \mathbb{N} = \{0, 1, 2, \dots\}$ とし、$n \ge 1$ に対して $U_n = X \setminus \{n\} \in \mathcal{T}_f$ とおく。
 
 $$

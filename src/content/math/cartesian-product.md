@@ -1,5 +1,7 @@
 ---
-title: "直積（Cartesian Products）"
+title: "直積"
+aliases:
+  - "Cartesian products"
 description: "順序対と 2 つの集合の直積、A × B と B × A の違いと両者の全単射、m 組・ω 組を関数として定める有限直積と無限直積、同じ集合の直積（実数の m 組全体と実数列全体）、直積と共通部分・和集合、有限集合の直積の有限性。"
 topic: set-theory
 order: 5

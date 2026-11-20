@@ -471,7 +471,7 @@ $$
 $\forall x\, P(x)$ のとき、任意の $x$ で $P(x)$ なので $P(x) \lor Q(x)$。$\forall x\, Q(x)$ のときも同様。よって $\forall x\, (P(x) \lor Q(x))$。
 :::
 
-:::example[逆が成り立たない例]{#ex-forall-or}
+:::counterexample[逆が成り立たない例]{#ex-forall-or}
 $X = \{1, 2\}$、$P(x)$ を「$x = 1$」、$Q(x)$ を「$x = 2$」とする。
 
 - $x = 1$ では $P(1)$、$x = 2$ では $Q(2)$ が成り立つので、$\forall x\, (P(x) \lor Q(x))$ は真。
@@ -509,7 +509,7 @@ $$
 $P(x_0) \land Q(x_0)$ を満たす $x_0$ をとると、$P(x_0)$ より $\exists x\, P(x)$、$Q(x_0)$ より $\exists x\, Q(x)$。
 :::
 
-:::example[逆が成り立たない例]{#ex-exists-and}
+:::counterexample[逆が成り立たない例]{#ex-exists-and}
 定義域を $\mathbb{R}$ とし、$P(x)$ を「$x = 1$」、$Q(x)$ を「$x = 2$」とする。
 
 $P(1)$ および $Q(2)$ は真であるため、

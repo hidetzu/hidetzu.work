@@ -1,0 +1,29 @@
+---
+// 分野別一覧（/math/fields/<分野の id>）。分野名を H1 にして、その分野のノートを分野の中の順（order）に並べる。
+// ノートのない分野のページは作らない
+import MathLayout from '../../../layouts/MathLayout.astro';
+import MathNoteList from '../../../components/MathNoteList.astro';
+import { getMathNotes, groupByField, type MathNote } from '../../../lib/math-notes';
+import type { MathField } from '../../../data/types';
+
+export async function getStaticPaths() {
+  const groups = groupByField(await getMathNotes());
+  return groups.map(({ field, notes }) => ({ params: { field: field.id }, props: { field, notes } }));
+}
+
+interface Props {
+  field: MathField;
+  notes: MathNote[];
+}
+
+const { field, notes } = Astro.props;
+---
+
+<MathLayout title={`${field.title} | Math Notes`} description={field.description} current={{ page: 'field', field: field.id }}>
+  <main id="main" class="math-list-page">
+    <h1>{field.title}</h1>
+    <p class="math-list-lead">{field.description}</p>
+    <p class="math-list-count">{notes.length} ノート</p>
+    <MathNoteList notes={notes} />
+  </main>
+</MathLayout>

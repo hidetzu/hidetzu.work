@@ -1,0 +1,23 @@
+---
+// /math のページ（トップ、すべてのノート、分野別一覧、検索、記号と文字、学習記録）の骨格。
+// 左に /math 共通のメニュー（MathNav）、右にページの本文（<main> はページの側で書く）。
+// 個別ノートは NoteLayout の nav スロットに MathNav を入れて、同じ並びにする
+import Base from './Base.astro';
+import MathNav, { type MathNavCurrent } from '../components/MathNav.astro';
+import '../styles/math.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  current: MathNavCurrent;
+}
+
+const { title, description, current } = Astro.props;
+---
+
+<Base title={title} description={description} wide>
+  <div class="math-shell">
+    <MathNav current={current} />
+    <slot />
+  </div>
+</Base>

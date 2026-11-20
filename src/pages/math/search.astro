@@ -1,40 +1,81 @@
 ---
-// 数学ノートの検索（/math/search）。索引はビルドの後に Pagefind が dist/pagefind/ に作る（docs/adr/0010）。
-// サイトで JS を読み込むのは検索ページだけ。JS が動かないときは /math の一覧へ案内する
-import Base from '../../layouts/Base.astro';
-import '../../styles/math.css';
+// 数学ノートの検索（/math/search）。索引はビルドの後に scripts/build-search-index.mjs が dist/pagefind/ に作る（docs/adr/0010）。
+// ノート単位の結果に加えて、定義・定理・証明・反例・例のブロックを 1 件ずつ探し、ノートの中のその位置へ直接移動できる。
+// 検索語・種類・分野は URL（?q=&kind=&field=）に持つ。結果から本文を開いて戻ったときや、URL を開き直したときも同じ条件で探す
+import MathLayout from '../../layouts/MathLayout.astro';
+// 結果の項目名（ブロックのラベル）に数式が入ることがあるので、KaTeX の CSS を読む（JS は増やさない）
+import 'katex/dist/katex.min.css';
+import { getMathNotes, groupByField } from '../../lib/math-notes';
+
+const fields = groupByField(await getMathNotes()).map(({ field }) => field);
+// 種類の絞り込み。値は検索の索引の kind フィルタ（scripts/build-search-index.mjs）
+const kinds = [
+  { value: '', label: 'すべて' },
+  { value: 'definition', label: '定義' },
+  { value: 'theorem', label: '定理・命題' },
+  { value: 'proof', label: '証明' },
+  { value: 'counterexample', label: '反例' },
+  { value: 'example', label: '例' },
+  { value: 'section', label: '節・資料' },
+];
 ---
 
-<Base title="数学ノートを検索" description="数学ノート（Math Notes）の本文・タイトル・概要を検索する。">
+<MathLayout
+  title="数学ノートを検索"
+  description="数学ノート（Math Notes）の定義・定理・証明・反例・例と、ノートの本文を検索する。"
+  current={{ page: 'search' }}
+>
   <main id="main" class="math-search">
-    <p class="math-back"><a href="/math">← Math Notes</a></p>
     <h1 class="math-search-title">数学ノートを検索</h1>
-    <form class="math-search-form" action="/math/search" method="get" role="search">
-      <label for="math-search-q" class="visually-hidden">検索する語</label>
-      <input id="math-search-q" type="search" name="q" autocomplete="off" placeholder="例: 写像、稠密性、XOR" />
-      <button type="submit">検索</button>
+    <form class="math-search-panel" action="/math/search" method="get" role="search">
+      <div class="math-search-form">
+        <label for="math-search-q" class="visually-hidden">検索する語</label>
+        <input id="math-search-q" type="search" name="q" autocomplete="off" placeholder="例: 写像、稠密性、XOR" />
+        <button type="submit">検索</button>
+      </div>
+      <fieldset class="math-search-kinds">
+        <legend>種類</legend>
+        {
+          kinds.map((k, i) => (
+            <label>
+              <input type="radio" name="kind" value={k.value} checked={i === 0} />
+              <span>{k.label}</span>
+            </label>
+          ))
+        }
+      </fieldset>
+      <p class="math-search-field">
+        <label for="math-search-field">分野</label>
+        <select id="math-search-field" name="field">
+          <option value="">すべての分野</option>
+          {fields.map((f) => <option value={f.id}>{f.title}</option>)}
+        </select>
+      </p>
     </form>
     <p class="math-search-status" id="math-search-status" aria-live="polite"></p>
-    <ol class="others math-list math-search-results" id="math-search-results"></ol>
+    <ol class="math-search-results" id="math-search-results"></ol>
     <noscript>
       <p class="math-search-status">
-        検索には JavaScript が必要です。<a href="/math#fields">分野ごとの一覧</a>からノートを探せます。
+        検索には JavaScript が必要です。<a href="/math/notes">すべてのノート</a>や、左のメニューの分野からノートを探せます。
       </p>
     </noscript>
     <p class="math-search-note">
       数式の中の記号では検索できません。言葉（「写像」「排他的論理和」など）で検索してください。
+      種類か分野を選べば、検索語がなくても一覧にできます（例: 反例をすべて出す）。
     </p>
   </main>
-</Base>
+</MathLayout>
 
 <!--
   Vite に処理させない（is:inline）。処理させると、Astro がページに埋め込むときに動的 import が書き換えられて動かなくなる
 -->
 <script is:inline type="module">
-  const form = document.querySelector('.math-search-form');
+  const form = document.querySelector('.math-search-panel');
   const input = document.querySelector('#math-search-q');
+  const select = document.querySelector('#math-search-field');
   const status = document.querySelector('#math-search-status');
   const list = document.querySelector('#math-search-results');
+  const fieldTitle = (id) => [...select.options].find((o) => o.value === id)?.textContent ?? '';
 
   // build.format: 'file' なので索引の URL は /math/sets.html になる。本番の URL（/math/sets）に直す
   const cleanUrl = (url) => url.replace(/\.html(?=$|#)/, '');
@@ -42,24 +83,100 @@ import '../../styles/math.css';
   let pagefind;
   const load = async () => {
     if (!pagefind) {
-      // 索引（/pagefind/）はビルドの後に Pagefind が作る
+      // 索引（/pagefind/）はビルドの後に scripts/build-search-index.mjs が作る
       pagefind = await import('/pagefind/pagefind.js');
       await pagefind.options({ excerptLength: 24 });
     }
     return pagefind;
   };
 
-  const el = (tag, cls) => {
+  const el = (tag, cls, text) => {
     const e = document.createElement(tag);
     if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
     return e;
   };
 
+  // フォームの状態 ⇄ URL
+  const readForm = () => ({
+    q: input.value,
+    kind: form.querySelector('input[name="kind"]:checked')?.value ?? '',
+    field: select.value,
+  });
+  const writeForm = ({ q, kind, field }) => {
+    input.value = q;
+    const radio = form.querySelector(`input[name="kind"][value="${CSS.escape(kind)}"]`);
+    (radio ?? form.querySelector('input[name="kind"][value=""]')).checked = true;
+    select.value = [...select.options].some((o) => o.value === field) ? field : '';
+  };
+  const fromUrl = () => {
+    const p = new URLSearchParams(location.search);
+    return { q: p.get('q') ?? '', kind: p.get('kind') ?? '', field: p.get('field') ?? '' };
+  };
+  const toUrl = ({ q, kind, field }) => {
+    const p = new URLSearchParams();
+    if (q) p.set('q', q);
+    if (kind) p.set('kind', kind);
+    if (field) p.set('field', field);
+    const qs = p.toString();
+    return qs ? `?${qs}` : location.pathname;
+  };
+
+  // 1 件の結果。ブロック（定義・定理・証明など）は「種類 ｜ 項目名」、所属ノート、抜粋。ノート・資料はページの題と節
+  const render = (d) => {
+    const li = el('li', 'math-search-result');
+    const head = el('p', 'math-search-head');
+    const a = el('a', 'math-search-name');
+    a.href = cleanUrl(d.url);
+    if (d.meta.kind_label) {
+      head.append(el('span', 'math-search-kind', d.meta.kind_label));
+      // name_html はビルド時にノートのブロックの見出しから作ったもの（KaTeX の HTML を含む）
+      if (d.meta.name_html) a.innerHTML = d.meta.name_html;
+      else a.textContent = d.meta.note ? `${d.meta.note}の${d.meta.kind_label}` : d.meta.kind_label;
+      head.append(a);
+      li.append(head);
+      const where = el('p', 'math-search-where');
+      const note = el('a', undefined, d.meta.note ?? '');
+      note.href = d.meta.note_url ?? cleanUrl(d.url.split('#')[0]);
+      where.append(note);
+      if (d.meta.field_title) where.append(` ・ ${d.meta.field_title}`);
+      li.append(where);
+    } else {
+      const isNote = !cleanUrl(d.url).startsWith('/math/notation');
+      head.append(el('span', 'math-search-kind', isNote ? 'ノート' : '資料'));
+      a.textContent = d.meta.title ?? d.url;
+      head.append(a);
+      li.append(head);
+      const field = d.filters?.field?.[0];
+      if (field) li.append(el('p', 'math-search-where', fieldTitle(field)));
+    }
+    // excerpt は Pagefind が本文から作った文字列で、一致した語だけ <mark> で囲んである
+    const excerpt = el('p', 'math-search-excerpt');
+    excerpt.innerHTML = d.excerpt;
+    li.append(excerpt);
+    if (!d.meta.kind_label) {
+      const subs = (d.sub_results ?? []).filter((s) => s.url !== d.url).slice(0, 3);
+      if (subs.length > 0) {
+        const ul = el('ul', 'math-search-subs');
+        for (const s of subs) {
+          const sli = el('li');
+          const sa = el('a', undefined, `節：${s.title}`);
+          sa.href = cleanUrl(s.url);
+          sli.append(sa);
+          ul.append(sli);
+        }
+        li.append(ul);
+      }
+    }
+    return li;
+  };
+
   let latest = 0;
-  const run = async (q) => {
+  const run = async ({ q, kind, field }) => {
     const id = ++latest;
     list.replaceChildren();
-    if (!q.trim()) {
+    const query = q.trim();
+    if (!query && !kind && !field) {
       status.textContent = '';
       return;
     }
@@ -71,13 +188,28 @@ import '../../styles/math.css';
       status.textContent = '検索の索引を読み込めませんでした（npm run dev では索引がありません）。';
       return;
     }
-    // まず語ごとの完全一致で探す。Pagefind の通常の検索は日本語の語を 1 文字ずつに分けたり、
-    // 英字の語を「T」のような 1 文字に当てたりして、関係のないノートを返すことがある。
-    // 完全一致で 0 件のときだけ、通常の検索の結果を「近い語」として出す
     const filters = { area: 'math' };
+    if (kind) filters.kind = kind;
+    if (field) filters.field = field;
+    const kindLabel = form.querySelector(`input[name="kind"][value="${CSS.escape(kind)}"] + span`)?.textContent;
+    const scope = [field && fieldTitle(field), kind && kindLabel].filter(Boolean).join('・');
+    const where = scope ? `（${scope}）` : '';
+
+    // 検索語がなければ、種類・分野に当てはまるものを一覧にする
+    if (!query) {
+      const search = await pf.search(null, { filters });
+      const data = await Promise.all(search.results.slice(0, 50).map((r) => r.data()));
+      if (id !== latest) return;
+      status.textContent = data.length === 0 ? `該当するものはありません${where}。` : `${data.length} 件${where}`;
+      list.append(...data.map(render));
+      return;
+    }
+
+    // まず語ごとの完全一致で探す。Pagefind の通常の検索は日本語の語を 1 文字ずつに分けたり、
+    // 英字の語を「T」のような 1 文字に当てたりして、関係のない結果を返すことがある。
+    // 完全一致で 0 件のときだけ、通常の検索の結果を「近い語」として出す
     // 「ド・モルガン」の中黒は Pagefind が語の区切りにするので、中黒でも分ける
-    const terms = q
-      .trim()
+    const terms = query
       .split(/[\s・･]+/)
       .map((t) => t.replace(/"/g, ''))
       .filter(Boolean);
@@ -86,63 +218,38 @@ import '../../styles/math.css';
     const exactTerms = long.length > 0 ? long : terms;
     let search = await pf.search(exactTerms.map((t) => `"${t}"`).join(' '), { filters });
     const exact = search.results.length > 0;
-    if (!exact) search = await pf.search(q, { filters });
-    let data = await Promise.all(search.results.slice(0, 20).map((r) => r.data()));
+    if (!exact) search = await pf.search(query, { filters });
+    let data = await Promise.all(search.results.slice(0, 40).map((r) => r.data()));
     if (id !== latest) return;
     // 近い語の結果のうち、1 文字だけの一致（真理値表の「T」など）しかないものは出さない
     if (!exact) {
       const longMark = (d) => [...d.excerpt.matchAll(/<mark>(.*?)<\/mark>/g)].some((m) => m[1].trim().length >= 2);
       data = data.filter(longMark);
     }
-    // タイトルに検索語を含むノート（「写像」なら写像のノート）を先に出す。それ以外は Pagefind の順のまま
+    // 題（ノート名、ブロックの項目名）に検索語を含むものを先に出す。それ以外は Pagefind の順のまま
     const inTitle = (d) => terms.some((t) => (d.meta.title ?? '').toLowerCase().includes(t.toLowerCase()));
     data = [...data.filter(inTitle), ...data.filter((d) => !inTitle(d))];
     status.textContent =
       data.length === 0
-        ? `「${q}」に一致するノートはありません。`
+        ? `「${q}」に一致するものはありません${where}。`
         : exact
-          ? `「${q}」を含むノート ${data.length} 件`
-          : `「${q}」をそのまま含むノートはありません。近い語を含むノート ${data.length} 件（関係のない結果を含むことがあります）`;
-    for (const d of data) {
-      const li = el('li', 'math-search-result');
-      const title = el('p', 'other-name');
-      const a = el('a');
-      a.href = cleanUrl(d.url);
-      a.textContent = d.meta.title ?? d.url;
-      const strong = el('strong');
-      strong.append(a);
-      title.append(strong);
-      // excerpt は Pagefind が本文から作った文字列で、一致した語だけ <mark> で囲んである
-      const excerpt = el('p', 'other-summary');
-      excerpt.innerHTML = d.excerpt;
-      li.append(title, excerpt);
-      const subs = (d.sub_results ?? []).filter((s) => s.url !== d.url).slice(0, 3);
-      if (subs.length > 0) {
-        const ul = el('ul', 'math-search-subs');
-        for (const s of subs) {
-          const sli = el('li');
-          const sa = el('a');
-          sa.href = cleanUrl(s.url);
-          sa.textContent = s.title;
-          sli.append(sa);
-          ul.append(sli);
-        }
-        li.append(ul);
-      }
-      list.append(li);
-    }
+          ? `「${q}」を含むもの ${data.length} 件${where}`
+          : `「${q}」をそのまま含むものはありません${where}。近い語を含むもの ${data.length} 件（関係のない結果を含むことがあります）`;
+    list.append(...data.map(render));
   };
 
-  const fromUrl = () => new URLSearchParams(location.search).get('q') ?? '';
-  input.value = fromUrl();
-  run(input.value);
-
-  // 送信しても再読み込みせず、URL の ?q= だけ書き換える（結果の URL を共有できるように）
+  // 送信しても再読み込みせず、URL だけ書き換える（結果から戻ったとき・URL を開き直したときに同じ条件で探せるように）
+  const submit = () => {
+    const state = readForm();
+    history.replaceState(null, '', toUrl(state));
+    run(state);
+  };
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const q = input.value;
-    history.replaceState(null, '', q ? `?q=${encodeURIComponent(q)}` : location.pathname);
-    run(q);
+    submit();
+  });
+  form.addEventListener('change', (e) => {
+    if (e.target !== input) submit();
   });
 
   // IME の変換中は検索しない
@@ -150,7 +257,19 @@ import '../../styles/math.css';
   input.addEventListener('input', (e) => {
     if (e.isComposing) return;
     clearTimeout(timer);
-    timer = setTimeout(() => form.requestSubmit(), 250);
+    timer = setTimeout(submit, 250);
   });
-  input.addEventListener('compositionend', () => form.requestSubmit());
+  input.addEventListener('compositionend', submit);
+
+  // 開いたとき（戻るで戻ったときを含む）は URL の条件で探す
+  const start = () => {
+    const state = fromUrl();
+    writeForm(state);
+    run(state);
+  };
+  start();
+  // bfcache から戻ったとき、ブラウザがフォームの値を復元して URL とずれることがあるので、URL に合わせ直す
+  addEventListener('pageshow', (e) => {
+    if (e.persisted) start();
+  });
 </script>

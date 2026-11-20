@@ -12,9 +12,11 @@ interface Props {
   description?: string;
   // 記事ページ（数学ノート）は article にする
   ogType?: 'website' | 'article';
+  // 左にメニューを置くページ（/math）は、本文の幅を保つために全体の幅を広げる
+  wide?: boolean;
 }
 
-const { title, description = site.description, ogType = 'website' } = Astro.props;
+const { title, description = site.description, ogType = 'website', wide = false } = Astro.props;
 const pageTitle = title ? `${title} | ${site.name}` : `${site.name} — ${site.tagline}`;
 // build.format: 'file' だと pathname が /index.html になるため正規化する
 const path = Astro.url.pathname.replace(/index\.html$/, '').replace(/\.html$/, '');
@@ -45,7 +47,7 @@ const ogImage = new URL('/ogp.png', Astro.site).href;
   </head>
   <body>
     <a class="skip-link" href="#main">本文へスキップ</a>
-    <div class="wrap">
+    <div class:list={['wrap', { 'wrap--wide': wide }]}>
       <header class="site-header">
         <a class="brand" href="/">{site.name}</a>
         <nav class="top" aria-label="links">

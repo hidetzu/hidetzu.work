@@ -48,7 +48,7 @@ test(':::counterexample は「反例」の見出しのブロックにする', ()
 
 test('ラベルがなければ種類名だけを見出しにする', () => {
   const html = md(':::attempt\n途中\n:::\n');
-  assert.match(html, /<div class="math-block math-attempt"><p class="math-block-title"><strong>証明の試み<\/strong><\/p>/);
+  assert.match(html, /<div class="math-block math-attempt" id="attempt-1"><p class="math-block-title"><strong>証明の試み<\/strong><\/p>/);
 });
 
 test('知らないブロック名はビルドエラーにする', () => {
@@ -95,4 +95,42 @@ test('主張の source は参考文献の行として見出しの横に出す', 
   const html = md(':::lemma[要素を 1 つ取り除く]{#lem-a source="Munkres, Lemma 6.1"}\n本文\n:::\n');
   assert.match(html, /<strong>補題<\/strong>（要素を 1 つ取り除く）<\/p><p class="math-block-origin">参考文献：Munkres, Lemma 6.1<\/p>/);
   assert.throws(() => md(':::proof{source="x"}\n本文\n:::\n'));
+});
+
+test('id のない証明には、付け先の主張の id から決まる id と data-for を付ける', () => {
+  const html = md(
+    [
+      ':::theorem[A]{#thm-a}\n主張\n:::',
+      ':::proof\n1 つ目\n:::',
+      ':::proof\n2 つ目\n:::',
+      ':::lemma[B]{#lem-b}\n主張\n:::',
+      ':::attempt\n途中\n:::',
+      ':::proof{for=thm-a}\n離れた位置\n:::',
+      ':::proof{#my-proof}\n書いた id\n:::',
+    ].join('\n\n'),
+  );
+  const ids = [...html.matchAll(/<div class="math-block math-(\w+)" id="([^"]+)"(?: data-for="([^"]+)")?>/g)].map(
+    (m) => `${m[1]}:${m[2]}:${m[3] ?? ''}`,
+  );
+  assert.deepEqual(ids, [
+    'theorem:thm-a:',
+    'proof:thm-a-proof:thm-a',
+    'proof:thm-a-proof-2:thm-a',
+    'lemma:lem-b:',
+    'attempt:lem-b-attempt:lem-b',
+    'proof:thm-a-proof-3:thm-a',
+    'proof:my-proof:lem-b',
+  ]);
+});
+
+test('id のない主張・注意には種類ごとの通し番号の id を付け、ドキュメントごとに数え直す', () => {
+  const src = ':::example\nx\n:::\n\n:::example[B]\ny\n:::\n\n:::proof\nz\n:::\n\n:::remark\nw\n:::\n';
+  for (const html of [md(src), md(src)]) {
+    const ids = [...html.matchAll(/ id="([^"]+)"/g)].map((m) => m[1]);
+    assert.deepEqual(ids, ['example-1', 'example-2', 'example-2-proof', 'remark-1']);
+  }
+});
+
+test('for が存在しない主張を指していたらビルドエラーにする', () => {
+  assert.throws(() => md(':::proof{for=thm-x}\nz\n:::\n'), /unknown statement "#thm-x"/);
 });

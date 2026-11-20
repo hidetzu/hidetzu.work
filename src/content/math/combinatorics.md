@@ -1,5 +1,5 @@
 ---
-title: "組み合わせ論 — 二項係数とパスカルの公式"
+title: "二項係数とパスカルの公式"
 aliases:
   - "combinatorics"
   - "binomial coefficients"

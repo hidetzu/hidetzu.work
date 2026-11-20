@@ -1,5 +1,7 @@
 ---
-title: "有限集合（Finite Sets）"
+title: "有限集合"
+aliases:
+  - "finite sets"
 description: "有限集合と濃度を全単射で定義し、有限集合が真部分集合と全単射で対応しないこと、濃度の一意性、有限であることの言い換え、部分集合・和集合・直積の有限性を示す。"
 topic: set-theory
 order: 8

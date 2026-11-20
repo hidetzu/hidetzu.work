@@ -2,8 +2,7 @@
 // 数学の記号・文字リファレンス。データは src/data/math-notation.ts にある。
 // クライアント JS は使わない（README「実装の方針」）。探すのはブラウザのページ内検索に任せる
 import 'katex/dist/katex.min.css';
-import Base from '../../layouts/Base.astro';
-import '../../styles/math.css';
+import MathLayout from '../../layouts/MathLayout.astro';
 import {
   glossary,
   greekLetters,
@@ -24,9 +23,10 @@ const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 const glyph = (command: string, letter: string) => tex(command ? `${command}{${letter}}` : letter);
 ---
 
-<Base title={title} description={description}>
-  <main id="main" class="math-note math-ref">
-    <p class="math-back"><a href="/math">← Math Notes</a></p>
+<MathLayout title={title} description={description} current={{ page: 'notation' }}>
+  {/* 検索では「節・資料」に入る（scripts/build-search-index.mjs）。本文（data-pagefind-body）の外に置かないと抜粋に出る */}
+  <span hidden data-pagefind-filter="kind">section</span>
+  <main id="main" class="math-note math-ref" data-pagefind-body data-pagefind-filter="area:math">
     <header class="math-head">
       <span class="topic">Reference</span>
       <h1>{title}</h1>
@@ -390,4 +390,4 @@ const glyph = (command: string, letter: string) => tex(command ? `${command}{${l
 
     <p class="math-back math-back--end"><a href="/math">← Math Notes</a></p>
   </main>
-</Base>
+</MathLayout>
