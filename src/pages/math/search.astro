@@ -122,7 +122,8 @@ const kinds = [
     return qs ? `?${qs}` : location.pathname;
   };
 
-  // 1 件の結果。ブロック（定義・定理・証明など）は「種類 ｜ 項目名」、所属ノート、抜粋。ノート・資料はページの題と節
+  // 1 件の結果。1 行目に「種類 項目名」と、右に所属ノート・分野。その下に、主張なら最初の段落、それ以外は抜粋。
+  // ノート・資料はページの題と節
   const render = (d) => {
     const li = el('li', 'math-search-result');
     const head = el('p', 'math-search-head');
@@ -134,26 +135,34 @@ const kinds = [
       if (d.meta.name_html) a.innerHTML = d.meta.name_html;
       else a.textContent = d.meta.note ? `${d.meta.note}の${d.meta.kind_label}` : d.meta.kind_label;
       head.append(a);
-      li.append(head);
-      const where = el('p', 'math-search-where');
+      const where = el('span', 'math-search-where');
       const note = el('a', undefined, d.meta.note ?? '');
       note.href = d.meta.note_url ?? cleanUrl(d.url.split('#')[0]);
       where.append(note);
       if (d.meta.field_title) where.append(` ・ ${d.meta.field_title}`);
-      li.append(where);
+      head.append(where);
+      li.append(head);
     } else {
       const isNote = !cleanUrl(d.url).startsWith('/math/notation');
       head.append(el('span', 'math-search-kind', isNote ? 'ノート' : '資料'));
       a.textContent = d.meta.title ?? d.url;
       head.append(a);
-      li.append(head);
       const field = d.filters?.field?.[0];
-      if (field) li.append(el('p', 'math-search-where', fieldTitle(field)));
+      if (field) head.append(el('span', 'math-search-where', fieldTitle(field)));
+      li.append(head);
     }
+    // statement_html はビルド時にノートの主張の最初の段落から作ったもの（KaTeX の HTML を含む）。
+    // 数式が抜け落ちないように、定義・定理・反例などは抜粋の代わりにこれを出す。
     // excerpt は Pagefind が本文から作った文字列で、一致した語だけ <mark> で囲んである
-    const excerpt = el('p', 'math-search-excerpt');
-    excerpt.innerHTML = d.excerpt;
-    li.append(excerpt);
+    if (d.meta.statement_html) {
+      const statement = el('div', 'math-search-statement');
+      statement.innerHTML = d.meta.statement_html;
+      li.append(statement);
+    } else {
+      const excerpt = el('p', 'math-search-excerpt');
+      excerpt.innerHTML = d.excerpt;
+      li.append(excerpt);
+    }
     if (!d.meta.kind_label) {
       const subs = (d.sub_results ?? []).filter((s) => s.url !== d.url).slice(0, 3);
       if (subs.length > 0) {

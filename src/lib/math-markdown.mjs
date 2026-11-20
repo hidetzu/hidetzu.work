@@ -116,6 +116,8 @@ export const mathBlocks = () => {
   // 直前の主張の id（証明の付け先。math-graph.mjs の parseNote と同じ規則）と、これまでの主張の id
   let lastStatement;
   const statementIds = new Set();
+  // 主張の id → 証明の見出しに添える名前（ラベルの名前の部分。名前がなければ「定理 4.1」）
+  const statementNames = new Map();
   return defineMdastPlugin({
     name: 'math-blocks',
     containerDirective(node, ctx) {
@@ -178,7 +180,19 @@ export const mathBlocks = () => {
         if (STATEMENT_KINDS.includes(node.name)) {
           lastStatement = blockId;
           statementIds.add(blockId);
+          const name =
+            labelChildren.length > 0 ? labelChildren : number ? [{ type: 'text', value: `${kind} ${number}` }] : [];
+          statementNames.set(blockId, name);
         }
+      }
+      // 証明の見出しは「証明　付け先の主張の名前」にする（ラベルを書いた証明はそのラベルのまま）
+      const forName = isProof && !label && forId ? statementNames.get(forId) : undefined;
+      if (forName && forName.length > 0) {
+        title.children.push({
+          type: 'mathBlockFor',
+          data: { hName: 'span', hProperties: { className: ['math-block-for'] } },
+          children: structuredClone(forName),
+        });
       }
 
       ctx.setProperty(node, 'data', {

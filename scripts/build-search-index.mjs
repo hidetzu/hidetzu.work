@@ -83,6 +83,29 @@ const blocksOf = (html) => {
   return blocks;
 };
 
+/** 主張の最初の段落（見出しと参考文献の行を除いた、最初の要素）の HTML。検索の結果で抜粋の代わりに出す */
+const firstBlockHtml = (body) => {
+  const rest = body
+    .replace(/^\s*<p class="math-block-title">[\s\S]*?<\/p>/, '')
+    .replace(/^\s*<p class="math-block-origin">[\s\S]*?<\/p>/, '')
+    .trimStart();
+  // 「集合 A, B に対して」のように短い前置きで終わる段落は、続く数式や箇条書きまでつなげる（3 要素、40 字まで）
+  let html = '';
+  let at = 0;
+  for (let i = 0; i < 3 && plainText(html).length < 40; i++) {
+    const tag = rest.slice(at).match(/^\s*<([a-z][a-z0-9]*)\b/i);
+    if (!tag) break;
+    const start = at + tag[0].indexOf('<');
+    const element = balanced(rest, start, tag[1]);
+    html += element;
+    at = start + element.length;
+  }
+  return html;
+};
+
+// 抜粋の代わりに主張の最初の段落を出す種類（証明と例は長いので、今どおり Pagefind の抜粋）
+const STATEMENT_HTML_KINDS = new Set(['definition', 'theorem', 'lemma', 'proposition', 'corollary', 'counterexample']);
+
 const walk = async (dir) => {
   const out = [];
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -131,8 +154,7 @@ for (const file of await walk(path.join(root, 'math'))) {
     const name = plainText(nameHtml);
     const kindLabel = b.label;
     const title = name ? `${kindLabel} ｜ ${name}` : `${kindLabel}（${noteTitle}）`;
-    // 証明の見出しは「証明」だけなので、付け先の主張の名前でも見つかるように本文の前に置く
-    const lead = isProof && nameHtml ? `<p>${nameHtml}</p>` : '';
+    const statementHtml = STATEMENT_HTML_KINDS.has(b.kind) ? firstBlockHtml(b.body) : '';
     // 本文（data-pagefind-body）の外に、フィルタとメタ情報を置く（内側に置くと、その文字が抜粋に出る）
     const content = `<!doctype html><html lang="ja"><head><title>${escapeAttr(title)}</title></head><body>
 <span data-pagefind-filter="area">math</span>
@@ -144,8 +166,8 @@ for (const file of await walk(path.join(root, 'math'))) {
 <meta data-pagefind-meta="note[content]" content="${escapeAttr(noteTitle)}">
 <meta data-pagefind-meta="note_url[content]" content="/math/${slug}">
 <meta data-pagefind-meta="field_title[content]" content="${escapeAttr(fieldTitle)}">
+${statementHtml ? `<meta data-pagefind-meta="statement_html[content]" content="${escapeAttr(statementHtml)}">` : ''}
 <div data-pagefind-body>
-${lead}
 ${b.body}
 </div></body></html>`;
     const res = await index.addHTMLFile({ url: `/math/${slug}#${b.id}`, content });

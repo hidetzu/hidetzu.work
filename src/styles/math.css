@@ -84,94 +84,6 @@
   color: var(--accent);
 }
 
-/* /math の補助リンク（検索ボックスの下） */
-.math-index-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 1.25rem;
-  margin: 0;
-  font-size: 0.875rem;
-}
-
-.math-index-links a {
-  color: var(--muted);
-}
-
-.math-index-links a:hover {
-  color: var(--accent);
-}
-
-/* 分野のカード（/math）。カードは罫だけで囲み、地色は付けない */
-.math-field-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
-  align-items: start;
-  gap: 1rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.math-field-card {
-  padding: 0.9rem 1.1rem 1rem;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  scroll-margin-top: 1.5rem;
-}
-
-.math-field-card:target {
-  border-color: var(--accent);
-}
-
-.math-field-card h3 {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0 0.75rem;
-  margin: 0;
-  font-size: 1.0625rem;
-  font-weight: 700;
-  color: var(--fg);
-}
-
-.math-field-count {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 400;
-  color: var(--faint);
-}
-
-.math-field-card .math-field-description {
-  margin: 0.35rem 0 0.6rem;
-  font-size: 0.8125rem;
-  line-height: 1.7;
-}
-
-.math-field-notes {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: 0.9375rem;
-}
-
-.math-field-notes li {
-  padding: 0.2rem 0;
-  border-top: 1px solid var(--line-soft);
-}
-
-.math-field-notes a {
-  display: inline-block;
-  padding: 0.15rem 0;
-  color: var(--fg);
-  text-decoration: none;
-}
-
-.math-field-notes a:hover {
-  color: var(--accent);
-  text-decoration: underline;
-}
-
 .math-field-status {
   margin-left: 0.5rem;
   white-space: nowrap;
@@ -558,20 +470,6 @@ nav.math-toc > ul > li {
     border-left: 1px solid var(--line);
     font-size: 0.8125rem;
   }
-}
-
-/* ブロックの読み分け（新しいレイアウトだけ）。定義は淡い地色、定理・命題などの主張は太い罫 */
-.note .math-definition {
-  padding: 0.6rem 1rem;
-  border-radius: 0 6px 6px 0;
-  background: color-mix(in srgb, var(--accent) 6%, transparent);
-}
-
-.note .math-theorem,
-.note .math-lemma,
-.note .math-proposition,
-.note .math-corollary {
-  border-left-width: 3px;
 }
 
 /* --- 本文 ------------------------------------------------------------------ */
@@ -1517,19 +1415,201 @@ nav.math-toc > ul > li {
   font-size: 0.9375rem;
 }
 
-/* --- /math 共通のメニュー（MathNav） ------------------------------------------- */
+/* --- /math の配色（body.math-site） -------------------------------------------- */
 
 /*
-  PC は深緑の左サイドバー、モバイルは上部のバー（Math Notes と「目次」ボタン）。
-  色はライト・ダークの両方で同じ深緑にする（本文の地の色と区別するため）
+  /math のページ（MathLayout と数学ノート）だけ、差し色を Math の緑にし、定義・定理などの面の色を足す。
+  ML のノートも math.css を読むので、色は body.math-site の中でだけ切り替える。
+  文字色の対比（地の色に対して）: ライト fg 16.1・body 9.6・muted 5.2・accent 7.8・counter 6.3、
+  ダーク fg 14.8・body 10.6・muted 6.2・accent 8.9・counter 8.4
 */
-.math-nav {
-  --nav-bg: #15372c;
-  --nav-fg: #e6f0ea;
-  --nav-muted: #a9c4b8;
-  --nav-line: #2b5446;
-  --nav-current: #24584a;
-  --nav-hover: #1d4639;
+.math-site {
+  --accent: #1d5a44;
+  --on-accent: #ffffff;
+  --input-line: #cfcabe;
+  --nav-bg: #f4f2ed;
+  --nav-current: #e6eee9;
+  --def-head: #e9f1ec;
+  --def-line: #cfe0d6;
+  --thm-bg: #f3f1ea;
+  --proof-line: #c9c4b8;
+  --counter: #8a4f12;
+  --counter-line: #c08a4a;
+  --mark: #f6e2ae;
+  /* 1 画面目の差し色のぼかしは /math では使わない */
+  background: var(--bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  .math-site {
+    --accent: #7cc4a2;
+    --on-accent: #10201a;
+    --input-line: #4a463e;
+    --nav-bg: #1b1a16;
+    --nav-current: #24342c;
+    --def-head: #1f2d26;
+    --def-line: #2f4a3d;
+    --thm-bg: #26241f;
+    --proof-line: #4f4b42;
+    --counter: #e2a463;
+    --counter-line: #9a6a3a;
+    --mark: #5c4a1a;
+  }
+}
+
+/* --- /math 共通のヘッダー（MathHeader） --------------------------------------- */
+
+/*
+  1 段。PC は「hidetzu / Math Notes」、検索欄、Home・ML。
+  64rem 未満は「Math Notes」、検索（/math/search へのリンク）、メニュー（<details>。中身は PC の左のメニューと同じ）
+*/
+.math-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  margin: 0 0 2rem;
+  padding: 0 0 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.math-header-brand {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.math-header-brand a {
+  text-decoration: none;
+}
+
+.math-header-site {
+  color: var(--fg);
+}
+
+.math-header-sep {
+  margin: 0 0.35em;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.math-header-home {
+  color: var(--accent);
+}
+
+.math-header-search {
+  flex: 1 1 16rem;
+  max-width: 28rem;
+}
+
+.math-header-search input {
+  width: 100%;
+  height: 2.4rem;
+  padding: 0 0.9rem;
+  border: 1px solid var(--input-line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.math-header-links {
+  display: flex;
+  gap: 1.1rem;
+  margin-left: auto;
+  font-size: 0.8125rem;
+}
+
+.math-header-links a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.math-header-links a:hover {
+  color: var(--accent);
+}
+
+.math-header-button {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 0.8rem;
+  border-radius: 8px;
+  color: var(--fg);
+  font-size: 0.875rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.math-header-searchlink {
+  margin-left: auto;
+}
+
+.math-nav-menu > summary {
+  border: 1px solid var(--line);
+  list-style: none;
+}
+
+.math-nav-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.math-nav-menu > summary::after {
+  content: "▾";
+  margin-left: 0.35em;
+  color: var(--muted);
+}
+
+.math-nav-menu[open] > summary::after {
+  content: "▴";
+}
+
+.math-nav-panel {
+  position: absolute;
+  top: calc(100% - 0.4rem);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  max-height: 75vh;
+  overflow-y: auto;
+  padding: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--nav-bg);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+}
+
+@media (max-width: 63.99rem) {
+  .math-header {
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .math-header-site,
+  .math-header-sep,
+  .math-header-search,
+  .math-header-links {
+    display: none;
+  }
+}
+
+@media (min-width: 64rem) {
+  .math-header-searchlink,
+  .math-nav-menu {
+    display: none;
+  }
+}
+
+/* --- /math 共通のメニュー（MathNav、ヘッダーのメニュー） ---------------------------- */
+
+/*
+  明るい地。開いているページ・分野は左の帯と地の色で示す。開いている分野だけ、ノートを分野の中の順に展開する
+*/
+.math-nav-side,
+.math-nav-panel {
   font-size: 0.875rem;
   line-height: 1.5;
 }
@@ -1549,54 +1629,69 @@ nav.math-toc > ul > li {
   justify-content: space-between;
   align-items: baseline;
   gap: 0.75rem;
-  padding: 0.45rem 0.65rem;
-  border-radius: 6px;
-  color: var(--nav-fg);
+  padding: 0.4rem 0.65rem;
+  border-left: 3px solid transparent;
+  border-radius: 0 6px 6px 0;
+  color: var(--fg);
   text-decoration: none;
 }
 
 .math-nav-list a:hover {
-  background: var(--nav-hover);
-  color: var(--nav-fg);
-}
-
-.math-nav-list a:focus-visible,
-.math-nav summary:focus-visible,
-.math-nav-home:focus-visible {
-  outline: 2px solid var(--nav-fg);
-  outline-offset: 1px;
-}
-
-/* 開いているページ（page）と、開いているノートの分野（true） */
-.math-nav-list a[aria-current] {
   background: var(--nav-current);
+  color: var(--fg);
+}
+
+/* 開いているページ（page）。ノートを開いているときの分野（true）は太字だけ */
+.math-nav-list a[aria-current] {
   font-weight: 700;
+}
+
+.math-nav-list a[aria-current="page"] {
+  border-left-color: var(--accent);
+  background: var(--nav-current);
+}
+
+/* 開いている分野のノート（分野の中の順） */
+.math-nav-notes {
+  margin: 0.1rem 0 0.4rem;
+  padding: 0 0 0 1rem;
+  list-style: none;
+  font-size: 0.8125rem;
+}
+
+.math-nav-list .math-nav-notes a {
+  display: block;
+  padding: 0.25rem 0.65rem;
+  color: var(--muted);
+}
+
+.math-nav-list .math-nav-notes a[aria-current="page"] {
+  color: var(--fg);
 }
 
 .math-nav-count {
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: var(--nav-muted);
+  font-weight: 400;
+  color: var(--muted);
 }
 
 .math-nav-head {
   margin: 1.1rem 0.65rem 0.3rem;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.08em;
-  color: var(--nav-muted);
+  font-size: 0.75rem;
+  color: var(--muted);
 }
 
 /* 参考文献から探す（初期状態は閉じている） */
 .math-nav-refs summary {
-  padding: 0.45rem 0.65rem;
+  padding: 0.4rem 0.65rem 0.4rem calc(0.65rem + 3px);
   border-radius: 6px;
-  color: var(--nav-fg);
+  color: var(--fg);
   cursor: pointer;
 }
 
 .math-nav-refs summary:hover {
-  background: var(--nav-hover);
+  background: var(--nav-current);
 }
 
 .math-nav-ref {
@@ -1607,7 +1702,7 @@ nav.math-toc > ul > li {
 .math-nav-chapter-title {
   margin: 0.5rem 0.65rem 0.2rem 0;
   font-size: 0.75rem;
-  color: var(--nav-muted);
+  color: var(--muted);
 }
 
 .math-nav-chapter ul {
@@ -1618,8 +1713,7 @@ nav.math-toc > ul > li {
 
 .math-nav-chapter a {
   display: block;
-  justify-content: flex-start;
-  padding: 0.35rem 0.65rem;
+  padding: 0.3rem 0.65rem;
 }
 
 .math-nav-section {
@@ -1627,63 +1721,8 @@ nav.math-toc > ul > li {
   min-width: 2.6rem;
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: var(--nav-muted);
-}
-
-/* モバイル: 上部のバー。「目次」を押すと、同じ項目をバーの下に開く */
-.math-nav-bar {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 0 1.5rem;
-  padding: 0.35rem 0.4rem 0.35rem 0.9rem;
-  border-radius: 8px;
-  background: var(--nav-bg);
-  color: var(--nav-fg);
-}
-
-.math-nav-home {
-  padding: 0.4rem 0;
-  font-weight: 700;
-  color: var(--nav-fg);
-  text-decoration: none;
-}
-
-.math-nav-menu > summary {
-  display: block;
-  padding: 0.4rem 0.9rem;
-  border: 1px solid var(--nav-line);
-  border-radius: 6px;
-  cursor: pointer;
-  list-style: none;
-}
-
-.math-nav-menu > summary::-webkit-details-marker {
-  display: none;
-}
-
-.math-nav-menu > summary::after {
-  content: " ▾";
-  color: var(--nav-muted);
-}
-
-.math-nav-menu[open] > summary::after {
-  content: " ▴";
-}
-
-.math-nav-panel {
-  position: absolute;
-  top: calc(100% + 0.3rem);
-  left: 0;
-  right: 0;
-  z-index: 10;
-  max-height: 75vh;
-  overflow-y: auto;
-  padding: 0.5rem;
-  border-radius: 8px;
-  background: var(--nav-bg);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.25);
+  font-weight: 400;
+  color: var(--muted);
 }
 
 .math-nav-side {
@@ -1694,12 +1733,8 @@ nav.math-toc > ul > li {
   .math-shell {
     display: grid;
     grid-template-columns: 15rem minmax(0, 1fr);
-    gap: 3rem;
+    gap: 2.5rem;
     align-items: start;
-  }
-
-  .math-nav-bar {
-    display: none;
   }
 
   .math-nav-side {
@@ -1730,6 +1765,507 @@ nav.math-toc > ul > li {
   .math-shell .note-toc--side {
     display: none;
   }
+}
+
+/* --- /math のトップ（全幅。説明と検索、分野の地図、最近の更新と参照資料） ------------------- */
+
+.math-top-intro {
+  max-width: 46rem;
+}
+
+.math-top-intro h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 5vw, 1.9rem);
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--fg);
+}
+
+.math-top-lead {
+  margin: 0.5rem 0 0;
+}
+
+.math-top-search {
+  margin-top: 1.4rem;
+}
+
+.math-top-search label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.math-top .math-search-form {
+  max-width: none;
+  margin: 0;
+}
+
+.math-top .math-search-form input,
+.math-top .math-search-form button {
+  height: 3rem;
+  border-radius: 10px;
+}
+
+.math-top .math-search-form input {
+  padding: 0 1rem;
+}
+
+.math-top .math-search-form button {
+  padding: 0 1.25rem;
+}
+
+/* 種類のボタン（/math/search?kind=… へのリンク）。狭い画面では折り返さず横にスクロールする */
+.math-kind-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+}
+
+.math-kind-links a {
+  display: inline-block;
+  padding: 0.25rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--fg);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.math-kind-links a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.math-top-section {
+  margin-top: 3rem;
+}
+
+.math-top-section h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  color: var(--fg);
+}
+
+.math-top-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.math-top-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.math-learning-dot {
+  display: inline-block;
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--counter);
+}
+
+.math-top-legend .math-learning-dot {
+  margin-left: 0.6rem;
+}
+
+/* 分野の地図。分野は基礎から応用の順に、64rem 以上で 1 行に並べる。高さは揃えず、上端の色帯で分野を区切る */
+.math-map {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+  align-items: start;
+  gap: 0.75rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 64rem) {
+  .math-map {
+    grid-template-columns: repeat(var(--map-cols, 5), minmax(0, 1fr));
+  }
+}
+
+.math-map-field {
+  padding: 0.85rem 1rem 0.9rem;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--accent);
+  border-radius: 8px;
+  background: var(--surface);
+  scroll-margin-top: 1.5rem;
+}
+
+.math-map-field:target {
+  border-color: var(--accent);
+}
+
+.math-map-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.math-map-title a {
+  font-weight: 700;
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.math-map-title a:hover {
+  color: var(--accent);
+}
+
+.math-map-count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.math-map-notes {
+  margin: 0.45rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.math-map-notes li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.math-map-notes a {
+  padding: 0.2rem 0;
+  color: var(--body);
+  text-decoration: none;
+}
+
+.math-map-notes a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.math-top-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 2.5rem;
+}
+
+.math-top-recent {
+  flex: 3 1 24rem;
+  min-width: 0;
+}
+
+.math-top-refs {
+  flex: 2 1 17rem;
+  min-width: 0;
+}
+
+.math-top-columns .math-recent {
+  margin-top: 0.6rem;
+}
+
+.math-ref-links {
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+}
+
+.math-ref-links li {
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.math-ref-links a {
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.math-ref-links a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.math-ref-links span {
+  margin-left: 0.6rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+@media (max-width: 40rem) {
+  .math-kind-links,
+  .math-search-kinds {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+
+  .math-search-kinds label {
+    flex: none;
+  }
+}
+
+/* --- 数学ノートのページ（body.math-site の NoteLayout） --------------------------- */
+
+.math-site .note {
+  margin-top: 0;
+}
+
+/* パンくずは「分野 › ノート」 */
+.math-site .note-crumbs ol {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+
+.math-site .note-crumbs li + li::before {
+  content: "›";
+  color: var(--muted);
+}
+
+.math-site .note-head h1 {
+  margin-top: 0.3rem;
+  font-size: clamp(1.6rem, 5vw, 2.1rem);
+  line-height: 1.3;
+}
+
+.math-site .note-meta a.status {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  text-transform: none;
+  border-color: var(--def-line);
+  border-radius: 4px;
+  padding: 0 0.5rem;
+  color: var(--accent);
+}
+
+.math-site .prose h2 {
+  border-bottom-color: var(--line);
+}
+
+.math-site .note-toc--side .note-toc-list a:target-current {
+  color: var(--accent);
+}
+
+.math-site .note-toc--side .note-toc-list a[aria-current="location"] {
+  color: var(--accent);
+}
+
+/*
+  ブロックの読み分け。
+  - 定義: 白い枠と、見出しの帯（アクセント色）。参考文献の番号は見出しの右
+  - 定理・命題・補題・系: 枠線なしの色付きの面
+  - 証明・例: 左の細い線（例は本文より一段弱く）。証明の見出しには付け先の主張の名前
+  - 反例: 破線の枠（反例の色）
+*/
+.math-site .math-block {
+  border-left-color: var(--proof-line);
+}
+
+.math-site .math-definition {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 0 1.1rem 0.8rem;
+  border: 1px solid var(--def-line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.math-site .math-definition > * {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.math-site .math-definition > .math-block-title {
+  margin: 0 -1.1rem 0.7rem;
+  padding: 0.4rem 1.1rem;
+  border-radius: 5px 5px 0 0;
+  background: var(--def-head);
+}
+
+.math-site .math-definition > .math-block-title:has(+ .math-block-origin) {
+  grid-column: 1;
+  margin-right: 0;
+  padding-right: 0.75rem;
+  border-radius: 5px 0 0 0;
+}
+
+.math-site .math-definition > .math-block-title + .math-block-origin {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  margin: 0 -1.1rem 0.7rem 0;
+  padding: 0.4rem 1.1rem 0.4rem 0;
+  border-radius: 0 5px 0 0;
+  background: var(--def-head);
+  font-size: 0.75rem;
+}
+
+.math-site .math-definition > .math-block-title strong {
+  color: var(--accent);
+}
+
+.math-site .math-theorem,
+.math-site .math-lemma,
+.math-site .math-proposition,
+.math-site .math-corollary {
+  padding: 0.75rem 1.1rem 0.8rem;
+  border: 0;
+  border-radius: 6px;
+  background: var(--thm-bg);
+}
+
+.math-site .math-definition > :last-child,
+.math-site .math-theorem > :last-child,
+.math-site .math-lemma > :last-child,
+.math-site .math-proposition > :last-child,
+.math-site .math-corollary > :last-child,
+.math-site .math-counterexample > :last-child {
+  margin-bottom: 0;
+}
+
+.math-site .math-proof {
+  padding-left: 1.1rem;
+  border-left: 2px solid var(--proof-line);
+}
+
+.math-site .math-example {
+  font-size: 0.9375rem;
+}
+
+.math-site .math-counterexample {
+  padding: 0.6rem 1.1rem 0.75rem;
+  border: 1px dashed var(--counter-line);
+  border-radius: 6px;
+}
+
+.math-site .math-counterexample > .math-block-title strong {
+  color: var(--counter);
+}
+
+/* 検索や参照から飛んできたブロック */
+.math-site .math-block:target {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* 証明の見出しに添える、付け先の主張の名前 */
+.math-block-for {
+  margin-left: 0.9em;
+  font-size: 0.8125rem;
+  font-style: normal;
+  color: var(--muted);
+}
+
+/* 前・次のノート（分野の中の順） */
+.math-pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  max-width: 44rem;
+  margin-top: 2.5rem;
+}
+
+.math-pager a {
+  flex: 1 1 12rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.math-pager a:hover {
+  border-color: var(--accent);
+}
+
+.math-pager-next {
+  text-align: right;
+}
+
+.math-pager-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* --- 検索（body.math-site） ------------------------------------------------------ */
+
+.math-site .math-search-form input {
+  border-color: var(--input-line);
+}
+
+.math-site .math-search-form button {
+  border: 0;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+}
+
+.math-site .math-search-form button:hover {
+  opacity: 0.9;
+}
+
+/* 種類の選択中は塗りつぶし */
+.math-site .math-search-kinds input:checked + span {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.math-site .math-search-results mark {
+  background: var(--mark);
+  color: var(--fg);
+}
+
+/* 結果の 1 行目: 種類・項目名、右に所属ノート・分野 */
+.math-search-head .math-search-where {
+  margin: 0 0 0 auto;
+}
+
+/* 主張の最初の段落（抜粋の代わり）。数式をそのまま出す */
+.math-search-statement {
+  margin: 0.35rem 0 0;
+  font-size: 0.9375rem;
+  color: var(--body);
+}
+
+.math-search-statement > * {
+  margin: 0;
+}
+
+.math-search-statement ol,
+.math-search-statement ul {
+  padding-left: 1.4rem;
+}
+
+.math-search-statement .math-display {
+  overflow-x: auto;
+}
+
+.math-search-statement .katex-display {
+  margin: 0.3rem 0;
 }
 
 /* --- 分野別一覧・すべてのノート ------------------------------------------------- */
@@ -1794,5 +2330,53 @@ nav.math-toc > ul > li {
 .math-note-list-description {
   margin: 0.25rem 0 0;
   font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* --- 分野別一覧（学ぶ順の番号と、参考文献の節） --------------------------------------- */
+
+.math-list-search {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+}
+
+.math-list-search a {
+  color: var(--accent);
+}
+
+.math-note-list--numbered {
+  counter-reset: math-note;
+}
+
+.math-note-list--numbered li {
+  position: relative;
+  padding-left: 2.2rem;
+  counter-increment: math-note;
+}
+
+.math-note-list--numbered li::before {
+  content: counter(math-note);
+  position: absolute;
+  left: 0;
+  top: 0.9rem;
+  width: 1.6rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-align: right;
+  color: var(--accent);
+}
+
+.math-note-list--numbered .math-note-list-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.6rem;
+}
+
+.math-note-list-place {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
   color: var(--muted);
 }

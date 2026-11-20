@@ -1,8 +1,10 @@
 ---
 // /math のページ（トップ、すべてのノート、分野別一覧、検索、記号と文字、学習記録）の骨格。
-// 左に /math 共通のメニュー（MathNav）、右にページの本文（<main> はページの側で書く）。
-// 個別ノートは NoteLayout の nav スロットに MathNav を入れて、同じ並びにする
+// 上に /math 共通のヘッダー（MathHeader）、左に /math 共通のメニュー（MathNav）、右にページの本文（<main> はページの側で書く）。
+// トップ（nav={false}）は左のメニューを出さず全幅にする。分野の地図がメニューの役をする。
+// 個別ノートは NoteLayout の header・nav スロットに同じものを入れる
 import Base from './Base.astro';
+import MathHeader from '../components/MathHeader.astro';
 import MathNav, { type MathNavCurrent } from '../components/MathNav.astro';
 import '../styles/math.css';
 
@@ -10,14 +12,16 @@ interface Props {
   title?: string;
   description?: string;
   current: MathNavCurrent;
+  nav?: boolean;
 }
 
-const { title, description, current } = Astro.props;
+const { title, description, current, nav = true } = Astro.props;
 ---
 
-<Base title={title} description={description} wide>
-  <div class="math-shell">
-    <MathNav current={current} />
+<Base title={title} description={description} wide siteHeader={false} bodyClass="math-site">
+  <MathHeader current={current} search={current.page !== 'top' && current.page !== 'search'} />
+  <div class:list={[{ 'math-shell': nav }]}>
+    {nav && <MathNav current={current} />}
     <slot />
   </div>
 </Base>

@@ -1,54 +1,67 @@
 ---
-// /math 共通のメニューの中身（MathNav が PC のサイドバーとモバイルの開閉メニューの 2 か所で使う）。
-// 上から、Math Notes、すべてのノート、分野から探す、参照資料（記号と文字、学習記録、参考文献から探す）
-import type { MathField, MathReference } from '../data/types';
-import type { MathNote } from '../lib/math-notes';
-import type { MathNavCurrent } from './MathNav.astro';
+// /math 共通のメニューの中身。PC の左のメニュー（MathNav）と、狭い画面のヘッダーの「メニュー」（MathHeader）の 2 か所で使う。
+// 上から、すべてのノート、分野（基礎から応用の順。開いている分野だけ、ノートを分野の中の順に展開する）、
+// 参照資料（記号と文字、学習記録、参考文献から探す）。site を付けると、最後にサイトへの戻りを足す
+import { getMathNotes, groupByField, groupByReference } from '../lib/math-notes';
 
-type Chapter = {
-  number: number;
-  title: string;
-  sections: { number: number; title: string; notes: MathNote[] }[];
-  unsectioned: MathNote[];
+export type MathNavCurrent = {
+  // 開いているページ。note は個別ノート、field は分野別一覧
+  page: 'top' | 'all' | 'field' | 'note' | 'notation' | 'learning' | 'search';
+  // 分野別一覧の分野、またはノートの分野（src/data/math.json の fields の id）
+  field?: string;
+  // 開いているノートの slug
+  note?: string;
 };
 
 interface Props {
   current: MathNavCurrent;
-  total: number;
-  fields: { field: MathField; count: number }[];
-  references: { reference: MathReference; chapters: Chapter[] }[];
+  site?: boolean;
 }
 
-const { current, total, fields, references } = Astro.props;
+const { current, site = false } = Astro.props;
+const notes = await getMathNotes();
+const fields = groupByField(notes);
+const references = groupByReference(notes).references;
 
 // 開いているページの項目は aria-current="page"。ノートを開いているときは、その分野を aria-current="true" にする
 const pageCurrent = (page: MathNavCurrent['page']) => (current.page === page ? 'page' : undefined);
 const fieldCurrent = (id: string) =>
   current.field !== id ? undefined : current.page === 'field' ? 'page' : 'true';
+const noteCurrent = (id: string) => (current.note === id ? 'page' : undefined);
 ---
 
 <ul class="math-nav-list">
-  <li><a href="/math" aria-current={pageCurrent('top')}>Math Notes</a></li>
   <li>
     <a href="/math/notes" aria-current={pageCurrent('all')}>
       <span>すべてのノート</span>
-      <span class="math-nav-count">{total}<span class="visually-hidden"> ノート</span></span>
+      <span class="math-nav-count">{notes.length}<span class="visually-hidden"> ノート</span></span>
     </a>
   </li>
 </ul>
 
-<p class="math-nav-head">分野から探す</p>
+<p class="math-nav-head">分野</p>
 <ul class="math-nav-list">
   {
-    fields.map(({ field, count }) => (
+    fields.map(({ field, notes }) => (
       <li>
         <a href={`/math/fields/${field.id}`} aria-current={fieldCurrent(field.id)}>
           <span>{field.title}</span>
           <span class="math-nav-count">
-            {count}
+            {notes.length}
             <span class="visually-hidden"> ノート</span>
           </span>
         </a>
+        {current.field === field.id && (
+          <ol class="math-nav-notes">
+            {notes.map((note) => (
+              <li>
+                <a href={`/math/${note.id}`} aria-current={noteCurrent(note.id)}>
+                  {note.data.title}
+                </a>
+              </li>
+            ))}
+          </ol>
+        )}
       </li>
     ))
   }
@@ -66,25 +79,25 @@ const fieldCurrent = (id: string) =>
         references.map(({ reference, chapters }) => (
           <div class="math-nav-ref">
             <p class="math-nav-ref-title" lang="en">{reference.title}</p>
-            {chapters.map((chapter) => (
+            {chapters.map(({ chapter, sections, unsectioned }) => (
               <div class="math-nav-chapter">
                 <p class="math-nav-chapter-title">
                   Chapter {chapter.number} <span lang="en">{chapter.title}</span>
                 </p>
                 <ul>
                   {/* 節を記録していないノート（章のどこかを読んだもの）を先に、節ごとのノートを節の順に */}
-                  {chapter.unsectioned.map((note) => (
+                  {unsectioned.map((note) => (
                     <li>
-                      <a href={`/math/${note.id}`} aria-current={current.note === note.id ? 'page' : undefined}>
+                      <a href={`/math/${note.id}`} aria-current={noteCurrent(note.id)}>
                         <span class="math-nav-section">Ch.{chapter.number}</span>
                         {note.data.title}
                       </a>
                     </li>
                   ))}
-                  {chapter.sections.map((section) =>
-                    section.notes.map((note) => (
+                  {sections.map(({ section, notes }) =>
+                    notes.map((note) => (
                       <li>
-                        <a href={`/math/${note.id}`} aria-current={current.note === note.id ? 'page' : undefined}>
+                        <a href={`/math/${note.id}`} aria-current={noteCurrent(note.id)}>
                           <span class="math-nav-section">§{section.number}</span>
                           {note.data.title}
                         </a>
@@ -100,3 +113,15 @@ const fieldCurrent = (id: string) =>
     </details>
   </li>
 </ul>
+
+{
+  site && (
+    <>
+      <p class="math-nav-head">サイト</p>
+      <ul class="math-nav-list">
+        <li><a href="/">Home</a></li>
+        <li><a href="/ml">Machine Learning</a></li>
+      </ul>
+    </>
+  )
+}
