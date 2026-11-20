@@ -5,6 +5,7 @@ import 'katex/dist/katex.min.css';
 import NoteLayout from '../../layouts/NoteLayout.astro';
 import MathNoteMeta from '../../components/MathNoteMeta.astro';
 import MathNoteLinks from '../../components/MathNoteLinks.astro';
+import MathNav from '../../components/MathNav.astro';
 import type { TocItem } from '../../components/NoteToc.astro';
 import '../../styles/math.css';
 import {
@@ -23,7 +24,7 @@ export async function getStaticPaths() {
   const notes = await getMathNotes();
   const all = await getCollection('math');
   // /math の下で別のページに使っている名前は、ノートの slug にできない
-  const reserved = ['search', 'learning', 'notation'];
+  const reserved = ['search', 'learning', 'notation', 'notes', 'fields'];
   for (const n of all) {
     if (reserved.includes(n.id)) throw new Error(`math: slug "${n.id}" is reserved for another page`);
   }
@@ -68,10 +69,12 @@ const noteToc: TocItem[] = [
   description={description}
   aliases={aliases}
   area="math"
+  filters={{ field: field.id }}
   back={{ href: '/math', label: 'Math Notes' }}
-  category={{ href: `/math#${field.id}`, label: field.title }}
+  category={{ href: `/math/fields/${field.id}`, label: field.title }}
   toc={noteToc}
 >
+  <MathNav slot="nav" current={{ page: 'note', field: field.id, note: note.id }} />
   <Fragment slot="meta">
     <a class="status" href={learningHref(note.id)} title={mathStatusNote[status]}>
       {mathStatusLabel[status]}

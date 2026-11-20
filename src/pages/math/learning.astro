@@ -6,8 +6,7 @@
 // - これから学ぶ予定（src/data/math.json の roadmap）
 import { render } from 'astro:content';
 import 'katex/dist/katex.min.css';
-import Base from '../../layouts/Base.astro';
-import '../../styles/math.css';
+import MathLayout from '../../layouts/MathLayout.astro';
 import mathData from '../../data/math.json';
 import type { MathIndex } from '../../data/types';
 import { richText } from '../../lib/tex';
@@ -92,10 +91,9 @@ const logContents = new Map(
 const description = '数学ノートの学習記録。ノートの状態、参考文献ごとの学習範囲、証明の出どころ、ノート間の依存関係、未解決の問い、ノートごとの学習の経過。';
 ---
 
-<Base title="学習記録 | Math Notes" description={description}>
+<MathLayout title="学習記録 | Math Notes" description={description} current={{ page: 'learning' }}>
   <main id="main" class="math-index math-learning">
     <section class="section" aria-labelledby="math-learning">
-      <p class="math-back"><a href="/math">← Math Notes</a></p>
       <div class="section-head">
         <span class="num">∑</span>
         <h1 id="math-learning">Learning Log</h1>
@@ -386,4 +384,4 @@ const description = '数学ノートの学習記録。ノートの状態、参�
       <p class="math-goals">{data.goals}</p>
     </section>
   </main>
-</Base>
+</MathLayout>

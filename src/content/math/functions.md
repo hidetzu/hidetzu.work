@@ -201,7 +201,7 @@ $A_0 \subseteq A$、$B_0 \subseteq B$ とする。
 **2 の等号（$f$ が全射）。** $b \in B_0$ とする。全射性より、ある $a \in A$ が存在して $f(a) = b$。$f(a) = b \in B_0$ なので $a \in f^{-1}(B_0)$、よって $b = f(a) \in f(f^{-1}(B_0))$。
 :::
 
-:::example[等号が成り立たない例（補足）]{#ex-image-preimage-strict}
+:::counterexample[等号が成り立たない例（補足）]{#ex-image-preimage-strict}
 $f \colon \mathbb{R} \to \mathbb{R}$、$f(x) = x^2$（単射でも全射でもない）とする。
 
 - $A_0 = [0, 1]$ なら $f(A_0) = [0, 1]$、$f^{-1}([0, 1]) = [-1, 1] \ne A_0$。
@@ -321,7 +321,7 @@ $$
 
 ### 反例
 
-:::example[単射でないと等号が成り立たない例]{#ex-image-intersection}
+:::counterexample[単射でないと等号が成り立たない例]{#ex-image-intersection}
 $f \colon \mathbb{R} \to \mathbb{R}$、$f(x) = x^2$、$A_0 = [-1, 0]$、$A_1 = [0, 1]$ とする。$f(A_0) = f(A_1) = [0, 1]$ なので
 
 $$
@@ -443,7 +443,7 @@ $$
 
 2 で単射になるのは最初の $f$、4 で全射になるのは最後の $g$ で、もう一方については何も言えない。
 
-:::example[合成が全単射でも g は単射でなく、f は全射でない]{#ex-composition-counterexample}
+:::counterexample[合成が全単射でも g は単射でなく、f は全射でない]{#ex-composition-counterexample}
 $A = \{1, 2\}$、$B = \{a, b, c\}$ とし、$f \colon A \to B$、$g \colon B \to A$ を
 
 $$
@@ -482,7 +482,7 @@ $f \colon A \to B$ とする。
 8 節の定理で見ると、$g \circ f = i_A$ は単射なので 2 から $f$ は単射、$f \circ h = i_B$ は全射なので 4 から $f$ は全射、と読むこともできる。
 [3 節の補題](#lem-2-1)は、この 2 つを合わせて、さらに $g = h = f^{-1}$ を示したもの。
 
-:::example[左逆写像はあるが右逆写像はない]{#ex-left-inverse-only}
+:::counterexample[左逆写像はあるが右逆写像はない]{#ex-left-inverse-only}
 8 節の例の $f \colon \{1, 2\} \to \{a, b, c\}$、$f(1) = a$、$f(2) = b$ をもう一度使う。
 
 - $g(a) = 1$、$g(b) = 2$、$g(c) = 2$ とすると $g \circ f = i_A$ なので、$g$ は $f$ の左逆写像。

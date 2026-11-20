@@ -1,0 +1,30 @@
+---
+// すべてのノート（/math/notes）。分野の順 → 分野の中の順（order）に、分野ごとの見出しの下に並べる
+import MathLayout from '../../layouts/MathLayout.astro';
+import MathNoteList from '../../components/MathNoteList.astro';
+import { getMathNotes, groupByField } from '../../lib/math-notes';
+
+const notes = await getMathNotes();
+const groups = groupByField(notes);
+---
+
+<MathLayout
+  title="すべてのノート | Math Notes"
+  description="Math Notes のすべてのノートを分野ごとに並べた一覧。"
+  current={{ page: 'all' }}
+>
+  <main id="main" class="math-list-page">
+    <h1>すべてのノート</h1>
+    <p class="math-list-count">{notes.length} ノート</p>
+    {
+      groups.map(({ field, notes }) => (
+        <section aria-labelledby={`all-${field.id}`}>
+          <h2 id={`all-${field.id}`}>
+            <a href={`/math/fields/${field.id}`}>{field.title}</a>
+          </h2>
+          <MathNoteList notes={notes} />
+        </section>
+      ))
+    }
+  </main>
+</MathLayout>

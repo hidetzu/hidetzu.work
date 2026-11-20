@@ -1,0 +1,102 @@
+---
+// /math 共通のメニューの中身（MathNav が PC のサイドバーとモバイルの開閉メニューの 2 か所で使う）。
+// 上から、Math Notes、すべてのノート、分野から探す、参照資料（記号と文字、学習記録、参考文献から探す）
+import type { MathField, MathReference } from '../data/types';
+import type { MathNote } from '../lib/math-notes';
+import type { MathNavCurrent } from './MathNav.astro';
+
+type Chapter = {
+  number: number;
+  title: string;
+  sections: { number: number; title: string; notes: MathNote[] }[];
+  unsectioned: MathNote[];
+};
+
+interface Props {
+  current: MathNavCurrent;
+  total: number;
+  fields: { field: MathField; count: number }[];
+  references: { reference: MathReference; chapters: Chapter[] }[];
+}
+
+const { current, total, fields, references } = Astro.props;
+
+// 開いているページの項目は aria-current="page"。ノートを開いているときは、その分野を aria-current="true" にする
+const pageCurrent = (page: MathNavCurrent['page']) => (current.page === page ? 'page' : undefined);
+const fieldCurrent = (id: string) =>
+  current.field !== id ? undefined : current.page === 'field' ? 'page' : 'true';
+---
+
+<ul class="math-nav-list">
+  <li><a href="/math" aria-current={pageCurrent('top')}>Math Notes</a></li>
+  <li>
+    <a href="/math/notes" aria-current={pageCurrent('all')}>
+      <span>すべてのノート</span>
+      <span class="math-nav-count">{total}<span class="visually-hidden"> ノート</span></span>
+    </a>
+  </li>
+</ul>
+
+<p class="math-nav-head">分野から探す</p>
+<ul class="math-nav-list">
+  {
+    fields.map(({ field, count }) => (
+      <li>
+        <a href={`/math/fields/${field.id}`} aria-current={fieldCurrent(field.id)}>
+          <span>{field.title}</span>
+          <span class="math-nav-count">
+            {count}
+            <span class="visually-hidden"> ノート</span>
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<p class="math-nav-head">参照資料</p>
+<ul class="math-nav-list">
+  <li><a href="/math/notation" aria-current={pageCurrent('notation')}>数学の記号と文字</a></li>
+  <li><a href="/math/learning" aria-current={pageCurrent('learning')}>学習記録</a></li>
+  <li>
+    {/* 初期状態では閉じておく。参考文献の章・節から、対応するノートを開く（学習記録の textbook を使う） */}
+    <details class="math-nav-refs">
+      <summary>参考文献から探す</summary>
+      {
+        references.map(({ reference, chapters }) => (
+          <div class="math-nav-ref">
+            <p class="math-nav-ref-title" lang="en">{reference.title}</p>
+            {chapters.map((chapter) => (
+              <div class="math-nav-chapter">
+                <p class="math-nav-chapter-title">
+                  Chapter {chapter.number} <span lang="en">{chapter.title}</span>
+                </p>
+                <ul>
+                  {/* 節を記録していないノート（章のどこかを読んだもの）を先に、節ごとのノートを節の順に */}
+                  {chapter.unsectioned.map((note) => (
+                    <li>
+                      <a href={`/math/${note.id}`} aria-current={current.note === note.id ? 'page' : undefined}>
+                        <span class="math-nav-section">Ch.{chapter.number}</span>
+                        {note.data.title}
+                      </a>
+                    </li>
+                  ))}
+                  {chapter.sections.map((section) =>
+                    section.notes.map((note) => (
+                      <li>
+                        <a href={`/math/${note.id}`} aria-current={current.note === note.id ? 'page' : undefined}>
+                          <span class="math-nav-section">§{section.number}</span>
+                          {note.data.title}
+                        </a>
+                      </li>
+                    )),
+                  )}
+                </ul>
+              </div>
+            ))}
+          </div>
+        ))
+      }
+    </details>
+  </li>
+</ul>

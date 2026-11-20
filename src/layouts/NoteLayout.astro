@@ -14,67 +14,77 @@ interface Props {
   aliases?: string[];
   // 検索の分野のフィルタ（docs/adr/0010）
   area: string;
+  // 検索のフィルタ（例: { field: 'logic' }）。kind は section（ノートと節）に決まっている
+  filters?: Record<string, string>;
   back: { href: string; label: string };
   category: { href: string; label: string };
   toc: TocItem[];
 }
 
-const { title, description, aliases = [], area, back, category, toc } = Astro.props;
+const { title, description, aliases = [], area, filters = {}, back, category, toc } = Astro.props;
 const hasToc = toc.length > 1;
+// 左のメニュー（数学ノートでは MathNav）。あれば全体の幅を広げて、メニューと本文を横に並べる
+const hasNav = Astro.slots.has('nav');
 ---
 
-<Base title={title} description={description} ogType="article">
-  <main id="main" data-pagefind-filter={`area:${area}`} class="note">
-    <header class="note-head">
-      <nav class="note-crumbs" aria-label="パンくずリスト">
-        <ol>
-          <li><a href={back.href}><span aria-hidden="true">← </span>{back.label}</a></li>
-          <li><a href={category.href}>{category.label}</a></li>
-        </ol>
-      </nav>
-      <h1 data-pagefind-body>{title}</h1>
-      <p class="note-description" data-pagefind-body>{description}</p>
-      {
-        aliases.length > 0 && (
-          <p class="note-aliases" data-pagefind-body>
-            別名：<span lang="en">{aliases.join(', ')}</span>
-          </p>
-        )
-      }
-      <p class="note-meta"><slot name="meta" /></p>
-    </header>
+<Base title={title} description={description} ogType="article" wide={hasNav}>
+  <div class:list={[{ 'math-shell': hasNav }]}>
+    <slot name="nav" />
+    <main id="main" data-pagefind-filter={`area:${area}`} class="note">
+      {/* 検索の種類（kind）と分野などのフィルタ。ページ単位の結果は「節・資料」に入る（scripts/build-search-index.mjs） */}
+      <span hidden data-pagefind-filter="kind">section</span>
+      {Object.entries(filters).map(([key, value]) => <span hidden data-pagefind-filter={key}>{value}</span>)}
+      <header class="note-head">
+        <nav class="note-crumbs" aria-label="パンくずリスト">
+          <ol>
+            <li><a href={back.href}><span aria-hidden="true">← </span>{back.label}</a></li>
+            <li><a href={category.href}>{category.label}</a></li>
+          </ol>
+        </nav>
+        <h1 data-pagefind-body>{title}</h1>
+        <p class="note-description" data-pagefind-body>{description}</p>
+        {
+          aliases.length > 0 && (
+            <p class="note-aliases" data-pagefind-body>
+              別名：<span lang="en">{aliases.join(', ')}</span>
+            </p>
+          )
+        }
+        <p class="note-meta"><slot name="meta" /></p>
+      </header>
 
-    {
-      hasToc && (
-        <details class="note-toc note-toc--inline">
-          <summary>目次</summary>
-          <nav aria-label="目次">
-            <NoteToc items={toc} />
-          </nav>
-        </details>
-      )
-    }
-
-    <div class={hasToc ? 'note-grid' : undefined}>
-      <div class="note-main">
-        <article class="prose" data-pagefind-body>
-          <slot />
-        </article>
-        <slot name="after" />
-        <p class="math-back math-back--end"><a href={back.href}>← {back.label} に戻る</a></p>
-      </div>
       {
         hasToc && (
-          <aside class="note-toc note-toc--side">
-            <nav aria-labelledby="note-toc-title">
-              <p class="note-toc-title" id="note-toc-title">目次</p>
+          <details class="note-toc note-toc--inline">
+            <summary>このノートの目次</summary>
+            <nav aria-label="このノートの目次">
               <NoteToc items={toc} />
             </nav>
-          </aside>
+          </details>
         )
       }
-    </div>
-  </main>
+
+      <div class={hasToc ? 'note-grid' : undefined}>
+        <div class="note-main">
+          <article class="prose" data-pagefind-body>
+            <slot />
+          </article>
+          <slot name="after" />
+          <p class="math-back math-back--end"><a href={back.href}>← {back.label} に戻る</a></p>
+        </div>
+        {
+          hasToc && (
+            <aside class="note-toc note-toc--side">
+              <nav aria-labelledby="note-toc-title">
+                <p class="note-toc-title" id="note-toc-title">このノートの目次</p>
+                <NoteToc items={toc} />
+              </nav>
+            </aside>
+          )
+        }
+      </div>
+    </main>
+  </div>
   {
     hasToc && (
       /*

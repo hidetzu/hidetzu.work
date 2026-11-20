@@ -1,6 +1,5 @@
 ---
-import Base from '../../layouts/Base.astro';
-import '../../styles/math.css';
+import MathLayout from '../../layouts/MathLayout.astro';
 import mathData from '../../data/math.json';
 import type { MathIndex } from '../../data/types';
 import { fieldOf, getMathNotes, groupByField, lastModified, mathStatusLabel, ymd } from '../../lib/math-notes';
@@ -19,7 +18,7 @@ const description = '数学を基礎から学び直しながら、定義・定�
 const recent = [...notes].sort((a, b) => lastModified(b).getTime() - lastModified(a).getTime()).slice(0, 5);
 ---
 
-<Base title="Math Notes" description={description}>
+<MathLayout title="Math Notes" description={description} current={{ page: 'top' }}>
   <main id="main" class="math-index">
     <section class="section" aria-labelledby="math-notes">
       <div class="section-head">
@@ -54,7 +53,7 @@ const recent = [...notes].sort((a, b) => lastModified(b).getTime() - lastModifie
               {groups.map(({ field, notes }) => (
                 <li class="math-field-card" id={field.id}>
                   <h3>
-                    {field.title}
+                    <a href={`/math/fields/${field.id}`}>{field.title}</a>
                     <span class="math-field-count">{notes.length} ノート</span>
                   </h3>
                   <p class="math-field-description">{field.description}</p>
@@ -107,4 +106,4 @@ const recent = [...notes].sort((a, b) => lastModified(b).getTime() - lastModifie
       )
     }
   </main>
-</Base>
+</MathLayout>

@@ -1,0 +1,25 @@
+---
+// ノート名と短い概要の一覧（分野別一覧とすべてのノートで使う）。並びは渡された順のまま
+import { mathStatusLabel, type MathNote } from '../lib/math-notes';
+
+interface Props {
+  notes: MathNote[];
+}
+
+const { notes } = Astro.props;
+---
+
+<ul class="math-note-list">
+  {
+    notes.map((note) => (
+      <li>
+        <p class="math-note-list-title">
+          <a href={`/math/${note.id}`}>{note.data.title}</a>
+          {note.data.status !== 'understood' && <span class="math-field-status">{mathStatusLabel[note.data.status]}</span>}
+          {note.data.draft && <span class="math-field-status">draft</span>}
+        </p>
+        <p class="math-note-list-description">{note.data.description}</p>
+      </li>
+    ))
+  }
+</ul>

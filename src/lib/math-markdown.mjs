@@ -79,73 +79,132 @@ export const blockTitle = (kind, label) => {
   return name ? `${head}（${name}）` : head;
 };
 
-export const mathBlocks = defineMdastPlugin({
-  name: 'math-blocks',
-  containerDirective(node, ctx) {
-    const kind = MATH_BLOCK_KINDS[node.name];
-    if (!kind) {
-      throw new Error(
-        `unknown math block ":::${node.name}". Use one of: ${Object.keys(MATH_BLOCK_KINDS).join(', ')}`,
-      );
-    }
+/**
+ * アンカー（id）のないブロックに付ける id を決める。ドキュメントごとに 1 つ作る。
+ * 検索の結果から証明・反例などへ直接移動できるように、すべてのブロックに id を付ける。
+ * 同じ本文なら再ビルドしても同じ id になる（本文の順と主張の id だけで決まる）。
+ *
+ * - 証明・証明の試み: 付け先の主張の id のあとに `-proof`（2 つ目からは `-proof-2`）、`-attempt`
+ * - それ以外（主張に id がない場合も含む）: 種類名と、その種類の id のないブロックの通し番号（`example-1`）
+ */
+export const createBlockIds = () => {
+  const counters = new Map();
+  const perStatement = new Map();
+  const next = (key) => {
+    const n = (counters.get(key) ?? 0) + 1;
+    counters.set(key, n);
+    return n;
+  };
+  return {
+    /** 主張・注意などの id。書いてあればそのまま */
+    block: (name, id) => id ?? `${name}-${next(name)}`,
+    /** 証明の id。statementId は付け先の主張の id（なければ undefined） */
+    proof: (name, id, statementId) => {
+      if (id) return id;
+      if (!statementId) return `${name}-${next(name)}`;
+      const key = `${statementId}-${name}`;
+      const n = (perStatement.get(key) ?? 0) + 1;
+      perStatement.set(key, n);
+      return n === 1 ? key : `${key}-${n}`;
+    },
+  };
+};
 
-    const first = node.children[0];
-    const label = first?.data?.directiveLabel ? first : undefined;
-    let labelChildren = label ? [...label.children] : [];
-
-    // 先頭の番号を種類名の側に移す
-    let number;
-    const head = labelChildren[0];
-    if (head?.type === 'text') {
-      const m = head.value.match(LABEL_NUMBER);
-      if (m) {
-        number = m[1];
-        const rest = head.value.slice(m[0].length);
-        labelChildren = rest ? [{ ...head, value: rest }, ...labelChildren.slice(1)] : labelChildren.slice(1);
+// ドキュメントごとに呼ばれる（Sätteri のプラグインのファクトリー）。直前の主張と id の通し番号を覚えておくため
+export const mathBlocks = () => {
+  const ids = createBlockIds();
+  // 直前の主張の id（証明の付け先。math-graph.mjs の parseNote と同じ規則）と、これまでの主張の id
+  let lastStatement;
+  const statementIds = new Set();
+  return defineMdastPlugin({
+    name: 'math-blocks',
+    containerDirective(node, ctx) {
+      const kind = MATH_BLOCK_KINDS[node.name];
+      if (!kind) {
+        throw new Error(
+          `unknown math block ":::${node.name}". Use one of: ${Object.keys(MATH_BLOCK_KINDS).join(', ')}`,
+        );
       }
-    }
 
-    const title = {
-      type: 'paragraph',
-      data: { hName: 'p', hProperties: { className: ['math-block-title'] } },
-      children: [
-        { type: 'strong', children: [{ type: 'text', value: number ? `${kind} ${number}` : kind }] },
-        ...(labelChildren.length > 0
-          ? [{ type: 'text', value: '（' }, ...labelChildren, { type: 'text', value: '）' }]
-          : []),
-      ],
-    };
+      const first = node.children[0];
+      const label = first?.data?.directiveLabel ? first : undefined;
+      let labelChildren = label ? [...label.children] : [];
 
-    const { id, origin, text, note, source } = node.attributes ?? {};
-    const isProof = node.name === 'proof' || node.name === 'attempt';
-    if (originLine({ origin, text, note }) && !isProof) {
-      throw new Error(`origin / text / note can only be used on :::proof or :::attempt (found on :::${node.name})`);
-    }
-    if (source && isProof) {
-      throw new Error(`source can only be used on statement blocks (found on :::${node.name})`);
-    }
-    // 証明なら出どころ、主張なら参考文献での番号（`source="Munkres, Lemma 6.1"`）を見出しの横に出す
-    const line = isProof ? originLine({ origin, text, note }) : sourceLine(source);
+      // 先頭の番号を種類名の側に移す
+      let number;
+      const head = labelChildren[0];
+      if (head?.type === 'text') {
+        const m = head.value.match(LABEL_NUMBER);
+        if (m) {
+          number = m[1];
+          const rest = head.value.slice(m[0].length);
+          labelChildren = rest ? [{ ...head, value: rest }, ...labelChildren.slice(1)] : labelChildren.slice(1);
+        }
+      }
 
-    ctx.setProperty(node, 'data', {
-      hName: 'div',
-      hProperties: { className: ['math-block', `math-${node.name}`], ...(id ? { id } : {}) },
-    });
-    const originNode = line && {
-      type: 'paragraph',
-      data: { hName: 'p', hProperties: { className: ['math-block-origin'] } },
-      children: [{ type: 'text', value: line }],
-    };
-    if (label) {
-      if (originNode) ctx.insertAfter(label, originNode);
-      ctx.replaceNode(label, title);
-    } else {
-      // 同じ位置への prependChild は呼んだ順に並ぶ
-      ctx.prependChild(node, title);
-      if (originNode) ctx.prependChild(node, originNode);
-    }
-  },
-});
+      const title = {
+        type: 'paragraph',
+        data: { hName: 'p', hProperties: { className: ['math-block-title'] } },
+        children: [
+          { type: 'strong', children: [{ type: 'text', value: number ? `${kind} ${number}` : kind }] },
+          ...(labelChildren.length > 0
+            ? [{ type: 'text', value: '（' }, ...labelChildren, { type: 'text', value: '）' }]
+            : []),
+        ],
+      };
+
+      const { id, origin, text, note, source } = node.attributes ?? {};
+      const isProof = node.name === 'proof' || node.name === 'attempt';
+      if (originLine({ origin, text, note }) && !isProof) {
+        throw new Error(`origin / text / note can only be used on :::proof or :::attempt (found on :::${node.name})`);
+      }
+      if (source && isProof) {
+        throw new Error(`source can only be used on statement blocks (found on :::${node.name})`);
+      }
+      // 証明なら出どころ、主張なら参考文献での番号（`source="Munkres, Lemma 6.1"`）を見出しの横に出す
+      const line = isProof ? originLine({ origin, text, note }) : sourceLine(source);
+
+      // id と、証明の付け先（data-for。検索の索引で「証明 ｜ 主張の名前」にするために使う）
+      let blockId;
+      let forId;
+      if (isProof) {
+        forId = node.attributes?.for ?? lastStatement;
+        if (node.attributes?.for && !statementIds.has(forId)) {
+          throw new Error(`proof for unknown statement "#${forId}" (found on :::${node.name})`);
+        }
+        blockId = ids.proof(node.name, id, forId);
+      } else {
+        blockId = ids.block(node.name, id);
+        if (STATEMENT_KINDS.includes(node.name)) {
+          lastStatement = blockId;
+          statementIds.add(blockId);
+        }
+      }
+
+      ctx.setProperty(node, 'data', {
+        hName: 'div',
+        hProperties: {
+          className: ['math-block', `math-${node.name}`],
+          id: blockId,
+          ...(isProof && forId ? { dataFor: forId } : {}),
+        },
+      });
+      const originNode = line && {
+        type: 'paragraph',
+        data: { hName: 'p', hProperties: { className: ['math-block-origin'] } },
+        children: [{ type: 'text', value: line }],
+      };
+      if (label) {
+        if (originNode) ctx.insertAfter(label, originNode);
+        ctx.replaceNode(label, title);
+      } else {
+        // 同じ位置への prependChild は呼んだ順に並ぶ
+        ctx.prependChild(node, title);
+        if (originNode) ctx.prependChild(node, originNode);
+      }
+    },
+  });
+};
 
 const render = (tex, displayMode) =>
   katex.renderToString(tex, {

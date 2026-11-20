@@ -27,7 +27,7 @@ npm run dev        # http://localhost:4321
 ```bash
 npm run check      # astro check（型 + テンプレートの診断）
 npm test           # 数学ノート用 Markdown プラグインのテスト（node --test）
-npm run build      # dist/ に静的ファイルを出力し、Pagefind で検索の索引（dist/pagefind/）を作る
+npm run build      # dist/ に静的ファイルを出力し、検索の索引（dist/pagefind/）を作る（scripts/build-search-index.mjs）
 npm run check:links # ビルド結果（dist/）の内部リンクとアンカーの確認（build の後に実行）
 npm run preview    # dist/ の内容をローカル配信して確認
 ```
@@ -104,6 +104,14 @@ Markdown ファイルを足すだけで一覧（`/math`）と記事ページに�
 | `topology` | 位相空間論 |
 
 URL は分野に関係なく `/math/<slug>` のまま。ノートの分野を変えても URL は変わらない。
+分野別一覧は `/math/fields/<分野の id>`（分野名を H1 にして、ノート名と概要を並べる）、全件の一覧は `/math/notes`。
+ノートのタイトル（H1）は扱う概念名にする（例: 「直積」）。英名は `aliases` に書くと検索で探せる。分野名はパンくずと一覧に出るので、タイトルには入れない。
+
+`/math` のすべてのページの左に、共通のメニュー（`src/components/MathNav.astro`）を置く。
+PC（64rem 以上）では深緑のサイドバー、それより狭い画面では上部の「Math Notes」と「目次」ボタン（`<details>` で開閉。JS なし）。
+上から Math Notes、すべてのノート、分野から探す（分野ごとのノート数つき）、参照資料（数学の記号と文字、学習記録、参考文献から探す）。
+開いているページは `aria-current="page"`、ノートを開いているときはその分野を `aria-current="true"` にして背景色で示す。
+「参考文献から探す」は初期状態で閉じていて、ノートの frontmatter の `textbook` から、参考文献の章 → 節番号 → ノートを並べる。
 
 Math Notes は、特定の教科書の翻訳・要約ではなく、書籍や資料から学んだ内容を自分の理解で組み立て直す数学ノートである（[ADR 0008](docs/adr/0008-math-notes-as-independent-notebook.md)）。
 `/math` の主な導線は分野で、参考文献ごとの章立ては補助的な学習記録として出す（[ADR 0005](docs/adr/0005-math-notes-structure-and-proof-records.md)）。
@@ -182,6 +190,8 @@ $$
 | `:::remark` | 注意 | 補足 |
 
 - `[...]` のラベルは省略できる。`{#id}` を付けると `/math/<slug>#id` で参照できる（`def-` / `thm-` / `q-` などの接頭辞を推奨）
+- `{#id}` のないブロックにも、検索の結果から直接移動できるように id が付く。証明・証明の試みは付け先の主張の id のあとに `-proof`（2 つ目からは `-proof-2`）、`-attempt`。
+  それ以外は種類名と通し番号（`example-1`）。本文が同じなら再ビルドしても変わらないが、ブロックを足すと通し番号はずれるので、ほかのページからリンクするブロックには `{#id}` を書く
 - 上の表にない名前はビルドエラーになる
 - ラベルの先頭の番号は見出しの種類名の側に出す。`:::lemma[3.1：名前]` は「補題 3.1（名前）」、`:::theorem[4.1]` は「定理 4.1」。
   番号は本の番号（確かめたもの）か、ノートの中の通し番号
@@ -283,14 +293,17 @@ note: functions
 
 ### 検索（/math/search）
 
-[ADR 0010](docs/adr/0010-static-search-with-pagefind.md)。`npm run build` の最後に Pagefind（`package.json` で版を固定）が `dist/pagefind/` に索引を作る。
+[ADR 0010](docs/adr/0010-static-search-with-pagefind.md)。`npm run build` の最後に `scripts/build-search-index.mjs` が Pagefind の Node API（`package.json` で版を固定）で `dist/pagefind/` に索引を作る。
 
-- 索引に入るのは、ノートのタイトル・概要・本文（`data-pagefind-body` を付けた要素）だけ。目次、証明の依存関係、関連ノート、ヘッダー・フッターは入らない。`/math`、`/math/notation`、`/ml` も入らない
-- ノートのページには分野のフィルタ（`data-pagefind-filter="area:math"` / `"area:ml"`）を付けてある。`/math/search` は `area: math` で絞るので、ML のノートは出ない
-- 数式（`.katex`）は `pagefind.yml` の `exclude_selectors` で外している。数式の中の記号では探せない
+- 索引には 2 種類の結果が入る
+  - ページ: ノートのタイトル・概要・本文（`data-pagefind-body` を付けた要素）と、`/math/notation`。種類は「節・資料」で、見出しが節として出る。目次、証明の依存関係、関連ノート、ヘッダー・フッターは入らない
+  - ブロック: ノートの定義・定理・証明・反例・例などを 1 件ずつ。結果の URL はノートの中のそのブロック（`/math/<slug>#<id>`）。証明は「証明 ｜ 付け先の主張の名前」で、主張の名前でも見つかる
+- フィルタは `area`（`math` / `ml`）、`kind`（`definition` / `theorem`（定理・命題・補題・系）/ `proof`（証明の試みを含む）/ `counterexample` / `example` / `section` / `other`（注意・疑問・読書メモ。「すべて」でだけ出る））、`field`（分野の id）
+- 検索語・種類・分野は URL（`?q=&kind=&field=`）に持つ。結果から本文を開いて戻ったときや、URL を開き直したときも同じ条件で探す。種類か分野だけでも一覧にできる
+- 数式（`.katex`）は索引に入れない（`scripts/build-search-index.mjs` の `excludeSelectors`）。数式の中の記号では探せない
 - 検索ページは、まず語ごとの完全一致（`"写像"`）で探し、0 件のときだけ Pagefind の通常の検索を「近い語」として出す。
   通常の検索は日本語の語を 1 文字ずつに分けたり、英字の語を真理値表の「T」に当てたりして、関係のないノートを返すことがあるため
-- タイトルに検索語を含むノートを先に出す。それ以外は Pagefind の順
+- 題（ノート名、ブロックの項目名）に検索語を含むものを先に出す。それ以外は Pagefind の順
 - スクリプトは `is:inline` にしている。Vite に処理させると、動的 import が書き換えられて本番で索引を読み込めない
 
 ### 書くときの約束
@@ -441,10 +454,14 @@ src/
   content/ml/    機械学習の学習ノート（Markdown）
   content.config.ts  数学ノートと機械学習ノートの frontmatter の定義
   lib/           math-markdown.mjs（数式とブロックの Markdown プラグイン）, math-notes.ts, ml.ts
-  components/    LoopDiagram.astro, Motif.astro（インライン SVG）、NoteToc / MathNoteMeta / MathNoteLinks（ノートのページの部品）
+  components/    LoopDiagram.astro, Motif.astro（インライン SVG）、NoteToc / MathNoteMeta / MathNoteLinks（ノートのページの部品）、
+                 MathNav / MathNavList（/math 共通のメニュー）、MathNoteList（ノート名と概要の一覧）
   layouts/       Base.astro（<head> / metadata / header / footer）
                  NoteLayout.astro（数学ノートと ML ノートのページの骨格。docs/design/content-platform.md §4.3）
-  pages/         index.astro, 404.astro, math/index.astro, math/[slug].astro, math/learning.astro, math/search.astro, ml/index.astro, ml/[slug].astro
+                 MathLayout.astro（/math のノート以外のページ。左に MathNav）
+  pages/         index.astro, 404.astro, math/index.astro, math/[slug].astro, math/notes.astro, math/fields/[field].astro,
+                 math/learning.astro, math/notation.astro, math/search.astro, ml/index.astro, ml/[slug].astro
+scripts/         build-search-index.mjs（検索の索引）, check-links.mjs（内部リンクの確認）
   styles/        global.css, math.css（数学ノートと /ml のページ）, ml.css（/ml のページだけ）
 tests/           数学ノート用 Markdown プラグインのテスト
 public/          favicon.svg, ogp.png, robots.txt, _redirects

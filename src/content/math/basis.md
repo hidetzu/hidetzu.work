@@ -131,7 +131,7 @@ $x \in B'_{k+1} \subseteq B'_k \cap B_{k+1} \subseteq B_1 \cap \cdots \cap B_{k+
 
 位相の条件 3 が有限個の共通部分だけを求める理由を考えた。
 
-:::example[開集合の無限個の共通部分]{#ex-infinite-intersection}
+:::counterexample[開集合の無限個の共通部分]{#ex-infinite-intersection}
 実数の通常の位相（7 節）で $B_n = \left( -\dfrac{1}{n}, \dfrac{1}{n} \right)$（$n = 1, 2, \dots$）とすると、各 $B_n$ は開集合だが
 
 $$
