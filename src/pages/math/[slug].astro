@@ -6,12 +6,14 @@ import NoteLayout from '../../layouts/NoteLayout.astro';
 import MathNoteMeta from '../../components/MathNoteMeta.astro';
 import MathNoteLinks from '../../components/MathNoteLinks.astro';
 import MathNav from '../../components/MathNav.astro';
+import MathHeader from '../../components/MathHeader.astro';
 import type { TocItem } from '../../components/NoteToc.astro';
 import '../../styles/math.css';
 import {
   fieldOf,
   getMathGraph,
   getMathNotes,
+  groupByField,
   learningHref,
   mathStatusLabel,
   mathStatusNote,
@@ -45,6 +47,13 @@ const { Content, headings } = await render(note);
 const { title, description, aliases, status, createdAt, updatedAt, sources, draft } = note.data;
 const field = fieldOf(note);
 
+// 前・次のノート（分野の中の順）
+const siblings = groupByField(notes).find((g) => g.field.id === field.id)?.notes ?? [];
+const at = siblings.findIndex((n) => n.id === note.id);
+const prev = at > 0 ? siblings[at - 1] : undefined;
+const next = at >= 0 ? siblings[at + 1] : undefined;
+const current = { page: 'note', field: field.id, note: note.id } as const;
+
 // 目次: 2 段目（###）は 1 段目（##）の下にまとめる
 const toc: TocItem[] = [];
 for (const h of headings) {
@@ -70,11 +79,12 @@ const noteToc: TocItem[] = [
   aliases={aliases}
   area="math"
   filters={{ field: field.id }}
-  back={{ href: '/math', label: 'Math Notes' }}
   category={{ href: `/math/fields/${field.id}`, label: field.title }}
   toc={noteToc}
+  bodyClass="math-site"
 >
-  <MathNav slot="nav" current={{ page: 'note', field: field.id, note: note.id }} />
+  <MathHeader slot="header" current={current} />
+  <MathNav slot="nav" current={current} />
   <Fragment slot="meta">
     <a class="status" href={learningHref(note.id)} title={mathStatusNote[status]}>
       {mathStatusLabel[status]}
@@ -95,4 +105,22 @@ const noteToc: TocItem[] = [
       <MathNoteMeta note={note} />
     </section>
   </Fragment>
+  {
+    (prev || next) && (
+      <nav slot="pager" class="math-pager" aria-label={`前後のノート（${field.title}）`}>
+        {prev && (
+          <a class="math-pager-prev" href={`/math/${prev.id}`} rel="prev">
+            <span class="math-pager-label">← 前のノート</span>
+            {prev.data.title}
+          </a>
+        )}
+        {next && (
+          <a class="math-pager-next" href={`/math/${next.id}`} rel="next">
+            <span class="math-pager-label">次のノート →</span>
+            {next.data.title}
+          </a>
+        )}
+      </nav>
+    )
+  }
 </NoteLayout>

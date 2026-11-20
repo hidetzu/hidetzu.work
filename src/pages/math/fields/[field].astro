@@ -1,5 +1,5 @@
 ---
-// 分野別一覧（/math/fields/<分野の id>）。分野名を H1 にして、その分野のノートを分野の中の順（order）に並べる。
+// 分野別一覧（/math/fields/<分野の id>）。分野名を H1 にして、その分野のノートを分野の中の順（order。学ぶ順）に番号付きで並べる。
 // ノートのない分野のページは作らない
 import MathLayout from '../../../layouts/MathLayout.astro';
 import MathNoteList from '../../../components/MathNoteList.astro';
@@ -17,13 +17,26 @@ interface Props {
 }
 
 const { field, notes } = Astro.props;
+
+// 定義・定理（命題・補題・系を含む）・反例の数。ノートの Markdown の :::definition などを数える
+const count = (re: RegExp) => notes.reduce((n, note) => n + (note.body?.match(re)?.length ?? 0), 0);
+const counts = [
+  { label: '定義', n: count(/^:::definition\b/gm) },
+  { label: '定理・命題', n: count(/^:::(?:theorem|proposition|lemma|corollary)\b/gm) },
+  { label: '反例', n: count(/^:::counterexample\b/gm) },
+].filter((c) => c.n > 0);
 ---
 
 <MathLayout title={`${field.title} | Math Notes`} description={field.description} current={{ page: 'field', field: field.id }}>
   <main id="main" class="math-list-page">
     <h1>{field.title}</h1>
     <p class="math-list-lead">{field.description}</p>
-    <p class="math-list-count">{notes.length} ノート</p>
-    <MathNoteList notes={notes} />
+    <p class="math-list-count">
+      {notes.length} ノート{counts.map((c) => ` · ${c.label} ${c.n}`)}
+    </p>
+    <p class="math-list-search">
+      <a href={`/math/search?field=${field.id}`}>この分野の定義・定理・反例を一覧する →</a>
+    </p>
+    <MathNoteList notes={notes} numbered />
   </main>
 </MathLayout>

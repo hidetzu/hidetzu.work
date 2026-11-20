@@ -16,18 +16,31 @@ interface Props {
   area: string;
   // 検索のフィルタ（例: { field: 'logic' }）。kind は section（ノートと節）に決まっている
   filters?: Record<string, string>;
-  back: { href: string; label: string };
+  // パンくずの先頭（ML は「Machine Learning」）。数学ノートは付けず「分野 › ノート」にする
+  back?: { href: string; label: string };
   category: { href: string; label: string };
   toc: TocItem[];
+  // body に付けるクラス（数学ノートは math-site）
+  bodyClass?: string;
 }
 
-const { title, description, aliases = [], area, filters = {}, back, category, toc } = Astro.props;
+const { title, description, aliases = [], area, filters = {}, back, category, toc, bodyClass } = Astro.props;
 const hasToc = toc.length > 1;
 // 左のメニュー（数学ノートでは MathNav）。あれば全体の幅を広げて、メニューと本文を横に並べる
 const hasNav = Astro.slots.has('nav');
+// 分野ごとのヘッダー（数学ノートでは MathHeader）。あればサイト共通のヘッダーの代わりに出す
+const hasHeader = Astro.slots.has('header');
 ---
 
-<Base title={title} description={description} ogType="article" wide={hasNav}>
+<Base
+  title={title}
+  description={description}
+  ogType="article"
+  wide={hasNav}
+  siteHeader={!hasHeader}
+  bodyClass={bodyClass}
+>
+  <slot name="header" />
   <div class:list={[{ 'math-shell': hasNav }]}>
     <slot name="nav" />
     <main id="main" data-pagefind-filter={`area:${area}`} class="note">
@@ -37,8 +50,9 @@ const hasNav = Astro.slots.has('nav');
       <header class="note-head">
         <nav class="note-crumbs" aria-label="パンくずリスト">
           <ol>
-            <li><a href={back.href}><span aria-hidden="true">← </span>{back.label}</a></li>
+            {back && <li><a href={back.href}><span aria-hidden="true">← </span>{back.label}</a></li>}
             <li><a href={category.href}>{category.label}</a></li>
+            {!back && <li aria-current="page">{title}</li>}
           </ol>
         </nav>
         <h1 data-pagefind-body>{title}</h1>
@@ -70,7 +84,8 @@ const hasNav = Astro.slots.has('nav');
             <slot />
           </article>
           <slot name="after" />
-          <p class="math-back math-back--end"><a href={back.href}>← {back.label} に戻る</a></p>
+          {back && <p class="math-back math-back--end"><a href={back.href}>← {back.label} に戻る</a></p>}
+          <slot name="pager" />
         </div>
         {
           hasToc && (

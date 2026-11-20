@@ -1,0 +1,41 @@
+---
+// /math 共通のヘッダー（1 段）。サイト共通のヘッダーの代わりに出す。
+// PC: 「hidetzu / Math Notes」、検索欄、サイトへの戻り（Home・ML）。
+// 狭い画面: 「Math Notes」、検索ページへのリンク、メニュー（<details> で開閉。JS なし。中身は PC の左のメニューと同じ）。
+// トップはページの最初に大きな検索欄があるので、ヘッダーの検索欄は出さない（search={false}）
+import MathNavList, { type MathNavCurrent } from './MathNavList.astro';
+
+interface Props {
+  current: MathNavCurrent;
+  search?: boolean;
+}
+
+const { current, search = true } = Astro.props;
+---
+
+<header class="math-header">
+  <p class="math-header-brand">
+    <a class="math-header-site" href="/">hidetzu</a>
+    <span class="math-header-sep" aria-hidden="true">/</span>
+    <a class="math-header-home" href="/math" aria-current={current.page === 'top' ? 'page' : undefined}>Math Notes</a>
+  </p>
+  {
+    search && (
+      <form class="math-header-search" action="/math/search" method="get" role="search">
+        <label for="math-header-q" class="visually-hidden">数学ノートを検索</label>
+        <input id="math-header-q" type="search" name="q" placeholder="定義・定理・証明を検索" />
+      </form>
+    )
+  }
+  <nav class="math-header-links" aria-label="サイト">
+    <a href="/">Home</a>
+    <a href="/ml">ML</a>
+  </nav>
+  <a class="math-header-button math-header-searchlink" href="/math/search">検索</a>
+  <details class="math-nav-menu">
+    <summary class="math-header-button">メニュー</summary>
+    <nav class="math-nav-panel" aria-label="Math Notes の目次">
+      <MathNavList current={current} site />
+    </nav>
+  </details>
+</header>

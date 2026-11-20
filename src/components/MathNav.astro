@@ -1,51 +1,19 @@
 ---
-// /math 共通のメニュー。PC（64rem 以上）では深緑の左サイドバー、それより狭い画面では上部の「Math Notes」と「目次」ボタン。
-// 「目次」ボタンは <details> で開閉する（JS なし）。項目はページへのリンクなので、選ぶとページが移って閉じる。
+// /math 共通の左のメニュー（PC、64rem 以上）。狭い画面では出さず、ヘッダーの「メニュー」（MathHeader）で同じ中身を開く。
 // ノートの中の目次（NoteLayout）とは別のもので、こちらは Math Notes 全体の目次
-import MathNavList from './MathNavList.astro';
-import { getMathNotes, groupByField, groupByReference } from '../lib/math-notes';
+import MathNavList, { type MathNavCurrent } from './MathNavList.astro';
 
-export type MathNavCurrent = {
-  // 開いているページ。note は個別ノート、field は分野別一覧
-  page: 'top' | 'all' | 'field' | 'note' | 'notation' | 'learning' | 'search';
-  // 分野別一覧の分野、またはノートの分野（src/data/math.json の fields の id）
-  field?: string;
-  // 開いているノートの slug
-  note?: string;
-};
+export type { MathNavCurrent };
 
 interface Props {
   current: MathNavCurrent;
 }
 
 const { current } = Astro.props;
-const notes = await getMathNotes();
-const fields = groupByField(notes).map(({ field, notes }) => ({ field, count: notes.length }));
-const references = groupByReference(notes).references.map(({ reference, chapters }) => ({
-  reference,
-  chapters: chapters.map(({ chapter, sections, unsectioned }) => ({
-    number: chapter.number,
-    title: chapter.title,
-    sections: sections.map(({ section, notes }) => ({ number: section.number, title: section.title, notes })),
-    unsectioned,
-  })),
-}));
-const list = { current, total: notes.length, fields, references };
 ---
 
-<div class="math-nav">
-  <div class="math-nav-bar">
-    <a class="math-nav-home" href="/math">Math Notes</a>
-    <details class="math-nav-menu">
-      <summary>目次</summary>
-      <nav class="math-nav-panel" aria-label="Math Notes の目次">
-        <MathNavList {...list} />
-      </nav>
-    </details>
-  </div>
-  <aside class="math-nav-side">
-    <nav aria-label="Math Notes の目次">
-      <MathNavList {...list} />
-    </nav>
-  </aside>
-</div>
+<aside class="math-nav-side">
+  <nav aria-label="Math Notes の目次">
+    <MathNavList current={current} />
+  </nav>
+</aside>

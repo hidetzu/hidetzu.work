@@ -1,15 +1,23 @@
 ---
-// ノート名と短い概要の一覧（分野別一覧とすべてのノートで使う）。並びは渡された順のまま
+// ノート名と短い概要の一覧（分野別一覧とすべてのノートで使う）。並びは渡された順のまま。
+// numbered を付けると、分野の中の順（学ぶ順）の番号を付け、右に参考文献の節（§1 など）を出す
 import { mathStatusLabel, type MathNote } from '../lib/math-notes';
 
 interface Props {
   notes: MathNote[];
+  numbered?: boolean;
 }
 
-const { notes } = Astro.props;
+const { notes, numbered = false } = Astro.props;
+const place = (note: MathNote) => {
+  const tb = note.data.textbook;
+  if (!tb) return undefined;
+  return tb.section !== undefined ? `§${tb.section}` : `Ch.${tb.chapter}`;
+};
+const List = numbered ? 'ol' : 'ul';
 ---
 
-<ul class="math-note-list">
+<List class:list={['math-note-list', { 'math-note-list--numbered': numbered }]}>
   {
     notes.map((note) => (
       <li>
@@ -17,9 +25,10 @@ const { notes } = Astro.props;
           <a href={`/math/${note.id}`}>{note.data.title}</a>
           {note.data.status !== 'understood' && <span class="math-field-status">{mathStatusLabel[note.data.status]}</span>}
           {note.data.draft && <span class="math-field-status">draft</span>}
+          {numbered && place(note) && <span class="math-note-list-place">{place(note)}</span>}
         </p>
         <p class="math-note-list-description">{note.data.description}</p>
       </li>
     ))
   }
-</ul>
+</List>

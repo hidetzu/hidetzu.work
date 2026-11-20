@@ -14,9 +14,20 @@ interface Props {
   ogType?: 'website' | 'article';
   // 左にメニューを置くページ（/math）は、本文の幅を保つために全体の幅を広げる
   wide?: boolean;
+  // サイト共通のヘッダーを出すか。/math は自分のヘッダー（MathHeader）を本文の側で出す
+  siteHeader?: boolean;
+  // body に付けるクラス（/math は math-site にして、配色を /math 用に切り替える）
+  bodyClass?: string;
 }
 
-const { title, description = site.description, ogType = 'website', wide = false } = Astro.props;
+const {
+  title,
+  description = site.description,
+  ogType = 'website',
+  wide = false,
+  siteHeader = true,
+  bodyClass,
+} = Astro.props;
 const pageTitle = title ? `${title} | ${site.name}` : `${site.name} — ${site.tagline}`;
 // build.format: 'file' だと pathname が /index.html になるため正規化する
 const path = Astro.url.pathname.replace(/index\.html$/, '').replace(/\.html$/, '');
@@ -45,9 +56,10 @@ const ogImage = new URL('/ogp.png', Astro.site).href;
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
   </head>
-  <body>
+  <body class={bodyClass}>
     <a class="skip-link" href="#main">本文へスキップ</a>
     <div class:list={['wrap', { 'wrap--wide': wide }]}>
+      {siteHeader && (
       <header class="site-header">
         <a class="brand" href="/">{site.name}</a>
         <nav class="top" aria-label="links">
@@ -67,6 +79,7 @@ const ogImage = new URL('/ogp.png', Astro.site).href;
           }
         </nav>
       </header>
+      )}
       <slot />
       <footer>
         <span>© {now.updated.slice(0, 4)} {site.name}</span>
