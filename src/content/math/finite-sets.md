@@ -7,9 +7,10 @@ topic: set-theory
 order: 8
 status: understood
 createdAt: 2026-11-15
-updatedAt: 2026-11-17
+updatedAt: 2026-11-21
 related:
   - functions
+  - cartesian-product
 tags:
   - set-theory
   - munkres
@@ -287,4 +288,83 @@ $$
 の右辺は 2 つの有限集合の和集合なので、有限である。
 
 **有限個の直積。** 未記述。
+:::
+
+## 6. 有限集合の直積の有限性
+
+直積と $m$ 組は[直積のノート](/math/cartesian-product#def-cartesian-product)の定義（[有限直積](/math/cartesian-product#def-finite-product)）を使う。以下の 2 つの命題は、[有限集合の和集合と直積](#cor-6-8)のうち直積の部分にあたる（Munkres, Corollary 6.8）。
+
+### 2 つの有限集合の直積
+
+:::proposition[2 つの有限集合の直積]{#prop-product-finite}
+$A, B$ が有限集合ならば、$A \times B$ は有限である。
+:::
+
+:::proof{origin=self text=ai note="本人が自力で考え、手書きノートで修正・完成させた証明"}
+$A = \varnothing$ または $B = \varnothing$ の場合、$A \times B = \varnothing$ なので有限である。
+
+以下、$A, B$ がともに空でない場合を考える。任意の $a \in A$ を固定し、写像
+
+$$
+\varphi_a \colon B \to \{a\} \times B
+$$
+
+を
+
+$$
+\varphi_a(b) = (a, b)
+$$
+
+によって定義する。この写像は全単射なので、$\{a\} \times B$ は有限集合である。
+
+さらに
+
+$$
+\begin{aligned}
+A \times B
+&= \left( \bigcup_{a \in A} \{a\} \right) \times B \\
+&= \bigcup_{a \in A} \bigl( \{a\} \times B \bigr)
+\end{aligned}
+$$
+
+が成り立つ。$A$ は有限集合なので、右辺は有限個の有限集合の和集合である。
+[有限集合の有限個の和集合は有限である](#cor-6-8)ことから、$A \times B$ は有限である。
+:::
+
+### 有限個の直積
+
+:::proposition[有限個の有限集合の直積]{#prop-finite-product-finite}
+$A_1, \dots, A_n$ が有限集合ならば、$\prod_{i=1}^{n} A_i$ は有限である。
+:::
+
+:::proof{origin=ai note="帰納法で 2 つの直積の場合に帰着し、自然な全単射で対応させるという方針は本人の指定。文章は Claude が書いた"}
+$n$ に関する[数学的帰納法](/math/integers-reals#thm-induction)で示す。
+有限集合と全単射で対応する集合は有限であることを使う（全単射を合成すればよい。一方が空集合なら他方も空集合である）。
+
+$n = 1$ のとき、$x \mapsto x(1)$ は $\prod_{i=1}^{1} A_i$ から $A_1$ への全単射なので、$\prod_{i=1}^{1} A_i$ は有限である。
+
+$n$ 個の有限集合の直積が有限であると仮定し、$A_1, \dots, A_{n+1}$ を有限集合とする。仮定より $\prod_{i=1}^{n} A_i$ は有限なので、[2 つの有限集合の直積](#prop-product-finite)より
+
+$$
+\left( \prod_{i=1}^{n} A_i \right) \times A_{n+1}
+$$
+
+は有限である。写像
+
+$$
+\Phi \colon \prod_{i=1}^{n+1} A_i \to \left( \prod_{i=1}^{n} A_i \right) \times A_{n+1}
+$$
+
+を
+
+$$
+\Phi(x) = \bigl( (x_1, \dots, x_n),\ x_{n+1} \bigr)
+$$
+
+で定める。逆向きの写像は $\bigl( (y_1, \dots, y_n), a \bigr) \mapsto (y_1, \dots, y_n, a)$ で与えられ、どちらの順に合成しても恒等写像になる。よって $\Phi$ は全単射であり、$\prod_{i=1}^{n+1} A_i$ は有限である。
+:::
+
+:::remark[有限であることと要素の個数]
+[直積のノートの例](/math/cartesian-product#ex-product-order)の式 $|A \times B| = |A| \cdot |B|$ は、要素の個数についての主張である。
+この節で示したのは $A \times B$ が有限であることだけで、要素の個数がこの積になることは証明していない。
 :::

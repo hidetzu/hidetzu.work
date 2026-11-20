@@ -1,8 +1,11 @@
 ---
 title: "ノートのタイトル"
 description: "一覧に出す一文。何を学ぶノートか。"
-topic: topology # 分野。src/data/math.json の fields の id（logic / set-theory / combinatorics / real-numbers / topology）
-order: 1 # 分野の中での並び順（小さいほど先）。省略すると後ろに作成日順で並ぶ
+topic: topology # 分野。src/data/math.json の fields の id（logic / set-theory / real-numbers / topology / combinatorics）
+order: 1 # 分野の中での並び順（小さいほど先）。証明で使うノートより後ろにする（README の「並び順」）。省略すると後ろに作成日順で並ぶ
+# usesLater:          # 分野の中で後ろのノートを使う順のままにすると決めたときだけ。相手の slug と理由
+#   - note: finite-sets
+#     reason: "…"
 status: unread # unread / studying / understood / proof-in-progress / verified（自己申告）
 createdAt: 2026-01-01
 # updatedAt: 2026-01-02
