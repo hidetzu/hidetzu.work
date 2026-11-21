@@ -40,6 +40,10 @@
             {
               "number": 6,
               "title": "Finite Sets"
+            },
+            {
+              "number": 8,
+              "title": "The Principle of Recursive Definition"
             }
           ]
         },
